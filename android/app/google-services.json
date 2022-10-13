@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "199672298066",
+    "project_id": "cikitsa-international",
+    "storage_bucket": "cikitsa-international.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199672298066:android:cf860bcb66e5d3999abd8b",
+        "android_client_info": {
+          "package_name": "com.cikitsainternational.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199672298066-trlrp96af86tqo6gi0qtg6eo842ukh2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBblcRyu9W4AjGqtTsi0YbEKu5uazuk3rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199672298066-trlrp96af86tqo6gi0qtg6eo842ukh2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
