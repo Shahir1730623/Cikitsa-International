@@ -1,13 +1,14 @@
 {
   "project_info": {
     "project_number": "199672298066",
+    "firebase_url": "https://cikitsa-international-default-rtdb.firebaseio.com",
     "project_id": "cikitsa-international",
     "storage_bucket": "cikitsa-international.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:199672298066:android:cf860bcb66e5d3999abd8b",
+        "mobilesdk_app_id": "1:199672298066:android:3e5c566848ee78829abd8b",
         "android_client_info": {
           "package_name": "com.cikitsainternational.app"
         }

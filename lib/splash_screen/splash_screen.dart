@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/authentication/initialization_screen.dart';
 import 'package:app/splash_screen/welcome_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     //firebaseAuth.currentUser != null ? AssistantMethods.readOnlineUserCurrentInfo() : null;
 
     Timer(const Duration(seconds: 5),() async {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => WelcomeScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => Initialization()));
     });
   }
 

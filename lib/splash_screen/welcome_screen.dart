@@ -1,6 +1,7 @@
 import 'package:app/authentication/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -30,12 +31,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
-                  children: const [
+                  children: [
                     Text(
                       "Welcome To",
-                      style: TextStyle(
+                      style: GoogleFonts.montserrat(
                         fontSize: 20,
-                        color: Colors.grey,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
 
@@ -43,9 +45,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                     Text(
                       "CIKITSA INTERNATIONAL",
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Color(0xFF707070),
+                      style: GoogleFonts.montserrat(
+                        fontSize: 23,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ],
@@ -84,55 +87,32 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                     const SizedBox(height: 30,),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()),);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.lightBlue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12), // <-- Radius
+                    SizedBox(
+                      height: 40,
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()),);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.lightBlue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12), // <-- Radius
+                          ),
                         ),
-                      ),
 
-                      child: const Text(
-                          "Agree and Continue",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15
-                          )
+                        child: const Text(
+                            "Agree and Continue",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15
+                            )
+                        ),
                       ),
                     ),
                   ],
                 ),
-
-
-
-               /* Container(
-                  height: 44.0,
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                      )
-                  ),
-
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(primary: Colors.transparent, shadowColor: Colors.transparent),
-                    child: const Text(
-                      "Agree and Continue",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15
-                      )
-                    ),
-                  ),
-                )*/
-
 
 
 
