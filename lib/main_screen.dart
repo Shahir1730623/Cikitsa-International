@@ -1,7 +1,7 @@
-import 'package:app/TabPages/find_doctor_screen.dart';
 import 'package:app/TabPages/history_screen.dart';
 import 'package:app/TabPages/subscription_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
 import 'package:flutter/material.dart';
 
 
@@ -39,47 +39,58 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         children:  const [
           UserDashboard(),
           HistoryScreen(),
-          FindDoctor(),
+          LiveConsultationCategory(),
           SubscriptionScreen(),
-          UserDashboard(),
+          HistoryScreen(),
         ],
       ),
 
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home,size: 35),
             label: "Home",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
+            icon: Image.asset(
+              "assets/NavigationBarItem/clipboard.png",
+              height: 30,
+            ),
             label: "History",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Image.asset(
+              "assets/NavigationBarItem/doctor.png",
+              height: 30,
+            ),
             label: "Find Doctor",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.subscriptions),
+            icon: Image.asset(
+              "assets/NavigationBarItem/subscription.png",
+              height: 30,
+            ),
             label: "Subscription",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
+            icon: Image.asset(
+              "assets/NavigationBarItem/menu.png",
+              height: 30,
+            ),
             label: "More",
           ),
 
         ],
 
-        unselectedItemColor: Colors.black12,
+        unselectedItemColor: Colors.black,
         selectedItemColor: Colors.lightBlueAccent,
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: const TextStyle(fontSize: 14),
+        selectedLabelStyle: const TextStyle(fontSize: 13),
         showUnselectedLabels: true,
         currentIndex: selectedIndex,
         onTap: onItemClicked,

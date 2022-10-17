@@ -1,5 +1,6 @@
 import 'package:app/authentication/create_profile_screen.dart';
 import 'package:app/authentication/login_screen.dart';
+import 'package:app/main_screen/user_dashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -49,7 +50,7 @@ class _OTPScreenState extends State<OTPScreen> {
           final snapshot = userKey.snapshot;
           if (snapshot.exists) {
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UserDashboard()));
           }
 
           else{

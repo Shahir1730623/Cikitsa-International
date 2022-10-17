@@ -1,6 +1,11 @@
+import 'package:app/models/UserModel.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../global/global.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({Key? key}) : super(key: key);
@@ -15,30 +20,127 @@ class _UserDashboardState extends State<UserDashboard> {
   List secondListImages = ["sugar-blood-level","bone-1","brainstorm"];
   List secondListNames = ["Diabetes Specialist","Orthopedics","Psychiatrist"];
 
+  // Enable Push Notifications
+  readCurrentUserInformation() async {
+    currentFirebaseUser = firebaseAuth.currentUser;
+
+    await FirebaseDatabase.instance.ref()
+        .child("User")
+        .child(currentFirebaseUser!.uid)
+        .once()
+        .then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.exists){
+        userData.id = (snapshot.value as Map)["id"];
+        userData.name = (snapshot.value as Map)["name"];
+        userData.phone = (snapshot.value as Map)["phone"];
+      }
+
+    });
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    readCurrentUserInformation();
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                  )
+        appBar: PreferredSize(
+         preferredSize: const Size.fromHeight(150.0),
+          child: AppBar(
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                    )
+                ),
+
+                child: Container(
+                  height: height * 0.16,
+                  margin: const EdgeInsets.all(15),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0,right: 10),
+                    child: Column(
+                      children: [
+                        // Logo, CircleAvatar
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  "assets/Logo.png",
+                                  height: height * 0.05,
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.blue,
+                                  child: Text(
+                                    currentUserInfo!.name![0],
+                                    style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+
+                        const SizedBox(height: 20,),
+
+                        // Search bar
+                        Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: TextField(
+                                cursorColor: Colors.grey,
+                                decoration: InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide.none
+                                    ),
+                                    hintText: 'Search by services or speciality',
+                                    hintStyle: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 15
+                                    ),
+                                    prefixIcon: Container(
+                                      padding: const EdgeInsets.all(15),
+                                      width: 15,
+                                      child: Image.asset("assets/NavigationBarItem/search.png"),
+                                    )
+                                ),
+                              ),
+                            ),
+
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+
               ),
 
-              child: Row(
-                children: [
-                  const SizedBox(height: 10,),
-                  Image.asset('assets/Logo.png', height: height * 0.5,),
-                ],
-              ),
-
-            ),
-
+          ),
         ),
 
         body: Container(
@@ -53,88 +155,116 @@ class _UserDashboardState extends State<UserDashboard> {
            child: SingleChildScrollView(
              child: Column(
                children: [
-                 const SizedBox(height: 20),
+                 const SizedBox(height: 10),
 
+                 //Emergency Service Container
                  Container(
                    decoration: const BoxDecoration(
                      image: DecorationImage(
                          image: AssetImage("assets/background_color.png"),
                          fit: BoxFit.cover),
                    ),
+                   height: 180,
 
-                   height: 150,
+                   child: Column(
+                     children: [
+                       const SizedBox(width: 10),
 
-                   child: ListView.builder(
-                     itemCount: 3,
-                     scrollDirection: Axis.horizontal,
-                     itemBuilder: (context, index) => Container(
-                       height: 150,
-                       width: 150,
-                       margin: const EdgeInsets.all(10),
+                       // Title
+                       Row(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                         children: [
+                           const SizedBox(width: 10),
 
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(10),
-                         color: Colors.white,
+                           Text(
+                             "Emergency Doctor",
+                             style: GoogleFonts.montserrat(
+                               color: Colors.black,
+                               fontWeight: FontWeight.bold,
+                               fontSize: 15,
+                             ),
+                           ),
+                         ],
                        ),
-                       child: Center(
-                         child: Padding(
-                           padding: const EdgeInsets.all(5.0),
-                           child: Column(
-                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                             children: [
-                               Text(
-                                 firstListNames[index],
-                                 textAlign: TextAlign.center,
-                                 style: GoogleFonts.montserrat(
-                                   fontSize: 12,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
 
-                               Image.asset(
-                                 'assets/' + firstListImages[index] + '.png',
-                                 height: 50,
-                               ),
+                       // Service Container
+                       Expanded(
+                         child: ListView.builder(
+                           itemCount: 3,
+                           scrollDirection: Axis.horizontal,
+                           itemBuilder: (context, index) => Container(
+                             height: 150,
+                             width: 150,
+                             margin: const EdgeInsets.all(10),
 
-                               Text(
-                                 "৳500",
-                                 style: GoogleFonts.montserrat(
-                                   fontSize: 12,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
+                             decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(10),
+                               color: Colors.white,
+                             ),
 
-                               SizedBox(
-                                 width: double.infinity,
-                                 height: 20,
-                                 child: ElevatedButton(
-                                   onPressed: (){
-
-                                   },
-
-                                   child: const Text(
-                                     "See doctor Now",
-                                     style: TextStyle(
-                                         fontSize: 10,
-                                         fontWeight: FontWeight.bold
+                             child: Center(
+                               child: Padding(
+                                 padding: const EdgeInsets.all(5.0),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                   children: [
+                                     Text(
+                                       firstListNames[index],
+                                       textAlign: TextAlign.center,
+                                       style: GoogleFonts.montserrat(
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold,
+                                       ),
                                      ),
-                                   ),
 
+                                     Image.asset(
+                                       'assets/' + firstListImages[index] + '.png',
+                                       height: 50,
+                                     ),
 
+                                     Text(
+                                       "৳500",
+                                       style: GoogleFonts.montserrat(
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold,
+                                       ),
+                                     ),
+
+                                     SizedBox(
+                                       width: double.infinity,
+                                       height: 20,
+                                       child: ElevatedButton(
+                                         onPressed: (){
+
+                                         },
+
+                                         child: const Text(
+                                           "See doctor Now",
+                                           style: TextStyle(
+                                             fontSize: 12,
+                                             fontWeight: FontWeight.bold
+                                           ),
+                                         ),
+
+                                       ),
+                                     ),
+
+                                   ],
                                  ),
                                )
+                               ),
 
-                             ],
+                             ),
                            ),
-                         )
-                         ),
-
                        ),
-                     ),
+                     ],
                    ),
 
-                 const SizedBox(height: 20),
+                   ),
 
+                 const SizedBox(height: 10),
+
+                 //Consult a specialist Container
                  Container(
                  decoration: const BoxDecoration(
                    image: DecorationImage(
@@ -142,79 +272,106 @@ class _UserDashboardState extends State<UserDashboard> {
                        fit: BoxFit.cover),
                  ),
 
-                 height: 150,
+                 height: 180,
 
-                 child: ListView.builder(
-                   itemCount: 3,
-                   scrollDirection: Axis.horizontal,
-                   itemBuilder: (context, index) => Container(
-                     height: 150,
-                     width: 150,
-                     margin: const EdgeInsets.all(10),
+                 child: Column(
+                   children: [
+                     const SizedBox(width: 10),
 
-                     decoration: BoxDecoration(
-                       borderRadius: BorderRadius.circular(10),
-                       color: Colors.white,
+                     // Title
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                         const SizedBox(width: 10),
+
+                         Text(
+                           "Consult a specialist",
+                           style: GoogleFonts.montserrat(
+                             color: Colors.black,
+                             fontWeight: FontWeight.bold,
+                             fontSize: 15,
+                           ),
+                         ),
+                       ],
                      ),
-                     child: Center(
-                         child: Padding(
-                           padding: const EdgeInsets.all(5.0),
-                           child: Column(
-                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                             children: [
-                               Text(
-                                 secondListNames[index],
-                                 textAlign: TextAlign.center,
-                                 style: GoogleFonts.montserrat(
-                                   fontSize: 12,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
 
-                               Image.asset(
-                                 'assets/' + secondListImages[index] + '.png',
-                                 height: 50,
-                               ),
+                     // Specialist Container
+                     Expanded(
+                       child: ListView.builder(
+                         itemCount: 3,
+                         scrollDirection: Axis.horizontal,
+                         itemBuilder: (context, index) => Container(
+                           height: 150,
+                           width: 150,
+                           margin: const EdgeInsets.all(10),
 
-                               Text(
-                                 "৳500",
-                                 style: GoogleFonts.montserrat(
-                                   fontSize: 12,
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
-
-                               SizedBox(
-                                 width: double.infinity,
-                                 height: 20,
-                                 child: ElevatedButton(
-                                   onPressed: (){
-
-                                   },
-
-                                   child: const Text(
-                                     "See doctor Now",
-                                     style: TextStyle(
-                                         fontSize: 10,
-                                         fontWeight: FontWeight.bold
+                           decoration: BoxDecoration(
+                             borderRadius: BorderRadius.circular(10),
+                             color: Colors.white,
+                           ),
+                           child: Center(
+                               child: Padding(
+                                 padding: const EdgeInsets.all(5.0),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                   children: [
+                                     Text(
+                                       secondListNames[index],
+                                       textAlign: TextAlign.center,
+                                       style: GoogleFonts.montserrat(
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold,
+                                       ),
                                      ),
-                                   ),
+
+                                     Image.asset(
+                                       'assets/' + secondListImages[index] + '.png',
+                                       height: 50,
+                                     ),
+
+                                     Text(
+                                       "৳500",
+                                       style: GoogleFonts.montserrat(
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold,
+                                       ),
+                                     ),
+
+                                     SizedBox(
+                                       width: double.infinity,
+                                       height: 20,
+                                       child: ElevatedButton(
+                                         onPressed: (){
+
+                                         },
+
+                                         child: const Text(
+                                           "See doctor Now",
+                                           style: TextStyle(
+                                               fontSize: 12,
+                                               fontWeight: FontWeight.bold
+                                           ),
+                                         ),
 
 
+                                       ),
+                                     )
+
+                                   ],
                                  ),
                                )
-
-                             ],
                            ),
-                         )
-                     ),
 
-                   ),
+                         ),
+                       ),
+                     ),
+                   ],
                  ),
                ),
 
-                 const SizedBox(height: 20),
+                 const SizedBox(height: 10),
 
+                 //Our Services Container
                  Container(
                    decoration:  const BoxDecoration(
                      image: DecorationImage(
@@ -239,7 +396,7 @@ class _UserDashboardState extends State<UserDashboard> {
                              style: GoogleFonts.montserrat(
                                color: Colors.black,
                                fontWeight: FontWeight.bold,
-                               fontSize: 20,
+                               fontSize: 15,
                              ),
                            ),
                          ],
@@ -434,14 +591,12 @@ class _UserDashboardState extends State<UserDashboard> {
 
                  )
 
-
                  ]
                ),
              ),
            ),
         )
     );
-
 
 }
 }
