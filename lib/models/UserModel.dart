@@ -4,6 +4,7 @@ class UserModel{
   String? id;
   String? name;
   String? phone;
+  String? age;
 
   UserModel({
     this.id,

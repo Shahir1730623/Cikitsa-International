@@ -52,95 +52,97 @@ class _UserDashboardState extends State<UserDashboard> {
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        appBar: PreferredSize(
-         preferredSize: const Size.fromHeight(150.0),
-          child: AppBar(
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                    )
-                ),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 130,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                  )
+              ),
 
-                child: Container(
-                  height: height * 0.16,
-                  margin: const EdgeInsets.all(15),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0,right: 10),
-                    child: Column(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0,right: 20,top: 15),
+                child: Column(
+                  children: [
+                    // Logo, CircleAvatar
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Logo, CircleAvatar
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  "assets/Logo.png",
-                                  height: height * 0.05,
-                                ),
-                              ],
+                            Image.asset(
+                              "assets/Logo.png",
+                              height: height * 0.05,
                             ),
-
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.blue,
-                                  child: Text(
-                                    currentUserInfo!.name![0],
-                                    style: GoogleFonts.montserrat(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
                           ],
                         ),
 
-                        const SizedBox(height: 20,),
-
-                        // Search bar
                         Row(
                           children: [
-                            Flexible(
-                              flex: 1,
-                              child: TextField(
-                                cursorColor: Colors.grey,
-                                decoration: InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide.none
-                                    ),
-                                    hintText: 'Search by services or speciality',
-                                    hintStyle: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 15
-                                    ),
-                                    prefixIcon: Container(
-                                      padding: const EdgeInsets.all(15),
-                                      width: 15,
-                                      child: Image.asset("assets/NavigationBarItem/search.png"),
-                                    )
+                            CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              child: Text(
+                                currentUserInfo!.name![0],
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white
                                 ),
                               ),
-                            ),
-
+                            )
                           ],
                         )
                       ],
                     ),
-                  ),
-                ),
 
+                    const SizedBox(height: 15,),
+
+                    // Searchbar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: TextFormField(
+                              onChanged: (textTyped) {
+                                //;
+                              },
+
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.search),
+                                  hintText: "Search by services",
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(15)),
+
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
-          ),
+            ),
+
         ),
 
         body: Container(
@@ -162,9 +164,11 @@ class _UserDashboardState extends State<UserDashboard> {
                    decoration: const BoxDecoration(
                      image: DecorationImage(
                          image: AssetImage("assets/background_color.png"),
+                         opacity: 0.5,
                          fit: BoxFit.cover),
                    ),
-                   height: 180,
+                   height: 170,
+
 
                    child: Column(
                      children: [
@@ -187,7 +191,7 @@ class _UserDashboardState extends State<UserDashboard> {
                          ],
                        ),
 
-                       // Service Container
+                       // Emergency Container
                        Expanded(
                          child: ListView.builder(
                            itemCount: 3,
@@ -269,10 +273,11 @@ class _UserDashboardState extends State<UserDashboard> {
                  decoration: const BoxDecoration(
                    image: DecorationImage(
                        image: AssetImage("assets/background_color.png"),
+                       opacity: 0.5,
                        fit: BoxFit.cover),
                  ),
 
-                 height: 180,
+                 height: 170,
 
                  child: Column(
                    children: [
@@ -376,11 +381,12 @@ class _UserDashboardState extends State<UserDashboard> {
                    decoration:  const BoxDecoration(
                      image: DecorationImage(
                          image: AssetImage("assets/background_color.png"),
+                         opacity: 0.5,
                          fit: BoxFit.cover,
                      ),
                    ),
                    alignment: Alignment.center,
-                   height: 300,
+                   height: 270,
 
                    child: Column(
                      children: [
@@ -402,11 +408,11 @@ class _UserDashboardState extends State<UserDashboard> {
                          ],
                        ),
 
-                       const SizedBox(height: 10),
+                       const SizedBox(height: 5),
 
                        Padding(
                          padding: const EdgeInsets.only(left: 5,right: 5),
-                         child: GridView(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                         child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                            shrinkWrap: true,
                            children: [
                              Container(
@@ -414,7 +420,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                  borderRadius: BorderRadius.circular(10),
                                  color: Colors.white,
                                ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
+                               margin: const EdgeInsets.fromLTRB(5,10,5,0),
                                child: Column(
                                  mainAxisAlignment: MainAxisAlignment.center,
                                  children: [
@@ -495,6 +501,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                  ],
                                ),
                              ),
+
                              Container(
                                decoration: BoxDecoration(
                                  borderRadius: BorderRadius.circular(10),

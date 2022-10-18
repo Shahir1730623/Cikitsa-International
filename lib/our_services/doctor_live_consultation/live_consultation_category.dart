@@ -1,8 +1,10 @@
 import 'package:app/TabPages/history_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../models/specialization_model.dart';
 import 'live_doctors.dart';
 
 class LiveConsultationCategory extends StatefulWidget {
@@ -13,87 +15,110 @@ class LiveConsultationCategory extends StatefulWidget {
 }
 
 class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
-  List specializationImagesList = ["sugar-blood-level","bone","brain","eye"];
-  List specializationNamesList = ["Diabetes Specialist","Orthopedics","Psychiatrist","Ophthalmologist"];
   final List<Color> colorList = <Color>[Colors.green, Colors.blue,Colors.yellow,Colors.pink];
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  static List<SpecializationModel> specializationList = [
+    SpecializationModel("Endocrinologist","Lorem ipsum dolor sit amet\nincididunt ut labore et dolore\nexercitation ullamco laboris","sugar-blood-level"),
+    SpecializationModel("Orthopedics","Lorem ipsum dolor sit amet\nincididunt ut labore et dolore\nexercitation ullamco laboris","bone"),
+    SpecializationModel("Psychiatrist","Lorem ipsum dolor sit amet\nincididunt ut labore et dolore\nexercitation ullamco laboris","brain"),
+    SpecializationModel("Ophthalmologist","Lorem ipsum dolor sit amet\nincididunt ut labore et dolore\nexercitation ullamco laboris","eye"),
+  ];
+
+  // Creating the list that we are going to display and filter
+  List<SpecializationModel> displayList = List.from(specializationList);
+
+  void updateSpecializationList(String text){
+    setState(() {
+      displayList = specializationList.where((element) => element.specializationName!.toLowerCase().contains(text.toLowerCase())).toList();
+    });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(150.0),
-            child: AppBar(
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                    )
-                ),
-
-                child: Padding(
-                  padding: const EdgeInsets.all(25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Logo, CircleAvatar
-
-                      Text(
-                        "Doctor Live Consultation",
-                        style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.black
-                        ),
-                      ),
-
-                      const SizedBox(height: 17),
-
-                      // Search bar
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              cursorColor: Colors.grey,
-                              decoration: InputDecoration(
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none
-                                  ),
-                                  hintText: 'Search by services or speciality',
-                                  hintStyle: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 15
-                                  ),
-                                  prefixIcon: Container(
-                                    padding: const EdgeInsets.all(15),
-                                    width: 10,
-                                    child: Image.asset("assets/NavigationBarItem/search.png"),
-                                  )
-                              ),
-                            ),
-                          ),
-
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-
-
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: 130,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                  )
               ),
+
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0,right: 20,top: 20,bottom: 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Logo, Title
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset("assets/video-call.png", height: 30,),
+
+                        SizedBox(width: 10),
+
+                        Text(
+                          "Doctor Live Consultation",
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black
+                          ),
+                        ),
+
+
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Search bar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            onChanged: (textTyped) {
+                              updateSpecializationList(textTyped);
+                            },
+
+                            decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search),
+                                hintText: "Search by specialization",
+                                fillColor: Colors.white,
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.all(15)),
+
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+
             ),
           ),
 
@@ -114,17 +139,17 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
 
                 Flexible(
                   child: ListView.builder(
-                    itemCount: 4,
-                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: displayList.length,
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) => GestureDetector(
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
                       },
                       child: Container(
-                        height: 150,
+                        height: 130,
                         width: 150,
-                        margin: const EdgeInsets.fromLTRB(20,10,20,10),
+                        margin: const EdgeInsets.fromLTRB(25,10,25,10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: colorList[index],
@@ -133,13 +158,15 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            SizedBox(height: 10,),
+                            const SizedBox(height: 10,),
 
+                            // Specialization Name
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                SizedBox(width: 85),
+                                const SizedBox(width: 85),
                                 Text(
-                                  specializationNamesList[index],
+                                  specializationList[index].specializationName!,
                                   style: GoogleFonts.montserrat(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -148,25 +175,25 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                               ],
                             ),
 
-                            SizedBox(height: 5,),
+                            const SizedBox(height: 5,),
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(width: 1,),
+                                const SizedBox(width: 1,),
 
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.asset(
-                                      "assets/" + specializationImagesList[index] + ".png",
+                                      "assets/${specializationList[index].imageName!}.png",
                                       height: 50,
                                     ),
                                   ],
                                 ),
 
                                 Text(
-                                    "Lorem ipsum dolor sit amet,\nincididunt ut labore et dolore\nexercitation ullamco laboris "
+                                    specializationList[index].specializationDetails!
                                 ),
 
                                 Image.asset(
@@ -174,14 +201,12 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                                   height: 20,
                                 ),
 
-                                SizedBox(width: 1),
+                                const SizedBox(width: 1),
 
                               ],
                             ),
 
-                            SizedBox(height: 30,),
-
-
+                            const SizedBox(height: 30,),
 
 
                           ],
@@ -189,8 +214,7 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                       ),
                     ),
                   ),
-                ),
-
+                )
 
               ],
             ),
