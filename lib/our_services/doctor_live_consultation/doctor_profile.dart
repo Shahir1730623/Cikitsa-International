@@ -1,4 +1,5 @@
 import 'package:app/common_screens/choose_user.dart';
+import 'package:app/our_services/doctor_live_consultation/live_doctors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +16,46 @@ class _DoctorProfileState extends State<DoctorProfile> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: (){
+              Navigator.pop(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  color: Colors.white
+                ),
+                child: const Icon(
+                  Icons.arrow_back_outlined,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(top:19.0),
+              child: Text(
+                "Online",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 10.0,left: 2),
+              child: Icon(Icons.circle,color: CupertinoColors.systemGreen),
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(

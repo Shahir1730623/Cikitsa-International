@@ -1,4 +1,7 @@
 import 'package:app/TabPages/history_screen.dart';
+import 'package:app/home/home_screen.dart';
+import 'package:app/main_screen.dart';
+import 'package:app/main_screen/user_dashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -38,188 +41,194 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            toolbarHeight: 130,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                  )
-              ),
-
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0,right: 20,top: 20,bottom: 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Logo, Title
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Image.asset("assets/video-call.png", height: 30,),
-
-                        SizedBox(width: 10),
-
-                        Text(
-                          "Doctor Live Consultation",
-                          style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black
-                          ),
-                        ),
-
-
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Search bar
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            onChanged: (textTyped) {
-                              updateSpecializationList(textTyped);
-                            },
-
-                            decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.search),
-                                hintText: "Search by specialization",
-                                fillColor: Colors.white,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.all(15)),
-
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ],
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              toolbarHeight: 130,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                    )
                 ),
-              ),
 
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0,right: 20,top: 20,bottom: 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Logo, Title
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Image.asset("assets/video-call.png", height: 30,),
 
-            ),
-          ),
+                          SizedBox(width: 10),
 
-        body: Container(
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-              )
-          ),
-
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 15,),
-
-                Flexible(
-                  child: ListView.builder(
-                    itemCount: displayList.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
-                      },
-                      child: Container(
-                        height: 130,
-                        width: 150,
-                        margin: const EdgeInsets.fromLTRB(25,10,25,10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: colorList[index],
-                        ),
-
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const SizedBox(height: 10,),
-
-                            // Specialization Name
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(width: 85),
-                                Text(
-                                  specializationList[index].specializationName!,
-                                  style: GoogleFonts.montserrat(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            "Doctor Live Consultation",
+                            style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black
                             ),
+                          ),
 
-                            const SizedBox(height: 5,),
 
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const SizedBox(width: 1,),
+                        ],
+                      ),
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      "assets/${specializationList[index].imageName!}.png",
-                                      height: 50,
+                      const SizedBox(height: 20),
+
+                      // Search bar
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              onChanged: (textTyped) {
+                                updateSpecializationList(textTyped);
+                              },
+
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.search),
+                                  hintText: "Search by specialization",
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 1,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(15)),
 
-                                Text(
-                                    specializationList[index].specializationDetails!
-                                ),
-
-                                Image.asset(
-                                  "assets/right-arrow.png",
-                                  height: 20,
-                                ),
-
-                                const SizedBox(width: 1),
-
-                              ],
                             ),
+                          ),
 
-                            const SizedBox(height: 30,),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
 
 
-                          ],
+              ),
+            ),
+
+          body: Container(
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                )
+            ),
+
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 15,),
+
+                  Flexible(
+                    child: ListView.builder(
+                      itemCount: displayList.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+                        },
+                        child: Container(
+                          height: 130,
+                          width: 150,
+                          margin: const EdgeInsets.fromLTRB(25,10,25,10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: colorList[index],
+                          ),
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const SizedBox(height: 10,),
+
+                              // Specialization Name
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(width: 85),
+                                  Text(
+                                    specializationList[index].specializationName!,
+                                    style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 5,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const SizedBox(width: 1,),
+
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        "assets/${specializationList[index].imageName!}.png",
+                                        height: 50,
+                                      ),
+                                    ],
+                                  ),
+
+                                  Text(
+                                      specializationList[index].specializationDetails!
+                                  ),
+
+                                  Image.asset(
+                                    "assets/right-arrow.png",
+                                    height: 20,
+                                  ),
+
+                                  const SizedBox(width: 1),
+
+                                ],
+                              ),
+
+                              const SizedBox(height: 30,),
+
+
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
+                  )
 
-              ],
+                ],
+              ),
             ),
-          ),
-        ) ,
+          ) ,
+        ),
       ),
     );
   }
