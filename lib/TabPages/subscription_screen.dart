@@ -29,7 +29,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   void registerDoctor() async{
-
     String doctorId = idGenerator();
 
     Map doctorMap = {
@@ -58,6 +57,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double height= MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
           child: Padding(
@@ -229,8 +229,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
 
 
 }

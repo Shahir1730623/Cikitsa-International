@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:app/common_screens/choose_user.dart';
 import 'package:app/our_services/doctor_live_consultation/live_doctors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../common_screens/new_user_info_form.dart';
+import '../../widgets/progress_dialog.dart';
 
 class DoctorProfile extends StatefulWidget {
   const DoctorProfile({Key? key}) : super(key: key);
@@ -236,7 +241,17 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             height: 45,
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                                Timer(const Duration(seconds: 2),() async {
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context){
+                                        return ProgressDialog(message: "Please wait...");
+                                      }
+                                  );
+
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                                });
                               },
 
                               style: ElevatedButton.styleFrom(
