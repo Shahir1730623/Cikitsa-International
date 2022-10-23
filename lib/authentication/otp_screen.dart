@@ -1,6 +1,8 @@
 import 'package:app/authentication/create_profile_screen.dart';
 import 'package:app/authentication/login_screen.dart';
+import 'package:app/main_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/splash_screen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,11 +48,11 @@ class _OTPScreenState extends State<OTPScreen> {
 
       if(firebaseUser != null){
         DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
-        reference.child(firebaseUser.uid).once().then((userKey) {
+        reference.child(firebaseAuth.currentUser!.uid).once().then((userKey) {
           final snapshot = userKey.snapshot;
           if (snapshot.exists) {
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UserDashboard()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
           }
 
           else{
@@ -62,7 +64,7 @@ class _OTPScreenState extends State<OTPScreen> {
             DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child('Users');
             databaseReference.child(firebaseUser.uid).set(userMap);
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateProfile()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
           };
 
       });

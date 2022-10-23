@@ -2,6 +2,8 @@ import 'package:app/TabPages/history_screen.dart';
 import 'package:app/home/home_screen.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,15 +30,15 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
   ];
 
   // Creating the list that we are going to display and filter
-  List<SpecializationModel> displayList = List.from(specializationList);
-
+  /*List<SpecializationModel> displayList = List.from(specializationList);
   void updateSpecializationList(String text){
     setState(() {
       displayList = specializationList.where((element) => element.specializationName!.toLowerCase().contains(text.toLowerCase())).toList();
     });
-  }
-
-
+  }*/
+  
+  TextEditingController searchTextEditingController = TextEditingController();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +94,12 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                         children: [
                           Expanded(
                             child: TextFormField(
+                              controller: searchTextEditingController,
                               onChanged: (textTyped) {
-                                updateSpecializationList(textTyped);
+                                //updateSpecializationList(textTyped);
+                                setState(() {
+
+                                });
                               },
 
                               decoration: InputDecoration(
@@ -139,93 +145,176 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                 )
             ),
 
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 15,),
+            child: Column(
+              children: [
+                const SizedBox(height: 15,),
 
-                  Flexible(
-                    child: ListView.builder(
-                      itemCount: displayList.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
-                        },
-                        child: Container(
-                          height: 130,
-                          width: 150,
-                          margin: const EdgeInsets.fromLTRB(25,10,25,10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: colorList[index],
-                          ),
+                Flexible(
+                  child: FirebaseAnimatedList(
+                    query: FirebaseDatabase.instance.ref().child("specializationCategories"),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index) {
+                      final specialization = (snapshot.value as Map)["name"].toString();
 
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const SizedBox(height: 10,),
+                      if(searchTextEditingController.text.isEmpty){
+                        return GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+                          },
+                          child: Container(
+                            height: 130,
+                            width: 150,
+                            margin: const EdgeInsets.fromLTRB(25,10,25,10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: colorList[index],
+                            ),
 
-                              // Specialization Name
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(width: 85),
-                                  Text(
-                                    specializationList[index].specializationName!,
-                                    style: GoogleFonts.montserrat(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const SizedBox(height: 10,),
 
-                              const SizedBox(height: 5,),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const SizedBox(width: 1,),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/${specializationList[index].imageName!}.png",
-                                        height: 50,
+                                // Specialization Name
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 85),
+                                    Text(
+                                      specializationList[index].specializationName!,
+                                      style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                ),
 
-                                  Text(
-                                      specializationList[index].specializationDetails!
-                                  ),
+                                const SizedBox(height: 5,),
 
-                                  Image.asset(
-                                    "assets/right-arrow.png",
-                                    height: 20,
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const SizedBox(width: 1,),
 
-                                  const SizedBox(width: 1),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/${specializationList[index].imageName!}.png",
+                                          height: 50,
+                                        ),
+                                      ],
+                                    ),
 
-                                ],
-                              ),
+                                    Text(
+                                        specializationList[index].specializationDetails!
+                                    ),
 
-                              const SizedBox(height: 30,),
+                                    Image.asset(
+                                      "assets/right-arrow.png",
+                                      height: 20,
+                                    ),
+
+                                    const SizedBox(width: 1),
+
+                                  ],
+                                ),
+
+                                const SizedBox(height: 30,),
 
 
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  )
+                        );
+                      }
 
-                ],
-              ),
+                      else if ((specialization.toLowerCase().contains(searchTextEditingController.text.toLowerCase()))){
+                        return GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+                          },
+                          child: Container(
+                            height: 130,
+                            width: 150,
+                            margin: const EdgeInsets.fromLTRB(25,10,25,10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: colorList[index],
+                            ),
+
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const SizedBox(height: 10,),
+
+                                // Specialization Name
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 85),
+                                    Text(
+                                      specializationList[index].specializationName!,
+                                      style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 5,),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const SizedBox(width: 1,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/${specializationList[index].imageName!}.png",
+                                          height: 50,
+                                        ),
+                                      ],
+                                    ),
+
+                                    Text(
+                                        specializationList[index].specializationDetails!
+                                    ),
+
+                                    Image.asset(
+                                      "assets/right-arrow.png",
+                                      height: 20,
+                                    ),
+
+                                    const SizedBox(width: 1),
+
+                                  ],
+                                ),
+
+                                const SizedBox(height: 30,),
+
+
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
+                      else{
+                        return Container();
+                      }
+
+
+                    }
+                  ),
+                )
+
+              ],
             ),
           ) ,
         ),

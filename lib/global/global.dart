@@ -1,5 +1,6 @@
 
 import 'package:app/models/UserModel.dart';
+import 'package:app/models/doctor_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/patient_model.dart';
@@ -9,7 +10,12 @@ User? currentFirebaseUser;
 String? userPhoneNumber;
 String? userName;
 var verifyId;
-PatientModel patientModel = PatientModel();
 
+String? patientId;
+String? consultationId;
+String? doctorId;
+
+PatientModel patientModel = PatientModel();
 UserModel userData = UserModel();
 UserModel? currentUserInfo;
+DoctorModel? selectedDoctorInfo;

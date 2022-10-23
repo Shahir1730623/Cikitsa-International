@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:app/common_screens/new_user_info_form.dart';
+import 'package:app/common_screens/old_user_info_form.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../our_services/doctor_live_consultation/doctor_profile.dart';
+import '../widgets/progress_dialog.dart';
 
 class ChooseUser extends StatefulWidget {
   const ChooseUser({Key? key}) : super(key: key);
@@ -20,37 +24,29 @@ class _ChooseUserState extends State<ChooseUser> {
 
   DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users").child(currentFirebaseUser!.uid);
 
-  void retrievePatientDataFromDatabase() {
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
-    reference.child(currentFirebaseUser!.uid).once().then((dataSnap){
-      final DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        patientModel.id = (snapshot.value as Map)["patientList"]["1666248443568974"]["id"];
-        patientModel.firstName = (snapshot.value as Map)["patientList"]["1666248443568974"]["firstName"];
-        patientModel.lastName = (snapshot.value as Map)["patientList"]["lastName"];
-        patientModel.weight = (snapshot.value as Map)["patientList"]["weight"];
-        patientModel.height = (snapshot.value as Map)["patientList"]["height"];
-        patientModel.gender = (snapshot.value as Map)["patientList"]["gender"];
-        patientModel.relation = (snapshot.value as Map)["patientList"]["relation"];
-        patientModel.visitationReason = (snapshot.value as Map)["patientList"]["visitationReason"];
-        patientModel.problem = (snapshot.value as Map)["patientList"]["problem"];
-      }
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
 
-      else {
-        Fluttertoast.showToast(msg: "No Patient record exist with this credentials");
-      }
+    Timer(const Duration(seconds: 2),()  {
+      Navigator.pop(context);
     });
-    
-
-    }
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
-    retrievePatientDataFromDatabase();
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -113,59 +109,80 @@ class _ChooseUserState extends State<ChooseUser> {
 
             SizedBox(height: height * 0.001),
 
-            FirebaseAnimatedList(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                query: reference.child("patientList"),
-                itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index){
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                      ),
+            Flexible(
+              child: FirebaseAnimatedList(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  query: reference.child("patientList"),
+                  itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index){
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: GestureDetector(
+                        onTap: (){
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context){
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                          );
 
-                      child: Padding(
-                        padding: const EdgeInsets.all(25.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Name: ${(snapshot.value as Map)["firstName"]} ${(snapshot.value as Map)["lastName"]}",
-                            style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 20,),),
+                          Timer(const Duration(seconds: 2),()  {
+                            Navigator.pop(context);
+                            patientId = (snapshot.value as Map)["id"];
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => OldUserForm()));
+                          });
 
-                            const SizedBox(height: 10,),
+                        },
 
-                            Text("Age: " + (snapshot.value as Map)["age"].toString(),
-                              style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 20)
-                            ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                          ),
 
-
-                            Row(
+                          child: Padding(
+                            padding: const EdgeInsets.all(25.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text((snapshot.value as Map)["gender"].toString(),
-                                    style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
+                                Text("Name: ${(snapshot.value as Map)["firstName"]} ${(snapshot.value as Map)["lastName"]}",
+                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 20,),),
 
-                                const Text(" - "),
-                                Text("${(snapshot.value as Map)["weight"]} kg",
-                                    style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
-                                const Text(" - "),
+                                const SizedBox(height: 10,),
 
-                                Text("${(snapshot.value as Map)["height"]} feet",
-                                    style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
+                                Text("Age: " + (snapshot.value as Map)["age"].toString(),
+                                  style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 20)
+                                ),
 
-                                SizedBox(width: height *  0.1,),
 
-                                Image.asset("assets/select.png",width: 40)
+                                Row(
+                                  children: [
+                                    Text((snapshot.value as Map)["gender"].toString(),
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
 
+                                    const Text(" - "),
+                                    Text("${(snapshot.value as Map)["weight"]} kg",
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
+                                    const Text(" - "),
+
+                                    Text("${(snapshot.value as Map)["height"]} feet",
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 15)),
+
+                                    SizedBox(width: height *  0.1,),
+
+                                    Image.asset("assets/select.png",width: 40)
+
+                                  ],
+                                )
                               ],
-                            )
-                          ],
+                            ),
+                          ),
+
                         ),
                       ),
-
-                    ),
-                  );
-                }
+                    );
+                  }
+              ),
             ),
 
             SizedBox(height: height * 0.025),

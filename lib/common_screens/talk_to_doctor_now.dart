@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+
+import 'package:app/common_screens/payment_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +11,16 @@ import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../main_screen.dart';
 import '../widgets/progress_dialog.dart';
-import 'choose_user.dart';
 
-class SelectSchedule extends StatefulWidget {
-  const SelectSchedule({Key? key}) : super(key: key);
+class TalkToDoctorNowInformation extends StatefulWidget {
+  const TalkToDoctorNowInformation({Key? key}) : super(key: key);
 
   @override
-  State<SelectSchedule> createState() => _SelectScheduleState();
+  State<TalkToDoctorNowInformation> createState() => _TalkToDoctorNowInformationState();
 }
 
-class _SelectScheduleState extends State<SelectSchedule> {
+class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
   final _formKey = GlobalKey<FormState>();
-
   TextEditingController relationTextEditingController = TextEditingController();
   TextEditingController problemTextEditingController = TextEditingController();
   List<String> reasonOfVisitTypesList = [
@@ -32,51 +32,12 @@ class _SelectScheduleState extends State<SelectSchedule> {
   ];
   String? selectedReasonOfVisit;
 
-  int dateCounter = 0;
-  int timeCounter = 0;
-
-  DateTime date = DateTime.now();
-  TimeOfDay time = TimeOfDay.now();
-
-  _pickedDate() async{
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: date,
-        firstDate: DateTime(2022),
-        lastDate: DateTime(2030)
-    );
-
-    if(pickedDate != null){
-      setState(() {
-        date = pickedDate;
-        dateCounter++;
-      });
-    }
-  }
-
-  _pickedTime() async {
-    TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: time
-    );
-
-    if(pickedTime != null){
-      setState(() {
-        time = pickedTime.replacing(hour: pickedTime.hourOfPeriod);
-        timeCounter++;
-      });
-    }
-  }
-
-
   String idGenerator() {
-    Random random = Random();
-    int randomNumber = random.nextInt(20000) + 10000;
-    int randomNumber2 = random.nextInt(10000);
-    return (randomNumber + randomNumber2).toString();
+    final now = DateTime.now();
+    return now.microsecondsSinceEpoch.toString();
   }
 
-  saveConsultationInfo(String id) async {
+  saveConsultationInfo() async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -86,22 +47,20 @@ class _SelectScheduleState extends State<SelectSchedule> {
     );
 
     String consultationId = idGenerator();
-
     Map consultationInfoMap = {
       "id" : consultationId,
       "visitationReason": selectedReasonOfVisit,
       "problem": problemTextEditingController.text.trim(),
+      "payment" : "Pending"
     };
 
     FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(id)
+        .child(patientId!)
         .child("consultations")
         .child(consultationId).set(consultationInfoMap);
 
-    Fluttertoast.showToast(msg: "Patient Details has been saved");
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
 
   }
 
@@ -112,6 +71,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     problemTextEditingController.addListener(() => setState(() {}));
     relationTextEditingController.addListener(() => setState(() {}));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,11 +102,11 @@ class _SelectScheduleState extends State<SelectSchedule> {
             ),
           ),
           title: Text(
-            "Select Schedule",
+            "Talk to doctor now",
             style: GoogleFonts.montserrat(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold
             ),
           ),
         ),
@@ -182,7 +142,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Book Now",
+                                "Fill up the form",
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,
@@ -193,116 +153,8 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ],
                           ),
 
-                          // Date
-                          Text(
-                            "Date",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          // Date Picker
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/medical.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
 
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 40,
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      _pickedDate();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        primary: (Colors.white70),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: Text(
-                                      (dateCounter != 0) ? '${date.day} / ${date.month} / ${date.year}' :  "Select date",
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-
-                          // Date
-                          Text(
-                            "Time",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          // Time Picker
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/medical.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 40,
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      _pickedTime();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: (Colors.white70),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: Text(
-                                      (timeCounter != 0) ? '${time.hour}' + ":" + '${time.minute}' :  "Select Time",
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-
-
-                          SizedBox(height: height * 0.03,),
+                          SizedBox(height: height * 0.05,),
 
                           // Reason of Consultation
                           Text(
@@ -314,7 +166,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 fontSize: 20
                             ),
                           ),
-                          SizedBox(height: height * 0.01,),
+                          SizedBox(height: height * 0.02,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -370,7 +222,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ],
                           ),
 
-                          SizedBox(height: height * 0.03,),
+                          SizedBox(height: height * 0.05,),
 
                           // Consultation For
                           Text(
@@ -382,7 +234,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 fontSize: 20
                             ),
                           ),
-                          SizedBox(height: height * 0.01,),
+                          SizedBox(height: height * 0.02,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -432,7 +284,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ],
                           ),
 
-                          SizedBox(height: height * 0.03,),
+                          SizedBox(height: height * 0.05,),
 
                           // Describe the problem
                           Text(
@@ -505,7 +357,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 ),
                               ),
                               Text(
-                                "৳200",
+                                selectedDoctorInfo!.fee!,
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,
@@ -532,12 +384,12 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                     }
                                 );
 
-                                // Saving selected doctor id
-                                saveConsultationInfo(doctorId!);
+                                // Saving consultation information
+                                saveConsultationInfo();
 
-                                Timer(const Duration(seconds: 4),()  {
+                                Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen()));
                                 });
 
 

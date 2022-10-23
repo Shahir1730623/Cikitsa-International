@@ -5,9 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../authentication/login_screen.dart';
-import '../global/global.dart';
+import '../models/doctor_model.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({Key? key}) : super(key: key);
@@ -23,41 +21,47 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   TextEditingController workplaceTextEditingController = TextEditingController();
   TextEditingController feeTextEditingController = TextEditingController();
 
-  String idGenerator() {
-    final now = DateTime.now();
-    return now.microsecondsSinceEpoch.toString();
+  static List<DoctorModel> doctorList = [
+    DoctorModel("1", "Dr. Ventakesh Rajkumar", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "10", "Evercare Hospital", "5", "10", "500","Online"),
+    DoctorModel("2", "Dr. Narendar Dasaraju", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "Square Hospital", "5", "10", "500","Online"),
+    DoctorModel("3", "Dr. Rajesh Krishnamoorhty", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "United Hospital", "5", "10", "500","Offline"),
+  ];
+
+  void saveExistingUserConsultationInfo() async {
+    for(int index=0; index < doctorList.length; index++){
+      Map doctorInfoMap = {
+        "id" : doctorList[index].doctorId,
+        "name" : doctorList[index].doctorName,
+        "specialization" : doctorList[index].specialization,
+        "experience" : doctorList[index].experience,
+        "workplace" : doctorList[index].workplace,
+        "rating" : doctorList[index].rating,
+        "totalVisits" : doctorList[index].totalVisits,
+        "fee" :  doctorList[index].fee,
+        "status" :  doctorList[index].status
+      };
+
+      FirebaseDatabase.instance.ref().child("Doctors")
+          .child(doctorList[index].doctorId.toString())
+          .set(doctorInfoMap);
+
+      Fluttertoast.showToast(msg: "Doctor " + (index + 1).toString() + " has been saved in database");
+
+    }
+
+
   }
 
-  void registerDoctor() async{
-    String doctorId = idGenerator();
-
-    Map doctorMap = {
-      'id' : doctorId,
-      'name' : nameTextEditingController.text.trim(),
-      'specialization' : specializationTextEditingController.text.trim(),
-      'degrees' : "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)",
-      'experience' : experienceTextEditingController.text.trim(),
-      'workplace' : workplaceTextEditingController.text.trim(),
-      'rating' : "5",
-      'totalVisits': "10",
-      'fee' : feeTextEditingController.text.trim(),
-      'status' : "Online",
-    };
-
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child('Doctors');
-    databaseReference.child(doctorId).set(doctorMap);
-
-    Fluttertoast.showToast(msg: "Account has been created");
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    saveExistingUserConsultationInfo();
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
-    final double height= MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
           child: Padding(
@@ -73,157 +77,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       fontWeight: FontWeight.bold
                   ),
                 ),
-
-                Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-
-                  child:  Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: nameTextEditingController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter your Name",
-                          ),
-
-                        ),
-                      )
-                  ),
-
-                ),
-
-                Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-
-                  child:  Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: specializationTextEditingController,
-                          keyboardType: TextInputType.phone,
-                          decoration:const  InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter your Specialization",
-                          ),
-
-                        ),
-                      )
-                  ),
-
-                ),
-
-                Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-
-                  child: Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: experienceTextEditingController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter your experience",
-                          ),
-
-                        ),
-                      )
-                  ),
-
-                ),
-
-                Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-
-                  child: Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: workplaceTextEditingController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter your workplace name",
-                          ),
-
-                        ),
-                      )
-                  ),
-
-                ),
-
-                Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-
-                  child: Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: feeTextEditingController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter your visiting fee",
-                          ),
-
-                        ),
-                      )
-                  ),
-
-                ),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 45,
-                  child: ElevatedButton(
-                      onPressed: ()  {
-                        registerDoctor();
-                      },
-
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightBlue,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)
-                          )
-                      ),
-
-                      child: const Text(
-                        "Register Now",
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
-                        ),
-                      )
-                  ),
-                ),
-
-
-
-
-
-
 
               ],
             ),

@@ -1,4 +1,15 @@
+import 'dart:async';
+import 'dart:math';
+import 'package:app/common_screens/choose_user.dart';
+import 'package:app/common_screens/new_user_info_form.dart';
+import 'package:app/common_screens/talk_to_doctor_now.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../global/global.dart';
+
 
 class OldUserForm extends StatefulWidget {
   const OldUserForm({Key? key}) : super(key: key);
@@ -8,7 +19,11 @@ class OldUserForm extends StatefulWidget {
 }
 
 class _OldUserFormState extends State<OldUserForm> {
-  TextEditingController problemTextEditingController = TextEditingController();
+  TextEditingController nameTextEditingController = TextEditingController(text: "");
+  TextEditingController ageTextEditingController = TextEditingController(text: "");
+  TextEditingController weightTextEditingController = TextEditingController(text: "");
+  TextEditingController heightTextEditingController = TextEditingController(text: "");
+  TextEditingController genderTextEditingController = TextEditingController();
 
   List<String> reasonOfVisitTypesList = [
     "Cancer",
@@ -21,6 +36,43 @@ class _OldUserFormState extends State<OldUserForm> {
 
   final _formKey = GlobalKey<FormState>();
 
+  String idGenerator() {
+    Random random =  Random();
+    int randomNumber = random.nextInt(20000) + 10000;
+    int randomNumber2 = random.nextInt(10000);
+    return (randomNumber + randomNumber2).toString();
+  }
+
+  void retrievePatientDataFromDatabase() {
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
+    reference
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .once()
+        .then((dataSnap){
+      final DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        nameTextEditingController.text = (snapshot.value as Map)["firstName"] + " " +  (snapshot.value as Map)["lastName"];
+        ageTextEditingController.text = (snapshot.value as Map)["age"];
+        weightTextEditingController.text = (snapshot.value as Map)["weight"];
+        heightTextEditingController.text = (snapshot.value as Map)["height"];
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No Patient record exist with this credentials");
+      }
+    });
+
+  }
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    retrievePatientDataFromDatabase();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +115,7 @@ class _OldUserFormState extends State<OldUserForm> {
                 children: [
                   // First Name Field
                   Text(
-                    "First Name",
+                    "Name",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -73,26 +125,20 @@ class _OldUserFormState extends State<OldUserForm> {
                     height: height * 0.01,
                   ),
                   TextFormField(
-                    controller: firstNameTextEditingController,
+                    controller: nameTextEditingController,
+                    readOnly: true,
                     style: const TextStyle(
                       color: Colors.black,
                     ),
                     decoration: InputDecoration(
-                      labelText: "First Name",
-                      hintText: "First Name",
+                      labelText: "Name",
+                      hintText: "Name",
                       prefixIcon: IconButton(
                         icon: Image.asset(
                           "assets/user.png",
                           height: 18,
                         ),
                         onPressed: () {},
-                      ),
-                      suffixIcon: firstNameTextEditingController.text.isEmpty
-                          ? Container(width: 0)
-                          : IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () =>
-                            firstNameTextEditingController.clear(),
                       ),
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
@@ -105,70 +151,11 @@ class _OldUserFormState extends State<OldUserForm> {
                       labelStyle:
                       const TextStyle(color: Colors.black, fontSize: 15),
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "The field is empty";
-                      } else
-                        return null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
+
                   ),
 
-                  // Last Name Field
-                  Text(
-                    "Last Name",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    controller: lastNameTextEditingController,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: "Last Name",
-                      hintText: "Last Name",
-                      prefixIcon: IconButton(
-                        icon: Image.asset(
-                          "assets/user.png",
-                          height: 18,
-                        ),
-                        onPressed: () {},
-                      ),
-                      suffixIcon: lastNameTextEditingController.text.isEmpty
-                          ? Container(width: 0)
-                          : IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () =>
-                            lastNameTextEditingController.clear(),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                      hintStyle:
-                      const TextStyle(color: Colors.grey, fontSize: 15),
-                      labelStyle:
-                      const TextStyle(color: Colors.black, fontSize: 15),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "The field is empty";
-                      } else
-                        return null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
+                    height: height * 0.03,
                   ),
 
                   // Age Field
@@ -184,6 +171,7 @@ class _OldUserFormState extends State<OldUserForm> {
                   ),
                   TextFormField(
                     controller: ageTextEditingController,
+                    readOnly: true,
                     style: const TextStyle(
                       color: Colors.black,
                     ),
@@ -197,13 +185,7 @@ class _OldUserFormState extends State<OldUserForm> {
                         ),
                         onPressed: () {},
                       ),
-                      suffixIcon: ageTextEditingController.text.isEmpty
-                          ? Container(width: 0)
-                          : IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () =>
-                            firstNameTextEditingController.clear(),
-                      ),
+
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -215,15 +197,9 @@ class _OldUserFormState extends State<OldUserForm> {
                       labelStyle:
                       const TextStyle(color: Colors.black, fontSize: 15),
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "The field is empty";
-                      } else
-                        return null;
-                    },
                   ),
                   SizedBox(
-                    height: height * 0.01,
+                    height: height * 0.03,
                   ),
 
                   // Height,Weight Fields
@@ -245,11 +221,12 @@ class _OldUserFormState extends State<OldUserForm> {
                             ),
                             TextFormField(
                               controller: weightTextEditingController,
+                              readOnly: true,
                               style: const TextStyle(
                                 color: Colors.black,
                               ),
                               decoration: InputDecoration(
-                                labelText: "Weight",
+                                labelText: "Weight (in kg)",
                                 hintText: "Weight",
                                 prefixIcon: IconButton(
                                   icon: Image.asset(
@@ -257,14 +234,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                     height: 18,
                                   ),
                                   onPressed: () {},
-                                ),
-                                suffixIcon: weightTextEditingController
-                                    .text.isEmpty
-                                    ? Container(width: 0)
-                                    : IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () =>
-                                      weightTextEditingController.clear(),
                                 ),
                                 enabledBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.black),
@@ -277,12 +246,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                 labelStyle: const TextStyle(
                                     color: Colors.black, fontSize: 15),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "The field is empty";
-                                } else
-                                  return null;
-                              },
                             ),
                             SizedBox(
                               height: height * 0.01,
@@ -308,12 +271,13 @@ class _OldUserFormState extends State<OldUserForm> {
                               height: height * 0.01,
                             ),
                             TextFormField(
+                              readOnly: true,
                               controller: heightTextEditingController,
                               style: const TextStyle(
                                 color: Colors.black,
                               ),
                               decoration: InputDecoration(
-                                labelText: "Height",
+                                labelText: "Height (in feet)",
                                 hintText: "Height",
                                 prefixIcon: IconButton(
                                   icon: Image.asset(
@@ -322,14 +286,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                   ),
                                   onPressed: () {},
                                 ),
-                                suffixIcon: heightTextEditingController
-                                    .text.isEmpty
-                                    ? Container(width: 0)
-                                    : IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () =>
-                                      heightTextEditingController.clear(),
-                                ),
                                 enabledBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.black),
                                 ),
@@ -341,12 +297,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                 labelStyle: const TextStyle(
                                     color: Colors.black, fontSize: 15),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "The field is empty";
-                                } else
-                                  return null;
-                              },
                             ),
                             SizedBox(
                               height: height * 0.01,
@@ -358,243 +308,7 @@ class _OldUserFormState extends State<OldUserForm> {
                   ),
 
                   SizedBox(
-                    height: height * 0.01,
-                  ),
-
-                  // Gender,Relation Fields
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Gender",
-                              style: GoogleFonts.montserrat(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            TextFormField(
-                              controller: genderTextEditingController,
-                              style: const TextStyle(
-                                color: Colors.black,
-                              ),
-                              decoration: InputDecoration(
-                                labelText: "Gender",
-                                hintText: "Gender",
-                                prefixIcon: IconButton(
-                                  icon: Image.asset(
-                                    "assets/gender.png",
-                                    height: 18,
-                                  ),
-                                  onPressed: () {},
-                                ),
-                                suffixIcon: genderTextEditingController
-                                    .text.isEmpty
-                                    ? Container(width: 0)
-                                    : IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () =>
-                                      genderTextEditingController.clear(),
-                                ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                                hintStyle: const TextStyle(
-                                    color: Colors.grey, fontSize: 15),
-                                labelStyle: const TextStyle(
-                                    color: Colors.black, fontSize: 15),
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "The field is empty";
-                                } else
-                                  return null;
-                              },
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: height * 0.005,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Relation",
-                              style: GoogleFonts.montserrat(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            TextFormField(
-                              controller: relationshipTextEditingController,
-                              style: const TextStyle(
-                                color: Colors.black,
-                              ),
-                              decoration: InputDecoration(
-                                labelText: "Relation",
-                                hintText: "Relation",
-                                prefixIcon: IconButton(
-                                  icon: Image.asset(
-                                    "assets/relations.png",
-                                    height: 18,
-                                  ),
-                                  onPressed: () {},
-                                ),
-                                suffixIcon: relationshipTextEditingController
-                                    .text.isEmpty
-                                    ? Container(width: 0)
-                                    : IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () =>
-                                      relationshipTextEditingController
-                                          .clear(),
-                                ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                                hintStyle: const TextStyle(
-                                    color: Colors.grey, fontSize: 15),
-                                labelStyle: const TextStyle(
-                                    color: Colors.black, fontSize: 15),
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "The field is empty";
-                                } else
-                                  return null;
-                              },
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-
-                  // Reason of visit
-                  Text(
-                    "Reason of visit",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-
-                  DropdownButton(
-                    isExpanded: true,
-                    iconSize: 26,
-                    dropdownColor: Colors.white,
-                    hint: const Text(
-                      "Specify the reason",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                    value: selectedReasonOfVisit,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedReasonOfVisit = newValue.toString();
-                      });
-                    },
-                    items: reasonOfVisitTypesList.map((reason) {
-                      return DropdownMenuItem(
-                        value: reason,
-                        child: Text(
-                          reason,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-
-                  // Describe the problem
-                  Text(
-                    "Describe the problem",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    controller: problemTextEditingController,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: "Write here",
-                      hintText: "Write here",
-                      prefixIcon: IconButton(
-                        icon: Image.asset(
-                          "assets/edit-info.png",
-                          height: 18,
-                        ),
-                        onPressed: () {},
-                      ),
-                      suffixIcon: problemTextEditingController.text.isEmpty
-                          ? Container(width: 0)
-                          : IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () =>
-                            problemTextEditingController.clear(),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                      hintStyle:
-                      const TextStyle(color: Colors.grey, fontSize: 15),
-                      labelStyle:
-                      const TextStyle(color: Colors.black, fontSize: 15),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "The field is empty";
-                      } else
-                        return null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.025,
+                    height: height * 0.05,
                   ),
 
                   Padding(
@@ -604,10 +318,10 @@ class _OldUserFormState extends State<OldUserForm> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUserForm()));
                             },
                             child: Text(
-                              "Existing Patient?\nClick here ",
+                              "New Patient?\nClick here ",
                               textAlign: TextAlign.center,
                               style: GoogleFonts.montserrat(
                                   fontSize: 14,
@@ -628,7 +342,20 @@ class _OldUserFormState extends State<OldUserForm> {
                             padding: EdgeInsets.all(10),
                             child: ElevatedButton(
                               onPressed: () {
-                                saveNewUserInfo();
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context){
+                                      return Center(child: CircularProgressIndicator());
+                                    }
+                                );
+
+                                Timer(const Duration(seconds: 2),()  {
+                                  Navigator.pop(context);
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
+                                });
+
+
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.lightBlue,

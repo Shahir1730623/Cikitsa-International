@@ -104,34 +104,32 @@ class _UserDashboardState extends State<UserDashboard> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
-                            child: TextFormField(
-                              onChanged: (textTyped) {
-                                //;
-                              },
+                          child: TextFormField(
+                            onChanged: (textTyped) {
+                              //;
+                            },
 
-                              decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.search),
-                                  hintText: "Search by services",
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: const BorderSide(
-                                      color: Colors.white,
-                                      width: 1,
-                                    ),
+                            decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search),
+                                hintText: "Search by services",
+                                fillColor: Colors.white,
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.white,
+                                    width: 1,
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: const BorderSide(
-                                      color: Colors.white,
-                                      width: 1,
-                                    ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.white,
+                                    width: 1,
                                   ),
-                                  contentPadding: const EdgeInsets.all(15)),
+                                ),
+                                contentPadding: const EdgeInsets.all(15)),
 
-                            ),
                           ),
                         ),
 

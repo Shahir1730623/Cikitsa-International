@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/models/doctor_model.dart';
 import 'package:app/our_services/doctor_live_consultation/doctor_profile.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../global/global.dart';
 
 class LiveDoctors extends StatefulWidget {
   const LiveDoctors({Key? key}) : super(key: key);
@@ -14,21 +21,41 @@ class LiveDoctors extends StatefulWidget {
 }
 
 class _LiveDoctorsState extends State<LiveDoctors> {
-  static List<DoctorModel> doctorList = [
-    DoctorModel("1", "Dr. Ventakesh Rajkumar", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "10", "Evercare Hospital", "5", "10", "500","Online"),
-    DoctorModel("2", "Dr. Narendar Dasaraju", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "Square Hospital", "5", "10", "500","Online"),
-    DoctorModel("3", "Dr. Rajesh Krishnamoorhty", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "United Hospital", "5", "10", "500","Offline"),
-  ];
+  DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors");
+  TextEditingController searchTextEditingController = TextEditingController();
 
-  // Creating the list that we are going to display and filter
-  List<DoctorModel> displayList = List.from(doctorList);
-
-  void updateDoctorList(String text){
+  /*void updateDoctorList(String text){
     setState(() {
       displayList = doctorList.where((element) => element.doctorName!.toLowerCase().contains(text.toLowerCase())).toList();
     });
+  }*/
+
+  void retrieveDoctorDataFromDatabase(String doctorId) {
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors");
+    reference
+        .child(doctorId)
+        .once()
+        .then((dataSnap){
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+      }
+
+    });
+
   }
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +112,11 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: searchTextEditingController,
                             onChanged: (textTyped) {
-                              updateDoctorList(textTyped);
+                              setState(() {
+
+                              });
                             },
 
                             decoration: InputDecoration(
@@ -134,213 +164,461 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                 )
             ),
 
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 10,),
+            child: Column(
+              children: [
+                const SizedBox(height: 10,),
 
-                  Flexible(
-                    child: ListView.builder(
-                      itemCount: displayList.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
-                        },
-                        child: Container(
-                          height: 220,
-                          width: 200,
-                          margin: const EdgeInsets.only(top: 10,bottom: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
+                Flexible(
+                  child: FirebaseAnimatedList(
+                    query: reference,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index) {
+                      final doctorName = (snapshot.value as Map)["name"].toString();
+                      final workplace = (snapshot.value as Map)["workplace"].toString();
+                      if(searchTextEditingController.text.isEmpty){
+                        return GestureDetector(
+                          onTap: (){
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context){
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+                            );
 
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 0,left: 20,top: 15,),
-                            child: Row(
-                              children: [
-                                // Left Column
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Doc image
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10.0),//or 15.0
-                                      child: Container(
-                                        height: 70.0,
-                                        width: 70.0,
-                                        color: Colors.grey[100],
-                                        child: Image.asset(
-                                          "assets/Logo.png",
-                                          fit: BoxFit.fill,
-                                        ),
-                                      ),
-                                    ),
+                            doctorId = (snapshot.value as Map)["id"];
+                            Fluttertoast.showToast(msg: doctorId.toString());
+                            retrieveDoctorDataFromDatabase(doctorId!);
 
-                                    const SizedBox(height: 10),
+                            Timer(const Duration(seconds: 3),()  {
+                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
+                            });
 
-                                    // Star,Rating and Total visits
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Image.asset(
-                                          "assets/star.png",
-                                          height: 15,
-                                        ),
+                            //saveSelectedDoctor(index);
 
-                                        const SizedBox(width: 7,),
+                          },
 
-                                        Text(
-                                          displayList[index].rating!,
-                                          style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                          ),
-                                        ),
+                          child: Container(
+                            height: 220,
+                            width: 200,
+                            margin: const EdgeInsets.only(top: 10,bottom: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
 
-                                        const SizedBox(width: 7,),
-
-                                        Text(
-                                          "(" + displayList[index].totalVisits! + ")",
-                                           style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-
-
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10,),
-
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Fee",
-                                          style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-
-                                        Text(
-                                          displayList[index].fee!,
-                                          style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-
-
-                                  ],
-                                ),
-
-                                const SizedBox(width: 10,),
-
-                                // Right Column
-                                Expanded(
-                                  child: Column(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 0,left: 20,top: 15,),
+                              child: Row(
+                                children: [
+                                  // Left Column
+                                  Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Doctor Name
-                                      Text(
-                                        displayList[index].doctorName!,
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
+                                      // Doc image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10.0),//or 15.0
+                                        child: Container(
+                                          height: 70.0,
+                                          width: 70.0,
+                                          color: Colors.grey[100],
+                                          child: Image.asset(
+                                            "assets/Logo.png",
+                                            fit: BoxFit.fill,
+                                          ),
                                         ),
                                       ),
 
-                                      const SizedBox(height: 5),
+                                      const SizedBox(height: 10),
 
-
+                                      // Star,Rating and Total visits
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
+                                          Image.asset(
+                                            "assets/star.png",
+                                            height: 15,
+                                          ),
+
+                                          const SizedBox(width: 7,),
+
                                           Text(
-                                            displayList[index].specialization!,
+                                            (snapshot.value as Map)["rating"].toString(),
                                             style: GoogleFonts.montserrat(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15,
                                             ),
                                           ),
 
-                                          // Online status
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                color: (displayList[index].status == "Online") ? Colors.lightGreen : Colors.grey
-                                            ),
+                                          const SizedBox(width: 7,),
 
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                displayList[index].status!,
-                                                style: GoogleFonts.montserrat(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
+                                          Text(
+                                            "(" + (snapshot.value as Map)["totalVisits"] + ")",
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
                                             ),
-
                                           ),
+
+
                                         ],
                                       ),
 
-                                      const SizedBox(height: 15),
+                                      const SizedBox(height: 10,),
 
-                                      Text(
-                                        displayList[index].degrees!,
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 13,
-                                        ),
-                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Fee",
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
 
-                                      const SizedBox(height: 15),
+                                          Text(
+                                            (snapshot.value as Map)["fee"].toString(),
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      )
 
-                                      Text(
-                                        "Experience: ${displayList[index].experience!}",
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      Text(
-                                        "Workplace: ${displayList[index].workplace!}",
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                      ),
 
                                     ],
                                   ),
-                                ),
 
-                                SizedBox(height: 5,),
+                                  const SizedBox(width: 10,),
+
+                                  // Right Column
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Doctor Name
+                                        Text(
+                                          (snapshot.value as Map)["name"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              (snapshot.value as Map)["specialization"].toString(),
+                                              style: GoogleFonts.montserrat(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+
+                                            // Online status
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: ((snapshot.value as Map)["status"].toString() == "Online") ? Colors.lightGreen : Colors.grey
+                                              ),
+
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  (snapshot.value as Map)["status"].toString(),
+                                                  style: GoogleFonts.montserrat(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                  ),
+                                                ),
+                                              ),
+
+                                            ),
+                                          ],
+                                        ),
+
+                                        const SizedBox(height: 15),
+
+                                        Text(
+                                          "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)",
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 13,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 15),
+
+                                        Text(
+                                          "Experience: " + (snapshot.value as Map)["experience"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 12),
+
+                                        Text(
+                                          "Workplace: " + (snapshot.value as Map)["workplace"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 5,),
 
 
 
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+
+                      }
+
+                      else if((doctorName.toLowerCase().contains(searchTextEditingController.text.toLowerCase())) || (workplace.toLowerCase().contains(searchTextEditingController.text.toLowerCase()))){
+                        return GestureDetector(
+                          onTap: (){
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context){
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+                            );
+
+                            doctorId = (snapshot.value as Map)["id"];
+                            Fluttertoast.showToast(msg: doctorId.toString());
+                            retrieveDoctorDataFromDatabase(doctorId!);
+
+                            Timer(const Duration(seconds: 4),()  {
+                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
+                            });
+
+                            //saveSelectedDoctor(index);
+
+                          },
+
+                          child: Container(
+                            height: 220,
+                            width: 200,
+                            margin: const EdgeInsets.only(top: 10,bottom: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 0,left: 20,top: 15,),
+                              child: Row(
+                                children: [
+                                  // Left Column
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Doc image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10.0),//or 15.0
+                                        child: Container(
+                                          height: 70.0,
+                                          width: 70.0,
+                                          color: Colors.grey[100],
+                                          child: Image.asset(
+                                            "assets/Logo.png",
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      // Star,Rating and Total visits
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Image.asset(
+                                            "assets/star.png",
+                                            height: 15,
+                                          ),
+
+                                          const SizedBox(width: 7,),
+
+                                          Text(
+                                            (snapshot.value as Map)["rating"].toString(),
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 7,),
+
+                                          Text(
+                                            "(" + (snapshot.value as Map)["totalVisits"] + ")",
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+
+
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 10,),
+
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Fee",
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+
+                                          Text(
+                                            (snapshot.value as Map)["fee"].toString(),
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+
+
+                                    ],
+                                  ),
+
+                                  const SizedBox(width: 10,),
+
+                                  // Right Column
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Doctor Name
+                                        Text(
+                                          (snapshot.value as Map)["name"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              (snapshot.value as Map)["specialization"].toString(),
+                                              style: GoogleFonts.montserrat(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+
+                                            // Online status
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: ((snapshot.value as Map)["status"].toString() == "Online") ? Colors.lightGreen : Colors.grey
+                                              ),
+
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  (snapshot.value as Map)["status"].toString(),
+                                                  style: GoogleFonts.montserrat(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                  ),
+                                                ),
+                                              ),
+
+                                            ),
+                                          ],
+                                        ),
+
+                                        const SizedBox(height: 15),
+
+                                        Text(
+                                          "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)",
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 13,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 15),
+
+                                        Text(
+                                          "Experience: " + (snapshot.value as Map)["experience"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 12),
+
+                                        Text(
+                                          "Workplace: " + (snapshot.value as Map)["workplace"].toString(),
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 5,),
+
+
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      else{
+                        return Container();
+
+                      }
+
+
+
+                    }
+
+
+
+
+
+
                     ),
-                  )
+                  ),
 
-
-                ],
-              ),
+              ],
             ),
 
           ),
