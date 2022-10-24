@@ -24,7 +24,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child(patientId!)
         .child("consultations")
         .child(consultationId!).
-        child("payment").set("paid");
+        child("payment").set("Paid");
 
   }
 
@@ -79,12 +79,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
               Row(
                 children: [
-                  Flexible(child: Image.asset("assets/Bkash-logo.png",width: 80,)),
+                  Flexible(child: Image.asset("assets/Bkash-logo.png",width: 70,)),
                   SizedBox(width: 10,),
                   Text(
                     "Pay with Bkash",
                     style: GoogleFonts.montserrat(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black
                     ),
@@ -92,21 +92,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
 
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.03,),
               const Divider(
                 thickness: 1,
                 color: Colors.grey,
               ),
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.03,),
 
               Row(
                 children: [
-                  Flexible(child: Image.asset("assets/Nagad-Logo.png",width: 80,)),
+                  Flexible(child: Image.asset("assets/Nagad-Logo.png",width: 70,)),
                   SizedBox(width: 10,),
                   Text(
                     "Pay with Nagad",
                     style: GoogleFonts.montserrat(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black
                     ),
@@ -114,22 +114,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
 
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.03),
               const Divider(
                 thickness: 1,
                 color: Colors.grey,
               ),
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.03,),
 
               Row(
                 children: [
                   SizedBox(width: 10,),
-                  Flexible(child: Image.asset("assets/Mastercard-logo.png",width: 70,)),
-                  SizedBox(width: 20,),
+                  Flexible(child: Image.asset("assets/Mastercard-logo.png",width: 50,)),
+                  SizedBox(width: 25,),
                   Text(
                     "Pay with Card",
                     style: GoogleFonts.montserrat(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black
                     ),
@@ -137,7 +137,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
 
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.1,),
 
               // Button
               Center(
@@ -165,7 +165,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ),
 
-              SizedBox(height: height* 0.05,),
+              SizedBox(height: height* 0.1,),
 
               // Payment Button
               Center(

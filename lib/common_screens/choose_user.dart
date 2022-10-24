@@ -33,7 +33,7 @@ class _ChooseUserState extends State<ChooseUser> {
         }
     );
 
-    Timer(const Duration(seconds: 2),()  {
+    Timer(const Duration(seconds: 1),()  {
       Navigator.pop(context);
     });
   }

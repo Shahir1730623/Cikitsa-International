@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/TabPages/history_screen.dart';
 import 'package:app/home/home_screen.dart';
 import 'package:app/main_screen.dart';
@@ -10,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/specialization_model.dart';
+import '../../widgets/progress_dialog.dart';
 import 'live_doctors.dart';
 
 class LiveConsultationCategory extends StatefulWidget {
@@ -21,6 +24,7 @@ class LiveConsultationCategory extends StatefulWidget {
 
 class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
   final List<Color> colorList = <Color>[Colors.green, Colors.blue,Colors.yellow,Colors.pink];
+  TextEditingController searchTextEditingController = TextEditingController();
 
   static List<SpecializationModel> specializationList = [
     SpecializationModel("Endocrinologist","Lorem ipsum dolor sit amet\nincididunt ut labore et dolore\nexercitation ullamco laboris","sugar-blood-level"),
@@ -36,8 +40,30 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
       displayList = specializationList.where((element) => element.specializationName!.toLowerCase().contains(text.toLowerCase())).toList();
     });
   }*/
-  
-  TextEditingController searchTextEditingController = TextEditingController();
+
+
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
+
+    Timer(const Duration(seconds: 1),()  {
+      Navigator.pop(context);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
+  }
   
 
   @override
@@ -161,6 +187,8 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                         return GestureDetector(
                           onTap: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+
+
                           },
                           child: Container(
                             height: 130,

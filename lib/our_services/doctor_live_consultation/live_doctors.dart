@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../global/global.dart';
+import '../../widgets/progress_dialog.dart';
 
 class LiveDoctors extends StatefulWidget {
   const LiveDoctors({Key? key}) : super(key: key);
@@ -49,11 +50,28 @@ class _LiveDoctorsState extends State<LiveDoctors> {
 
   }
 
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
+
+    Timer(const Duration(seconds: 1),()  {
+      Navigator.pop(context);
+    });
+  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
 
   }
 

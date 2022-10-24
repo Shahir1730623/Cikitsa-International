@@ -1,5 +1,6 @@
 import 'package:app/TabPages/history_screen.dart';
 import 'package:app/TabPages/subscription_screen.dart';
+import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           HistoryScreen(),
           LiveConsultationCategory(),
           SubscriptionScreen(),
-          HistoryScreen(),
+          CountDownScreen(),
         ],
       ),
 

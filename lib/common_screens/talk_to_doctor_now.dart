@@ -38,15 +38,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   }
 
   saveConsultationInfo() async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context){
-          return const Center(child: CircularProgressIndicator());
-        }
-    );
-
-    String consultationId = idGenerator();
+    consultationId = idGenerator();
     Map consultationInfoMap = {
       "id" : consultationId,
       "visitationReason": selectedReasonOfVisit,
@@ -59,7 +51,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
         .child("patientList")
         .child(patientId!)
         .child("consultations")
-        .child(consultationId).set(consultationInfoMap);
+        .child(consultationId!).set(consultationInfoMap);
 
 
   }

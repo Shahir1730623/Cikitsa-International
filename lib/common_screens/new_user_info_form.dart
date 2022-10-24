@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:app/common_screens/choose_user.dart';
@@ -26,8 +27,8 @@ class _NewUserFormState extends State<NewUserForm> {
   TextEditingController weightTextEditingController = TextEditingController();
   TextEditingController heightTextEditingController = TextEditingController();
   TextEditingController genderTextEditingController = TextEditingController();
-  TextEditingController relationshipTextEditingController = TextEditingController();
-  TextEditingController problemTextEditingController = TextEditingController();
+  TextEditingController relationTextEditingController = TextEditingController();
+
 
   List<String> genderTypesList = ["Male", "Female"];
   String? selectedGender;
@@ -56,6 +57,7 @@ class _NewUserFormState extends State<NewUserForm> {
       "weight": weightTextEditingController.text.trim(),
       "height": heightTextEditingController.text.trim(),
       "gender": genderTextEditingController.text.trim(),
+      "relation" : relationTextEditingController.text.trim()
     };
 
 
@@ -67,9 +69,6 @@ class _NewUserFormState extends State<NewUserForm> {
         .child("patientList")
         .child(id)
         .set(patientInfoMap);
-
-
-
   }
 
   @override
@@ -288,7 +287,7 @@ class _NewUserFormState extends State<NewUserForm> {
                     height: height * 0.01,
                   ),
 
-                  // Gender fields
+                  // Gender,relation fields
                   Row(
                     children: [
                       Expanded(
@@ -352,6 +351,56 @@ class _NewUserFormState extends State<NewUserForm> {
                           ],
                         ),
                       ),
+                      SizedBox(
+                        width: height * 0.005,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Relation",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            TextFormField(
+                              controller: relationTextEditingController,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: "Relation",
+                                hintText: "Relation",
+                                prefixIcon: IconButton(
+                                  icon: Image.asset(
+                                    "assets/relations.png",
+                                    height: 18,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                hintStyle: const TextStyle(
+                                    color: Colors.grey, fontSize: 15),
+                                labelStyle: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
 
@@ -364,7 +413,7 @@ class _NewUserFormState extends State<NewUserForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Weight",
+                              "Weight (in kg)",
                               style: GoogleFonts.montserrat(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -428,7 +477,7 @@ class _NewUserFormState extends State<NewUserForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Height",
+                              "Height (in feet)",
                               style: GoogleFonts.montserrat(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -498,7 +547,7 @@ class _NewUserFormState extends State<NewUserForm> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => SelectSchedule()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
                           },
                           child: Text(
                             "Existing Patient?\nClick here ",
@@ -522,8 +571,21 @@ class _NewUserFormState extends State<NewUserForm> {
                             padding: EdgeInsets.all(10),
                             child: ElevatedButton(
                               onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context){
+                                      return Center(child: CircularProgressIndicator());
+                                    }
+                                );
                                 saveNewUserInfo();
-                              },
+
+                                Timer(const Duration(seconds: 2),()  {
+                                  Navigator.pop(context);
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
+                                });
+
+                                },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.lightBlue,
                                   shape: RoundedRectangleBorder(

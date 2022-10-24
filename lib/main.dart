@@ -1,6 +1,9 @@
 import 'package:app/authentication/initialization_screen.dart';
+import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/main_screen.dart';
+import 'package:app/our_services/doctor_live_consultation/chat_screen.dart';
 import 'package:app/splash_screen/splash_screen.dart';
+import 'package:app/widgets/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -11,11 +14,12 @@ void main() async {
   runApp(
       MyApp(
         child: MaterialApp(
-          title: 'Cikitsa International ',
+          title: 'Cikitsa International',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const SplashScreen(),
+          home: const ChatScreen(),
+          builder: (context,child) => unFocus(child: child!),
           debugShowCheckedModeBanner: false,
         ),
   ));

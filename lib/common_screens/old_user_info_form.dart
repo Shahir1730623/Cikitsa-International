@@ -23,7 +23,8 @@ class _OldUserFormState extends State<OldUserForm> {
   TextEditingController ageTextEditingController = TextEditingController(text: "");
   TextEditingController weightTextEditingController = TextEditingController(text: "");
   TextEditingController heightTextEditingController = TextEditingController(text: "");
-  TextEditingController genderTextEditingController = TextEditingController();
+  TextEditingController relationTextEditingController = TextEditingController(text: "");
+  TextEditingController genderTextEditingController = TextEditingController(text: "");
 
   List<String> reasonOfVisitTypesList = [
     "Cancer",
@@ -55,6 +56,8 @@ class _OldUserFormState extends State<OldUserForm> {
       if (snapshot.exists) {
         nameTextEditingController.text = (snapshot.value as Map)["firstName"] + " " +  (snapshot.value as Map)["lastName"];
         ageTextEditingController.text = (snapshot.value as Map)["age"];
+        genderTextEditingController.text = (snapshot.value as Map)["gender"];
+        relationTextEditingController.text = (snapshot.value as Map)["relation"];
         weightTextEditingController.text = (snapshot.value as Map)["weight"];
         heightTextEditingController.text = (snapshot.value as Map)["height"];
       }
@@ -198,6 +201,116 @@ class _OldUserFormState extends State<OldUserForm> {
                       const TextStyle(color: Colors.black, fontSize: 15),
                     ),
                   ),
+
+                  SizedBox(
+                    height: height * 0.03,
+                  ),
+
+                  // Gender,Relation
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Gender",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            TextFormField(
+                              controller: genderTextEditingController,
+                              readOnly: true,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: "Gender",
+                                hintText: "Gender",
+                                prefixIcon: IconButton(
+                                  icon: Image.asset(
+                                    "assets/gender.png",
+                                    height: 18,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                hintStyle: const TextStyle(
+                                    color: Colors.grey, fontSize: 15),
+                                labelStyle: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: height * 0.005,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Relation",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            TextFormField(
+                              readOnly: true,
+                              controller: relationTextEditingController,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: "Relation",
+                                hintText: "Relation",
+                                prefixIcon: IconButton(
+                                  icon: Image.asset(
+                                    "assets/relations.png",
+                                    height: 18,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                hintStyle: const TextStyle(
+                                    color: Colors.grey, fontSize: 15),
+                                labelStyle: const TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
                   SizedBox(
                     height: height * 0.03,
                   ),
