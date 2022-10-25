@@ -23,8 +23,6 @@ class MessageTextField extends StatelessWidget {
             hintText: "Send a message"
           ),
 
-
-
         ),
       ),
     );

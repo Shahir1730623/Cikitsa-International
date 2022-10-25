@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:app/our_services/doctor_live_consultation/chat_screen.dart';
+import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,7 +39,7 @@ class TimerController extends GetxController{
 
         Timer(const Duration(seconds: 5),()  {
           Navigator.pop(context!);
-          Navigator.push(context!, MaterialPageRoute(builder: (context) => MainScreen()));;
+          Navigator.push(context!, MaterialPageRoute(builder: (context) => HistoryScreen()));;
         });
 
       }

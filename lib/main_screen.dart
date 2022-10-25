@@ -3,6 +3,7 @@ import 'package:app/TabPages/subscription_screen.dart';
 import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
+import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:flutter/material.dart';
 
 
@@ -40,7 +41,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         children:  const [
           UserDashboard(),
           HistoryScreen(),
-          LiveConsultationCategory(),
+          VideoConsultationDashboard(),
           SubscriptionScreen(),
           CountDownScreen(),
         ],

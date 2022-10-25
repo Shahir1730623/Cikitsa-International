@@ -29,7 +29,6 @@ class _DoctorProfileState extends State<DoctorProfile> {
     reference
         .child(currentFirebaseUser!.uid)
         .child("selectedDoctorId").set(selectedDoctorInfo!.doctorId);
-
   }
 
   @override

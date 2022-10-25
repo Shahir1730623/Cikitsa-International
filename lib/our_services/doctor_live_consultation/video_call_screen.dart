@@ -1,3 +1,4 @@
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,18 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     agoraConnectionData: AgoraConnectionData(
       appId: 'dda00641d5894ee0b40aec14845f364b',
       channelName: 'App Test' ,
-      tempToken: '007eJxTYOhQUZnmNqu9K8aA0S1UjJPVYz3Hyis5/E4/+6XPuXt5HVFgSElJNDAwMzFMMbWwNElNNUgyMUhMTTY0sTAxTTM2M0kyaQlLbghkZBBzesHCyACBID4Hg2NBgUJIanEJAwMAZ3AcKQ=='
+
+    ),
+    enabledPermission: [Permission.camera,Permission.microphone],
+
+    agoraChannelData: AgoraChannelData(
+      videoEncoderConfiguration: VideoEncoderConfiguration(
+        orientationMode: VideoOutputOrientationMode.Adaptative
+      )
     )
   );
+
+
 
   // Initializing Agora Client
   Future<void> initAgora() async{
@@ -29,8 +39,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     // TODO: implement initState
     super.initState();
     initAgora();
-
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +49,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           automaticallyImplyLeading: false,
           title: const Text("Live Video Consultation"),
         ),
@@ -47,17 +59,35 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             children: [
               AgoraVideoViewer(
                 client: client,
-                layoutType: Layout.floating,
                 showNumberOfUsers: true,
+                showAVState: true,
+                disabledVideoWidget: Container(
+                  decoration:  const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
+                      )
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/Logo.png",
+                        width: 200,
+                      )
+                    ],
+                  ),
+                ),
               ),
               AgoraVideoButtons(
                 client: client,
-                enabledButtons: const[
-                  BuiltInButtons.toggleCamera,
-                  BuiltInButtons.callEnd,
+                enabledButtons:  [
                   BuiltInButtons.toggleMic,
+                  BuiltInButtons.callEnd,
+                  BuiltInButtons.toggleCamera,
+                  BuiltInButtons.switchCamera,
                 ],
-
               )
             ],
           ),

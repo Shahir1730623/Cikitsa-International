@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common_screens/coundown_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -187,7 +188,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CountDownScreen()));
                       });
                     },
                     style: ElevatedButton.styleFrom(

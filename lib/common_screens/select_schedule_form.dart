@@ -89,8 +89,16 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
     Map consultationInfoMap = {
       "id" : consultationId,
+      "date" : date.toString(),
+      "time" : time.toString(),
+      "doctorName" : selectedDoctorInfo!.doctorName,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "doctorFee" : selectedDoctorInfo!.fee,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "consultationType" : "Scheduled",
       "visitationReason": selectedReasonOfVisit,
       "problem": problemTextEditingController.text.trim(),
+      "payment" : "Pending"
     };
 
     FirebaseDatabase.instance.ref().child("Users")
@@ -505,7 +513,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 ),
                               ),
                               Text(
-                                "৳200",
+                                selectedDoctorInfo!.fee!,
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,

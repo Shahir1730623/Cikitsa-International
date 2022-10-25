@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:app/common_screens/choose_user.dart';
 import 'package:app/common_screens/new_user_info_form.dart';
+import 'package:app/common_screens/select_schedule_form.dart';
 import 'package:app/common_screens/talk_to_doctor_now.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -465,11 +466,19 @@ class _OldUserFormState extends State<OldUserForm> {
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
+                                  if(selectedDoctorInfo!.status.toString() == "Online"){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
+                                  }
+
+                                  else{
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
+                                  }
+
                                 });
 
 
                               },
+
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.lightBlue,
                                   shape: RoundedRectangleBorder(

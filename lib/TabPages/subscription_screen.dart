@@ -33,6 +33,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         "id" : doctorList[index].doctorId,
         "name" : doctorList[index].doctorName,
         "specialization" : doctorList[index].specialization,
+        "degrees" : doctorList[index].degrees,
         "experience" : doctorList[index].experience,
         "workplace" : doctorList[index].workplace,
         "rating" : doctorList[index].rating,

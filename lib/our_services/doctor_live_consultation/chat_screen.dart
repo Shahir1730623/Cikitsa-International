@@ -29,6 +29,8 @@ class _ChatScreenState extends State<ChatScreen> {
     MessageBubble(message: "Thanks", date: "Oct 24,9:05 PM"),
   ];
 
+  TextEditingController searchTextEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +69,25 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          const MessageTextField(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchTextEditingController,
+              textAlignVertical: TextAlignVertical.center,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.send,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,vertical: 8
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  hintText: "Send a message"
+              ),
+
+            ),
+          ),
 
 
         ],

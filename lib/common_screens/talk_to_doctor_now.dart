@@ -37,10 +37,20 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     return now.microsecondsSinceEpoch.toString();
   }
 
+  DateTime date = DateTime.now();
+  TimeOfDay time = TimeOfDay.now().replacing(hour: TimeOfDay.now().hourOfPeriod);
+
   saveConsultationInfo() async {
     consultationId = idGenerator();
     Map consultationInfoMap = {
       "id" : consultationId,
+      "date" : date,
+      "time" : time,
+      "doctorName" : selectedDoctorInfo!.doctorName,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "doctorFee" : selectedDoctorInfo!.fee,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "consultationType" : "Now",
       "visitationReason": selectedReasonOfVisit,
       "problem": problemTextEditingController.text.trim(),
       "payment" : "Pending"
@@ -52,8 +62,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
         .child(patientId!)
         .child("consultations")
         .child(consultationId!).set(consultationInfoMap);
-
-
   }
 
   @override
@@ -173,7 +181,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10,),
+                              const SizedBox(width: 10,),
                               Expanded(
                                 child: DropdownButtonFormField(
                                   decoration: const InputDecoration(

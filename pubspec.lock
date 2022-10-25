@@ -9,7 +9,7 @@ packages:
     source: hosted
     version: "1.0.2"
   agora_rtc_engine:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: agora_rtc_engine
       url: "https://pub.dartlang.org"

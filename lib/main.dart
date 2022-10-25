@@ -2,6 +2,7 @@ import 'package:app/authentication/initialization_screen.dart';
 import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/chat_screen.dart';
+import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:app/splash_screen/splash_screen.dart';
 import 'package:app/widgets/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ void main() async {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const ChatScreen(),
+          home: const SplashScreen(),
           builder: (context,child) => unFocus(child: child!),
           debugShowCheckedModeBanner: false,
         ),
