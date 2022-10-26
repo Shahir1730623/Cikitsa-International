@@ -52,17 +52,17 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                             child: Container(
                               padding: const EdgeInsets.all(5),
                               decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: BorderRadius.all(Radius.circular(5)),
                                   color: Colors.blue
                               ),
                               child: const Icon(
                                 Icons.arrow_back_outlined,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ),
                           ),
 
-                          SizedBox(width: height * 0.05),
+                          SizedBox(width: height * 0.040),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -101,7 +101,7 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                       // New Consultation History
                       GestureDetector(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LiveConsultationCategory()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveConsultationCategory()));
                         },
                         child: Container(
                           padding: EdgeInsets.only(left: 10),
@@ -150,7 +150,7 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                       // Consultation History
                       GestureDetector(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser2()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser2()));
                         },
                         child: Container(
                           padding: EdgeInsets.only(left: 10),

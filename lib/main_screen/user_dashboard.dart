@@ -1,4 +1,5 @@
 import 'package:app/models/UserModel.dart';
+import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -442,32 +443,37 @@ class _UserDashboardState extends State<UserDashboard> {
                                  ],
                                ),
                              ),
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/live consultation.png",
-                                     height: 50,
-                                     width: 50,
-                                   ),
-
-                                   Text(
-                                     "Doctor Live\nConsultation",
-                                     textAlign: TextAlign.center,
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
+                             GestureDetector(
+                               onTap: (){
+                                 Navigator.push(context, MaterialPageRoute(builder: (context) => VideoConsultationDashboard()));
+                               },
+                               child: Container(
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(10),
+                                   color: Colors.white,
+                                 ),
+                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Image.asset(
+                                       "assets/live consultation.png",
+                                       height: 50,
+                                       width: 50,
                                      ),
-                                   )
 
-                                 ],
+                                     Text(
+                                       "Doctor Live\nConsultation",
+                                       textAlign: TextAlign.center,
+                                       style: GoogleFonts.montserrat(
+                                           color: Colors.black,
+                                           fontSize: 12,
+                                           fontWeight: FontWeight.bold
+                                       ),
+                                     )
+
+                                   ],
+                                 ),
                                ),
                              ),
                              Container(

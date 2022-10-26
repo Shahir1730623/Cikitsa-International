@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:intl/intl.dart';
 import 'package:app/common_screens/payment_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +20,7 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 }
 
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController relationTextEditingController = TextEditingController();
   TextEditingController problemTextEditingController = TextEditingController();
@@ -37,15 +38,18 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     return now.microsecondsSinceEpoch.toString();
   }
 
-  DateTime date = DateTime.now();
-  TimeOfDay time = TimeOfDay.now().replacing(hour: TimeOfDay.now().hourOfPeriod);
+  String formattedDate = DateFormat('yMd').format(DateTime.now());// 28/03/2020
+  String formattedTime = DateFormat.jm().format(DateTime.now());
+
+  //DateTime date = DateTime.now();
+  //TimeOfDay time = TimeOfDay.now().replacing(hour: TimeOfDay.now().hourOfPeriod);
 
   saveConsultationInfo() async {
     consultationId = idGenerator();
     Map consultationInfoMap = {
       "id" : consultationId,
-      "date" : date,
-      "time" : time,
+      "date" : formattedDate,
+      "time" : formattedTime,
       "doctorName" : selectedDoctorInfo!.doctorName,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,

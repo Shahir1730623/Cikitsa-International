@@ -621,16 +621,11 @@ class _LiveDoctorsState extends State<LiveDoctors> {
 
                       else{
                         return Container();
-
                       }
 
 
 
                     }
-
-
-
-
 
 
                     ),

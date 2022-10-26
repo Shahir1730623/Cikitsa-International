@@ -187,8 +187,6 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                         return GestureDetector(
                           onTap: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
-
-
                           },
                           child: Container(
                             height: 130,

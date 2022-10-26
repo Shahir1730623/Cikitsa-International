@@ -188,7 +188,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CountDownScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
                       });
                     },
                     style: ElevatedButton.styleFrom(

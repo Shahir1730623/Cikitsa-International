@@ -1,124 +1,16 @@
-import 'dart:async';
-import 'dart:math';
-import 'package:app/common_screens/payment_screen.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
-import '../global/global.dart';
-import '../main_screen.dart';
-import '../widgets/progress_dialog.dart';
-import 'choose_user.dart';
-
-class SelectSchedule extends StatefulWidget {
-  const SelectSchedule({Key? key}) : super(key: key);
+class RescheduleDate extends StatefulWidget {
+  const RescheduleDate({Key? key}) : super(key: key);
 
   @override
-  State<SelectSchedule> createState() => _SelectScheduleState();
+  State<RescheduleDate> createState() => _RescheduleDateState();
 }
 
-class _SelectScheduleState extends State<SelectSchedule> {
+class _RescheduleDateState extends State<RescheduleDate> {
   final _formKey = GlobalKey<FormState>();
-
-  DateTime date = DateTime.now();
-  TimeOfDay time = TimeOfDay.now();
-  String? formattedDate,formattedTime;
-  int dateCounter = 0;
-  int timeCounter = 0;
-
-
-  pickDate() async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(), //get today's date
-        firstDate:DateTime(2022), //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2030)
-    );
-
-    if(pickedDate != null ){
-      setState(() {
-        date = pickedDate;
-        formattedDate = DateFormat('dd-MM-yyyy').format(date);
-        dateCounter++;
-      });
-    }
-
-    else{
-      print("Date is not selected");
-    }
-
-  }
-
-  pickTime() async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: time, //get today's date
-    );
-
-    if(pickedTime != null ){
-      setState(() {
-        time = pickedTime;
-        formattedTime = time.format(context);
-        timeCounter++;
-      });
-    }
-  }
-
-
-  TextEditingController relationTextEditingController = TextEditingController();
-  TextEditingController problemTextEditingController = TextEditingController();
-  List<String> reasonOfVisitTypesList = [
-    "Cancer",
-    "Heart Problem",
-    "Skin problem",
-    "Liver problem",
-    "Broken bones"
-  ];
-  String? selectedReasonOfVisit;
-
-  String idGenerator() {
-    final now = DateTime.now();
-    return now.microsecondsSinceEpoch.toString();
-  }
-
-
-  saveConsultationInfo() async {
-    String consultationId = idGenerator();
-
-    Map consultationInfoMap = {
-      "id" : consultationId,
-      "date" : formattedDate,
-      "time" : formattedTime,
-      "doctorName" : selectedDoctorInfo!.doctorName,
-      "specialization" : selectedDoctorInfo!.specialization,
-      "doctorFee" : selectedDoctorInfo!.fee,
-      "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : "Scheduled",
-      "visitationReason": selectedReasonOfVisit,
-      "problem": problemTextEditingController.text.trim(),
-      "payment" : "Pending"
-    };
-
-    FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!)
-        .child("consultations")
-        .child(consultationId).set(consultationInfoMap);
-
-
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    problemTextEditingController.addListener(() => setState(() {}));
-    relationTextEditingController.addListener(() => setState(() {}));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,11 +41,11 @@ class _SelectScheduleState extends State<SelectSchedule> {
             ),
           ),
           title: Text(
-            "Select Schedule",
+            "Reschedule Date",
             style: GoogleFonts.montserrat(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold
             ),
           ),
         ),
@@ -237,8 +129,8 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                       pickDate();
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        primary: (Colors.white70),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      primary: (Colors.white70),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     child: Text(
                                       (dateCounter != 0) ? '$formattedDate' :  "Select date",

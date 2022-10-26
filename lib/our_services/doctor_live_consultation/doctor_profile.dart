@@ -24,12 +24,12 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
   List doctorImages = ["doctor-1.png","doctor-2.jpg","doctor-3.jpg"];
 
-  saveSelectedDoctorIdToDatabase(){
+  /*saveSelectedDoctorIdToDatabase(){
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
     reference
         .child(currentFirebaseUser!.uid)
         .child("selectedDoctorId").set(selectedDoctorInfo!.doctorId);
-  }
+  }*/
 
   @override
   void initState() {
@@ -85,6 +85,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
             ))
           ],
         ),
+
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
@@ -138,7 +139,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             ),
                           ),
 
-                          SizedBox(height: 15,),
+                          const SizedBox(height: 15,),
 
                           Row(
                             children: [
@@ -148,7 +149,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                 width: 30,
                               ),
 
-                              SizedBox(width: 20,),
+                              const SizedBox(width: 20,),
 
                               Text(
                                 selectedDoctorInfo!.specialization!,
@@ -285,13 +286,12 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                 );
 
                                 // Saving selected doctor id
-                                saveSelectedDoctorIdToDatabase();
+                                //saveSelectedDoctorIdToDatabase();
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
                                 });
-
 
 
                               },

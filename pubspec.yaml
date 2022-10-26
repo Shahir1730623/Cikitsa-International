@@ -47,6 +47,7 @@ dependencies:
   get: ^4.6.5
   agora_uikit: ^1.0.4
   agora_rtc_engine: ^5.2.0
+  intl: ^0.17.0
 
 
 dev_dependencies:
