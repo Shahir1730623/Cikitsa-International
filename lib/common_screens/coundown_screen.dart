@@ -7,9 +7,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../global/global.dart';
-import '../splash_screen/splash_screen.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/timer.dart';
 
@@ -138,18 +135,7 @@ class CountDownScreen extends GetView<TimerController>  {
             ),
 
             SizedBox(height: height * 0.05),
-
-            ElevatedButton(
-              onPressed: () {
-                firebaseAuth.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
-              },
-
-              child: const Text(
-                  "Logout"
-              ),
-            ),
-
+            
           ],
         ),
       ),

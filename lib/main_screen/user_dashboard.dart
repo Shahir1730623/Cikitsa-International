@@ -1,4 +1,6 @@
-import 'package:app/models/UserModel.dart';
+import 'dart:async';
+
+import 'package:app/models/user_model.dart';
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
+import '../widgets/progress_dialog.dart';
+import '../widgets/push_notification_dialog.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({Key? key}) : super(key: key);
@@ -41,11 +45,32 @@ class _UserDashboardState extends State<UserDashboard> {
 
   }
 
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return PushNotificationDialog();
+        }
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    readCurrentUserInformation();
+    //readCurrentUserInformation();
+    Future.delayed(Duration.zero, () {
+      if(pushNotify == true){
+        pushNotify = false;
+        loadScreen();
+      }
+
+      else{
+        // Do nothing
+      }
+    });
+
   }
 
   @override

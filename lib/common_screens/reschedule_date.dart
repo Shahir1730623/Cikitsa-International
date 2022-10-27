@@ -1,6 +1,14 @@
+import 'dart:async';
+
+import 'package:app/common_screens/payment_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+
+import '../global/global.dart';
+import '../widgets/progress_dialog.dart';
 
 class RescheduleDate extends StatefulWidget {
   const RescheduleDate({Key? key}) : super(key: key);
@@ -11,6 +19,94 @@ class RescheduleDate extends StatefulWidget {
 
 class _RescheduleDateState extends State<RescheduleDate> {
   final _formKey = GlobalKey<FormState>();
+
+  DateTime date = DateTime.now();
+  TimeOfDay time = TimeOfDay.now();
+  String? formattedDate,formattedTime;
+  int dateCounter = 0;
+  int timeCounter = 0;
+
+
+  pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), //get today's date
+        firstDate:DateTime(2022), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2030)
+    );
+
+    if(pickedDate != null ){
+      setState(() {
+        date = pickedDate;
+        formattedDate = DateFormat('dd-MM-yyyy').format(date);
+        dateCounter++;
+      });
+    }
+
+    else{
+      print("Date is not selected");
+    }
+
+  }
+
+  pickTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: time, //get today's date
+    );
+
+    if(pickedTime != null ){
+      setState(() {
+        time = pickedTime;
+        formattedTime = time.format(context);
+        timeCounter++;
+      });
+    }
+  }
+
+  TextEditingController relationTextEditingController = TextEditingController();
+  TextEditingController problemTextEditingController = TextEditingController();
+  List<String> reasonOfVisitTypesList = [
+    "Cancer",
+    "Heart Problem",
+    "Skin problem",
+    "Liver problem",
+    "Broken bones"
+  ];
+  String? selectedReasonOfVisit;
+
+  EditAndSaveConsultationInfo() async {
+    Map consultationInfoMap = {
+      "id" : consultationId,
+      "date" : formattedDate,
+      "time" : formattedTime,
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : selectedDoctorInfo!.doctorName,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "doctorFee" : selectedDoctorInfo!.fee,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "consultationType" : "Scheduled",
+      "visitationReason": selectedReasonOfVisit,
+      "problem": problemTextEditingController.text.trim(),
+      "payment" : "Pending"
+    };
+
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("consultations")
+        .child(consultationId!).set(consultationInfoMap);
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    problemTextEditingController.addListener(() => setState(() {}));
+    relationTextEditingController.addListener(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -404,8 +500,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
                                 ),
                               ),
                               Text(
-                                selectedDoctorInfo!.fee!,
-                                textAlign: TextAlign.center,
+                                (int.parse(selectedDoctorInfo!.fee!) / 2).toString(),
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -431,8 +526,8 @@ class _RescheduleDateState extends State<RescheduleDate> {
                                     }
                                 );
 
-                                // Saving selected doctor id
-                                saveConsultationInfo();
+                                // Editing and re-saving consultation info
+                                EditAndSaveConsultationInfo();
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);

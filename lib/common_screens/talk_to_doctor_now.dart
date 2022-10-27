@@ -50,6 +50,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "id" : consultationId,
       "date" : formattedDate,
       "time" : formattedTime,
+      "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : selectedDoctorInfo!.doctorName,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,

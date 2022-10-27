@@ -81,7 +81,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
               padding: const EdgeInsets.only(right: 10.0,left: 2),
               child: Icon(
                   Icons.circle,
-                  color: ((selectedDoctorInfo!.status.toString() == "Online") ? CupertinoColors.systemGreen : Colors.grey )
+                  color: ((selectedDoctorInfo!.status.toString() == "Online") ? CupertinoColors.systemGreen : Colors.grey.shade400)
             ))
           ],
         ),
@@ -297,7 +297,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               },
 
                               style: ElevatedButton.styleFrom(
-                                  primary: (((selectedDoctorInfo!.status.toString() == "Online") ? Colors.blue : Colors.grey.shade400 )),
+                                  primary: (((selectedDoctorInfo!.status.toString() == "Online") ? Colors.blue : Colors.grey.shade300 )),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
 

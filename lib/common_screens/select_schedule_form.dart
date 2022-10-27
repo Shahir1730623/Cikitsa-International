@@ -84,14 +84,14 @@ class _SelectScheduleState extends State<SelectSchedule> {
     return now.microsecondsSinceEpoch.toString();
   }
 
-
   saveConsultationInfo() async {
-    String consultationId = idGenerator();
+    consultationId = idGenerator();
 
     Map consultationInfoMap = {
       "id" : consultationId,
       "date" : formattedDate,
       "time" : formattedTime,
+      "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : selectedDoctorInfo!.doctorName,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
@@ -107,7 +107,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         .child("patientList")
         .child(patientId!)
         .child("consultations")
-        .child(consultationId).set(consultationInfoMap);
+        .child(consultationId!).set(consultationInfoMap);
 
 
   }
@@ -126,38 +126,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: GestureDetector(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.white
-                ),
-                child: const Icon(
-                  Icons.arrow_back_outlined,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            "Select Schedule",
-            style: GoogleFonts.montserrat(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-            ),
-          ),
-        ),
-
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(
@@ -186,19 +154,42 @@ class _SelectScheduleState extends State<SelectSchedule> {
                         children: [
                           // Book Now
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                "Book Now",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      color: Colors.blue
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_back_outlined,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
+
+                              SizedBox(width: height * 0.08),
+
+                              Row(
+                                children: [
+                                  Text(
+                                    "Book Now",
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
+
+                          SizedBox(height: height * 0.03,),
 
                           // Date
                           Text(
@@ -539,7 +530,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                     }
                                 );
 
-                                // Saving selected doctor id
+                                // Saving consultation info
                                 saveConsultationInfo();
 
                                 Timer(const Duration(seconds: 2),()  {

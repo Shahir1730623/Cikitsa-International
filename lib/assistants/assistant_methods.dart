@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 
 import '../global/global.dart';
-import '../models/UserModel.dart';
+import '../models/user_model.dart';
 
 class AssistantMethods{
   static void readOnlineUserCurrentInfo() {

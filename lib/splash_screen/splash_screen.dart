@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     firebaseAuth.currentUser != null ? AssistantMethods.readOnlineUserCurrentInfo() : null;
 
     Timer(const Duration(seconds: 5),() async {
-      if(await firebaseAuth.currentUser!=null){
+      if(firebaseAuth.currentUser!=null){
         // send User to main screen
         currentFirebaseUser = firebaseAuth.currentUser;
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));

@@ -26,8 +26,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child("consultations")
         .child(consultationId!).
         child("payment").set("Paid");
-
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +188,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+
+                        if(selectedDoctorInfo!.status == "Online"){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                        }
+
+                        else{
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+                          pushNotify = true;
+                        }
+
                       });
                     },
                     style: ElevatedButton.styleFrom(
