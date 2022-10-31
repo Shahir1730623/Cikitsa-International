@@ -21,7 +21,7 @@ void main() async {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const UploadingPrescription(),
+          home: const SplashScreen(),
           builder: (context,child) => unFocus(child: child!),
           debugShowCheckedModeBanner: false,
         ),

@@ -1,12 +1,17 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../global/global.dart';
+import '../models/ci_consultation_model.dart';
+import '../models/consultation_model.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/timer.dart';
 
@@ -19,6 +24,62 @@ class CountDownScreen extends GetView<TimerController>  {
     Get.put(TimerController());
     TimerController.context = context;
 
+    retrieveConsultationDataFromDatabase() {
+      DatabaseReference reference = FirebaseDatabase.instance.ref()
+          .child("Users")
+          .child(currentFirebaseUser!.uid)
+          .child("patientList")
+          .child(patientId!);
+
+      /*if(selectedService == "CI Consultation"){
+        reference.child("CIConsultations").child(consultationId!).once().then((dataSnap){
+          DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+          }
+
+          else{
+            Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+          }
+
+        });
+      }*/
+
+      if(selectedService != "CI Consultation"){
+        reference.child("consultations").child(consultationId!).once().then((dataSnap){
+          DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+          }
+
+          else{
+            Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+          }
+
+        });
+      }
+    }
+
+
+    setConsultationInfoToCompleted(){
+      DatabaseReference reference = FirebaseDatabase.instance.ref()
+          .child("Users")
+          .child(currentFirebaseUser!.uid)
+          .child("patientList")
+          .child(patientId!);
+
+      if(selectedService == "CI Consultation"){
+        reference.child("CIConsultations").child(consultationId!).child("consultationType").set("Completed");
+      }
+
+      else{
+        reference.child("consultations").child(consultationId!).child("consultationType").set("Completed");
+      }
+
+
+
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_){
       showDialog(
           context: context,
@@ -27,6 +88,9 @@ class CountDownScreen extends GetView<TimerController>  {
             return ProgressDialog(message: "Please wait...");
           }
       );
+
+      retrieveConsultationDataFromDatabase();
+      setConsultationInfoToCompleted();
 
       Timer(const Duration(seconds: 1),()  {
         Navigator.pop(context);

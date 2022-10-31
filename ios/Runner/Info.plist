@@ -6,6 +6,8 @@
     <string>The app tries to access your microphone</string>
     <key>NSCameraUsageDescription</key>
     <string>The app tries to access your camera</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>The app tries to access your photo library</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

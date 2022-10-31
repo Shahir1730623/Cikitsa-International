@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:app/global/global.dart';
 import 'package:app/our_services/doctor_live_consultation/chat_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/uploading_prescription.dart';
@@ -40,7 +41,14 @@ class TimerController extends GetxController{
 
         Timer(const Duration(seconds: 5),()  {
           Navigator.pop(context!);
-          Navigator.push(context!, MaterialPageRoute(builder: (context) => UploadingPrescription()));;
+          if(selectedService == "CI Consultation"){
+            Navigator.pushAndRemoveUntil(context!, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+            pushNotify = false;
+          }
+          else{
+            Navigator.push(context!, MaterialPageRoute(builder: (context) => UploadingPrescription()));
+          }
+
         });
 
       }

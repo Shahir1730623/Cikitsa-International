@@ -38,9 +38,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   country_picker: ^2.0.16
-  firebase_core: ^1.24.0
-  firebase_auth: ^3.11.2
-  firebase_database: ^9.1.7
+  firebase_core: ^2.1.1
+  firebase_auth: ^4.1.0
+  firebase_database: ^10.0.3
   google_fonts: ^3.0.1
   flutter_otp_text_field: ^1.1.1
   fluttertoast: ^8.1.1
@@ -48,6 +48,10 @@ dependencies:
   agora_uikit: ^1.0.4
   agora_rtc_engine: ^5.2.0
   intl: ^0.17.0
+  firebase_storage: ^11.0.3
+  file_picker: ^5.2.2
+  image_picker: ^0.8.6
+  carousel_slider: ^4.1.1
 
 
 dev_dependencies:
@@ -78,6 +82,9 @@ flutter:
      - assets/background_color.png
      - assets/background_color2.jpg
      - assets/NavigationBarItem/
+     - assets/sliderImages/
+     - assets/pharmacyImages/
+     - assets/consultationImages/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

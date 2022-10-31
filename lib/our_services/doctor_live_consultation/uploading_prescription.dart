@@ -12,15 +12,13 @@ class UploadingPrescription extends StatefulWidget {
 }
 
 class _UploadingPrescriptionState extends State<UploadingPrescription> {
-
-  void loadScreen(){
+  void loadScreen() {
     showDialog(
         context: context,
         barrierDismissible: true,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return const PrescriptionDialog();
-        }
-    );
+        });
   }
 
   @override
@@ -35,46 +33,42 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          CircleAvatar(//or 15.0
-            radius: 50,
-            backgroundColor: Colors.grey[100],
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Image.asset(
-                "assets/doctor-1.png",
-                fit: BoxFit.fitWidth,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Center(
+                child: CircleAvatar(
+                  //or 15.0
+                  radius: 60,
+                  backgroundColor: Colors.grey[100],
+                  foregroundImage: const AssetImage(
+                    "assets/doctor-1.png",
+                  ),
+                ),
               ),
-            ),
+              SizedBox(height: height * 0.05),
+              Text(
+                selectedConsultationInfo!.doctorName!,
+                style: GoogleFonts.montserrat(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25),
+              ),
+              SizedBox(height: height * 0.5),
+              Text(
+                "This may take several minutes",
+                style: GoogleFonts.montserrat(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17),
+              ),
+            ],
           ),
-
-
-          SizedBox(height: height * 0.05),
-
-          Text(
-            selectedConsultationInfo!.doctorName!,
-            style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 25
-            ),
-          ),
-
-          SizedBox(height: height * 0.7),
-
-          Text(
-            selectedConsultationInfo!.doctorName!,
-            style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 25
-            ),
-          ),
-
-        ],
+        ),
       ),
     );
   }

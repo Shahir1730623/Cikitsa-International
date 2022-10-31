@@ -19,13 +19,23 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   updatePaymentStatus(){
-    FirebaseDatabase.instance.ref().child("Users")
+   DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId!)
-        .child("consultations")
-        .child(consultationId!).
-        child("payment").set("Paid");
+        .child(patientId!);
+
+    if(selectedService == "CI Consultation"){
+           reference.child("CIConsultations")
+          .child(consultationId!)
+          .child("payment").set("Paid");
+    }
+
+    else{
+           reference.child("consultations")
+          .child(consultationId!)
+          .child("payment").set("Paid");
+    }
+
   }
 
 
@@ -188,6 +198,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
+
+                        if(selectedDoctorInfo == null){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+                          pushNotify = true;
+                        }
 
                         if(selectedDoctorInfo!.status == "Online"){
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));

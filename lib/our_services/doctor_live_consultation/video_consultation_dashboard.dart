@@ -1,4 +1,6 @@
 import 'package:app/common_screens/choose_user2.dart';
+import 'package:app/main_screen.dart';
+import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,7 +49,9 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                         children: [
                           GestureDetector(
                             onTap: (){
-                              Navigator.pop(context);
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context){
+                                return MainScreen();
+                              }));
                             },
                             child: Container(
                               padding: const EdgeInsets.all(5),

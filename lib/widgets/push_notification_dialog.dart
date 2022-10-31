@@ -1,4 +1,5 @@
 import 'package:app/common_screens/reschedule_date.dart';
+import 'package:app/global/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,7 +34,7 @@ class _PushNotificationDialogState extends State<PushNotificationDialog> {
           SizedBox(height: height * 0.07,),
 
           Text(
-            "You have meeting with\ndoctor now",
+            selectedService == ("CI Consultation") ? ("You have meeting with\nconsultant now") : ("You have meeting with\ndoctor now"),
             textAlign: TextAlign.center,
             style: GoogleFonts.montserrat(
                 color: Colors.blue,
@@ -71,7 +72,7 @@ class _PushNotificationDialogState extends State<PushNotificationDialog> {
 
               icon: Icon(Icons.video_call),
               label: Text(
-                ("Talk to Doctor Now"),
+                selectedService == ("CI Consultation") ? ("Talk to Consultant Now") : ("Talk to Doctor Now"),
                 style: GoogleFonts.montserrat(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,

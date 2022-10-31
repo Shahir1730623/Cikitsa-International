@@ -85,29 +85,48 @@ class _SelectScheduleState extends State<SelectSchedule> {
   }
 
   saveConsultationInfo() async {
-    consultationId = idGenerator();
-
-    Map consultationInfoMap = {
-      "id" : consultationId,
-      "date" : formattedDate,
-      "time" : formattedTime,
-      "doctorId" : selectedDoctorInfo!.doctorId,
-      "doctorName" : selectedDoctorInfo!.doctorName,
-      "specialization" : selectedDoctorInfo!.specialization,
-      "doctorFee" : selectedDoctorInfo!.fee,
-      "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : "Scheduled",
-      "visitationReason": selectedReasonOfVisit,
-      "problem": problemTextEditingController.text.trim(),
-      "payment" : "Pending"
-    };
-
-    FirebaseDatabase.instance.ref().child("Users")
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId!)
-        .child("consultations")
-        .child(consultationId!).set(consultationInfoMap);
+        .child(patientId!);
+
+    consultationId = idGenerator();
+    if(selectedService == "CI Consultation"){
+      Map CIConsultationInfoMap = {
+        "id" : consultationId,
+        "date" : formattedDate,
+        "time" : formattedTime,
+        "selectedCountry" : selectedCountry,
+        "consultantFee" : "500",
+        "consultationType" : "Scheduled",
+        "visitationReason": selectedReasonOfVisit,
+        "problem": problemTextEditingController.text.trim(),
+        "payment" : "Pending"
+      };
+
+      reference.child("CIConsultations").child(consultationId!).set(CIConsultationInfoMap);
+    }
+
+    else{
+      Map consultationInfoMap = {
+        "id" : consultationId,
+        "date" : formattedDate,
+        "time" : formattedTime,
+        "doctorId" : selectedDoctorInfo!.doctorId,
+        "doctorName" : selectedDoctorInfo!.doctorName,
+        "specialization" : selectedDoctorInfo!.specialization,
+        "doctorFee" : selectedDoctorInfo!.fee,
+        "workplace" : selectedDoctorInfo!.workplace,
+        "consultationType" : "Scheduled",
+        "visitationReason": selectedReasonOfVisit,
+        "problem": problemTextEditingController.text.trim(),
+        "payment" : "Pending"
+      };
+
+      reference.child("consultations").child(consultationId!).set(consultationInfoMap);
+    }
+
+
 
 
   }
@@ -327,7 +346,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10,),
+                              const SizedBox(width: 10,),
                               Expanded(
                                 child: DropdownButtonFormField(
                                   decoration: const InputDecoration(
@@ -370,68 +389,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
                           SizedBox(height: height * 0.03,),
 
-                          // Consultation For
-                          Text(
-                            "Consultation For",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/relations.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10,),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: relationTextEditingController,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-
-                                  decoration:  InputDecoration(
-                                    labelText: "Relation",
-                                    hintText: "Specify relation",
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
-                                    ),
-                                    focusedBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.blue),
-                                    ),
-                                    hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                                    labelStyle: TextStyle(color: Colors.black, fontSize: 15),
-
-                                    suffixIcon: relationTextEditingController.text.isEmpty
-                                        ? Container(width: 0)
-                                        : IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () =>
-                                          relationTextEditingController.clear(),
-                                    ),
-
-                                  ),
-
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: height * 0.03,),
-
                           // Describe the problem
                           Text(
                             "Describe the problem",
@@ -442,7 +399,9 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 fontSize: 20
                             ),
                           ),
+
                           SizedBox(height: height * 0.02,),
+
                           TextFormField(
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -503,7 +462,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 ),
                               ),
                               Text(
-                                selectedDoctorInfo!.fee!,
+                                selectedDoctorInfo == null ? "500" : (selectedDoctorInfo!.fee!),
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,

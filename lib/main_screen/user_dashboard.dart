@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:app/models/user_model.dart';
+import 'package:app/our_services/ci_consultation/ci_consultation_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
+import 'package:app/our_services/online_pharmacy/pharmacy_dashboard.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +94,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0,right: 20,top: 15),
-                child: Column(
+                child: ListView(
                   children: [
                     // Logo, CircleAvatar
                     Row(
@@ -438,34 +440,41 @@ class _UserDashboardState extends State<UserDashboard> {
                          padding: const EdgeInsets.only(left: 5,right: 5),
                          child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                            shrinkWrap: true,
+                           physics: const ScrollPhysics(),
                            children: [
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: const EdgeInsets.fromLTRB(5,10,5,0),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/leader.png",
-                                      height: 50,
-                                      width: 50,
-                                   ),
-
-                                   const SizedBox(height: 10),
-
-                                   Text(
-                                     "CI Consultation",
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
+                             GestureDetector(
+                               onTap: (){
+                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDashboard()));
+                                 selectedService = "CI Consultation";
+                               },
+                               child: Container(
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(10),
+                                   color: Colors.white,
+                                 ),
+                                 margin: const EdgeInsets.fromLTRB(5,10,5,0),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Image.asset(
+                                       "assets/leader.png",
+                                        height: 50,
+                                        width: 50,
                                      ),
-                                   )
 
-                                 ],
+                                     const SizedBox(height: 10),
+
+                                     Text(
+                                       "CI Consultation",
+                                       style: GoogleFonts.montserrat(
+                                           color: Colors.black,
+                                           fontSize: 12,
+                                           fontWeight: FontWeight.bold
+                                       ),
+                                     )
+
+                                   ],
+                                 ),
                                ),
                              ),
                              GestureDetector(
@@ -531,32 +540,37 @@ class _UserDashboardState extends State<UserDashboard> {
                                ),
                              ),
 
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/medicine.png",
-                                     height: 50,
-                                     width: 50,
-                                   ),
-
-                                   Text(
-                                     "Online Pharmacy",
-                                     textAlign: TextAlign.center,
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
+                             GestureDetector(
+                               onTap: (){
+                                 Navigator.push(context, MaterialPageRoute(builder: (context) => PharmacyDashboard()));
+                               },
+                               child: Container(
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(10),
+                                   color: Colors.white,
+                                 ),
+                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Image.asset(
+                                       "assets/medicine-2.png",
+                                       height: 50,
+                                       width: 50,
                                      ),
-                                   )
 
-                                 ],
+                                     Text(
+                                       "Online Pharmacy",
+                                       textAlign: TextAlign.center,
+                                       style: GoogleFonts.montserrat(
+                                           color: Colors.black,
+                                           fontSize: 12,
+                                           fontWeight: FontWeight.bold
+                                       ),
+                                     )
+
+                                   ],
+                                 ),
                                ),
                              ),
                              Container(

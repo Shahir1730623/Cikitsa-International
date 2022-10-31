@@ -71,7 +71,7 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+          Navigator.pop(context);
           return false;
         },
         child: Scaffold(

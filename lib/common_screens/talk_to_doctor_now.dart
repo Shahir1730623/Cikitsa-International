@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:app/common_screens/payment_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,7 +13,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../main_screen.dart';
+import '../service_file/storage_service.dart';
 import '../widgets/progress_dialog.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class TalkToDoctorNowInformation extends StatefulWidget {
   const TalkToDoctorNowInformation({Key? key}) : super(key: key);
@@ -20,6 +25,29 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 }
 
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
+
+  late List<String> imageList;
+
+  File? image;
+  final picker = ImagePicker();
+
+  Future<void> getImageGallery() async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if(pickedFile != null){
+        image = File(pickedFile.path);
+      }
+      else{
+        Fluttertoast.showToast(msg: "No file selected");
+      }
+
+    });
+  }
+
+
+  final Storage storage = Storage();
+  //late final path;
+  //late final fileName;
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController relationTextEditingController = TextEditingController();
@@ -46,6 +74,20 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
 
   saveConsultationInfo() async {
     consultationId = idGenerator();
+
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('Patient Reports and Prescriptions')
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("consultations")
+        .child(consultationId!)
+        .child(idGenerator());
+
+    firebase_storage.UploadTask uploadTask = reference.putFile(image!.absolute);
+    await Future.value(uploadTask);
+    var newUrl = await reference.getDownloadURL();
+
+
     Map consultationInfoMap = {
       "id" : consultationId,
       "date" : formattedDate,
@@ -58,7 +100,8 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "consultationType" : "Now",
       "visitationReason": selectedReasonOfVisit,
       "problem": problemTextEditingController.text.trim(),
-      "payment" : "Pending"
+      "payment" : "Pending",
+      "imageUrl" : newUrl.toString()
     };
 
     FirebaseDatabase.instance.ref().child("Users")
@@ -67,6 +110,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
         .child(patientId!)
         .child("consultations")
         .child(consultationId!).set(consultationInfoMap);
+
   }
 
   @override
@@ -229,68 +273,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
 
                           SizedBox(height: height * 0.05,),
 
-                          // Consultation For
-                          Text(
-                            "Consultation For",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.02,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/relations.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10,),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: relationTextEditingController,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-
-                                  decoration:  InputDecoration(
-                                    labelText: "Relation",
-                                    hintText: "Specify relation",
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
-                                    ),
-                                    focusedBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.blue),
-                                    ),
-                                    hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                                    labelStyle: TextStyle(color: Colors.black, fontSize: 15),
-
-                                    suffixIcon: relationTextEditingController.text.isEmpty
-                                        ? Container(width: 0)
-                                        : IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () =>
-                                          relationTextEditingController.clear(),
-                                    ),
-
-                                  ),
-
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: height * 0.05,),
-
                           // Describe the problem
                           Text(
                             "Describe the problem",
@@ -346,7 +328,59 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                           ),
 
 
-                          SizedBox(height: height * 0.12,),
+                          SizedBox(height: height * 0.02,),
+
+                          GestureDetector(
+                            onTap: (){
+                              getImageGallery();
+                              Fluttertoast.showToast(msg: "Pressed");
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                  style: BorderStyle.solid,
+                                ),
+                              ) ,
+                              child: Row(
+                                  children: [
+                                    Image.asset("assets/add-image.png",width: 40,),
+
+                                    SizedBox(width: 10,),
+
+                                    Expanded(
+                                      child: Text(
+                                          "Upload report and previous prescriptions",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                          )
+                                      ),
+                                    ),
+                                  ]
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                             color: Colors.white
+                            ),
+
+                            child: image != null ? Image.file(image!.absolute,fit: BoxFit.fill) : Container() ,
+
+                          ),
+
+                          SizedBox(height: height * 0.05,),
+
 
                           // Consultation fee
                           Row(
@@ -392,7 +426,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                 // Saving consultation information
                                 saveConsultationInfo();
 
-                                Timer(const Duration(seconds: 2),()  {
+                                Timer(const Duration(seconds: 3),()  {
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen()));
                                 });

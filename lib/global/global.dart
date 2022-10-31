@@ -1,4 +1,5 @@
 
+import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/models/user_model.dart';
 import 'package:app/models/consultation_model.dart';
 import 'package:app/models/doctor_model.dart';
@@ -22,5 +23,9 @@ UserModel userData = UserModel();
 UserModel? currentUserInfo;
 DoctorModel? selectedDoctorInfo;
 ConsultationModel? selectedConsultationInfo;
+CIConsultationModel? selectedCIConsultationInfo;
+
+String? selectedService;
+String? selectedCountry;
 
 bool? pushNotify = false;
