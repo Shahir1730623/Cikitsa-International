@@ -69,23 +69,9 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   String formattedDate = DateFormat('yMd').format(DateTime.now());// 28/03/2020
   String formattedTime = DateFormat.jm().format(DateTime.now());
 
-  //DateTime date = DateTime.now();
-  //TimeOfDay time = TimeOfDay.now().replacing(hour: TimeOfDay.now().hourOfPeriod);
 
   saveConsultationInfo() async {
     consultationId = idGenerator();
-
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('Patient Reports and Prescriptions')
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!)
-        .child("consultations")
-        .child(consultationId!)
-        .child(idGenerator());
-
-    firebase_storage.UploadTask uploadTask = reference.putFile(image!.absolute);
-    await Future.value(uploadTask);
-    var newUrl = await reference.getDownloadURL();
 
 
     Map consultationInfoMap = {
@@ -94,6 +80,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "time" : formattedTime,
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : selectedDoctorInfo!.doctorName,
+      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
       "workplace" : selectedDoctorInfo!.workplace,
@@ -101,7 +88,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "visitationReason": selectedReasonOfVisit,
       "problem": problemTextEditingController.text.trim(),
       "payment" : "Pending",
-      "imageUrl" : newUrl.toString()
     };
 
     FirebaseDatabase.instance.ref().child("Users")

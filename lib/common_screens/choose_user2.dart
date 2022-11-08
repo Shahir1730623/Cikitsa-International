@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/our_services/ci_consultation/consultation_history.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -71,7 +72,7 @@ class _ChooseUser2State extends State<ChooseUser2> {
                 child: Container(
                   decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5)),
-                      color: Colors.lightBlueAccent
+                      color: Colors.blue
                   ),
                   child: const Icon(
                     Icons.arrow_back_outlined,
@@ -121,7 +122,13 @@ class _ChooseUser2State extends State<ChooseUser2> {
                             Timer(const Duration(seconds: 2),()  {
                               Navigator.pop(context);
                               patientId = (snapshot.value as Map)["id"];
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                              if(selectedService == "CI Consultation"){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const ConsultationHistory()));
+                              }
+                              else{
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
+                              }
+
                             });
 
                           },

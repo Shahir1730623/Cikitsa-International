@@ -45,6 +45,8 @@ class CountDownScreen extends GetView<TimerController>  {
         });
       }*/
 
+
+
       if(selectedService != "CI Consultation"){
         reference.child("consultations").child(consultationId!).once().then((dataSnap){
           DataSnapshot snapshot = dataSnap.snapshot;
@@ -60,24 +62,12 @@ class CountDownScreen extends GetView<TimerController>  {
       }
     }
 
-
     setConsultationInfoToCompleted(){
-      DatabaseReference reference = FirebaseDatabase.instance.ref()
+      FirebaseDatabase.instance.ref()
           .child("Users")
           .child(currentFirebaseUser!.uid)
           .child("patientList")
-          .child(patientId!);
-
-      if(selectedService == "CI Consultation"){
-        reference.child("CIConsultations").child(consultationId!).child("consultationType").set("Completed");
-      }
-
-      else{
-        reference.child("consultations").child(consultationId!).child("consultationType").set("Completed");
-      }
-
-
-
+          .child(patientId!).child(selectedServiceDatabaseParentName!).child(consultationId!).child("consultationType").set("Completed");
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_){

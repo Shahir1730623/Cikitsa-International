@@ -91,6 +91,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
           child: Column(
             children: [
               Container(
+                width: double.infinity,
+                height: 200,
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
@@ -99,8 +101,10 @@ class _DoctorProfileState extends State<DoctorProfile> {
                     )
                 ),
 
-                child: Image.asset(
-                  "assets/doctor-1.png"
+
+                child: Image.network(
+                  selectedDoctorInfo!.doctorImageUrl!,
+                  fit: BoxFit.contain,
                 ),
               ),
 

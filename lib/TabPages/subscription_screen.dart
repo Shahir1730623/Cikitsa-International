@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/doctor_model.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({Key? key}) : super(key: key);
@@ -29,6 +30,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   void saveExistingUserConsultationInfo() async {
     for(int index=0; index < doctorList.length; index++){
+      firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorImages/doctor-' + (index+1).toString() +'.png');
+      var imageUrl = await reference.getDownloadURL();
       Map doctorInfoMap = {
         "id" : doctorList[index].doctorId,
         "name" : doctorList[index].doctorName,
@@ -39,7 +42,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         "rating" : doctorList[index].rating,
         "totalVisits" : doctorList[index].totalVisits,
         "fee" :  doctorList[index].fee,
-        "status" :  doctorList[index].status
+        "status" :  doctorList[index].status,
+        "imageUrl" : imageUrl
       };
 
       FirebaseDatabase.instance.ref().child("Doctors")

@@ -59,7 +59,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
         }
     );
 
-    Timer(const Duration(seconds: 1),()  {
+    Timer(const Duration(seconds: 2),()  {
       Navigator.pop(context);
     });
   }
@@ -236,16 +236,11 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       // Doc image
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10.0),//or 15.0
-                                        child: Container(
-                                          height: 70.0,
-                                          width: 70.0,
-                                          color: Colors.grey[100],
-                                          child: Image.asset(
-                                            "assets/Logo.png",
-                                            fit: BoxFit.fill,
-                                          ),
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Colors.grey[100],
+                                        foregroundImage: NetworkImage(
+                                          (snapshot.value as Map)["imageUrl"].toString(),
                                         ),
                                       ),
 

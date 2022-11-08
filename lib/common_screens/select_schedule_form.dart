@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/common_screens/payment_screen.dart';
+import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:intl/intl.dart';
 
 import '../global/global.dart';
 import '../main_screen.dart';
+import '../service_file/local_notification_service.dart';
 import '../widgets/progress_dialog.dart';
 import 'choose_user.dart';
 
@@ -22,6 +25,21 @@ class SelectSchedule extends StatefulWidget {
 
 class _SelectScheduleState extends State<SelectSchedule> {
   final _formKey = GlobalKey<FormState>();
+
+  late final LocalNotificationService service;
+
+  void listenToNotification(){
+    service.onNotificationClick.stream.listen(onNotificationListener);
+  }
+
+  void onNotificationListener(String? payload){
+    if(payload!=null && payload.isNotEmpty){
+      Navigator.push(context, MaterialPageRoute(builder: (context) => CountDownScreen()));
+    }
+    else{
+      //
+    }
+  }
 
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
@@ -104,7 +122,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         "payment" : "Pending"
       };
 
-      reference.child("CIConsultations").child(consultationId!).set(CIConsultationInfoMap);
+      reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(CIConsultationInfoMap);
     }
 
     else{
@@ -114,6 +132,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         "time" : formattedTime,
         "doctorId" : selectedDoctorInfo!.doctorId,
         "doctorName" : selectedDoctorInfo!.doctorName,
+        "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
         "specialization" : selectedDoctorInfo!.specialization,
         "doctorFee" : selectedDoctorInfo!.fee,
         "workplace" : selectedDoctorInfo!.workplace,
@@ -123,10 +142,15 @@ class _SelectScheduleState extends State<SelectSchedule> {
         "payment" : "Pending"
       };
 
-      reference.child("consultations").child(consultationId!).set(consultationInfoMap);
+      reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(consultationInfoMap);
     }
 
-
+    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+    var df =  DateFormat.jm().parse(formattedTime!);
+    formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    formattedTime = DateFormat('HH:mm').format(df);
+    String dateTime = formattedDate! + ' ' + formattedTime!;
+    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: "You just took water! Hurray!", dateTime: dateTime);
 
 
   }
@@ -137,6 +161,9 @@ class _SelectScheduleState extends State<SelectSchedule> {
     super.initState();
     problemTextEditingController.addListener(() => setState(() {}));
     relationTextEditingController.addListener(() => setState(() {}));
+    service = LocalNotificationService();
+    service.intialize();
+    listenToNotification();
   }
 
   @override

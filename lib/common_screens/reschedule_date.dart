@@ -76,27 +76,49 @@ class _RescheduleDateState extends State<RescheduleDate> {
   String? selectedReasonOfVisit;
 
   EditAndSaveConsultationInfo() async {
-    Map consultationInfoMap = {
-      "id" : consultationId,
-      "date" : formattedDate,
-      "time" : formattedTime,
-      "doctorId" : selectedDoctorInfo!.doctorId,
-      "doctorName" : selectedDoctorInfo!.doctorName,
-      "specialization" : selectedDoctorInfo!.specialization,
-      "doctorFee" : selectedDoctorInfo!.fee,
-      "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : "Scheduled",
-      "visitationReason": selectedReasonOfVisit,
-      "problem": problemTextEditingController.text.trim(),
-      "payment" : "Pending"
-    };
-
-    FirebaseDatabase.instance.ref().child("Users")
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId!)
-        .child("consultations")
-        .child(consultationId!).set(consultationInfoMap);
+        .child(selectedServiceDatabaseParentName!)
+        .child(consultationId!);
+
+    if(selectedService == "CI Consultation"){
+      Map CIConsultationInfoMap = {
+        "id" : consultationId,
+        "date" : formattedDate,
+        "time" : formattedTime,
+        "selectedCountry" : selectedCountry,
+        "consultantFee" : "250",
+        "consultationType" : "Scheduled",
+        "visitationReason": selectedReasonOfVisit,
+        "problem": problemTextEditingController.text.trim(),
+        "payment" : "Pending"
+      };
+
+      reference.set(CIConsultationInfoMap);
+    }
+
+    else{
+      Map consultationInfoMap = {
+        "id" : consultationId,
+        "date" : formattedDate,
+        "time" : formattedTime,
+        "doctorId" : selectedDoctorInfo!.doctorId,
+        "doctorName" : selectedDoctorInfo!.doctorName,
+        "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+        "specialization" : selectedDoctorInfo!.specialization,
+        "doctorFee" : selectedDoctorInfo!.fee,
+        "workplace" : selectedDoctorInfo!.workplace,
+        "consultationType" : "Scheduled",
+        "visitationReason": selectedReasonOfVisit,
+        "problem": problemTextEditingController.text.trim(),
+        "payment" : "Pending"
+      };
+
+      reference.set(consultationInfoMap);
+    }
+
 
   }
 
@@ -500,7 +522,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
                                 ),
                               ),
                               Text(
-                                (int.parse(selectedDoctorInfo!.fee!) / 2).toString(),
+                                selectedService == ("CI Consultation") ? ("250") : (int.parse(selectedDoctorInfo!.fee!) / 2).toString(),
                                 style: GoogleFonts.montserrat(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,

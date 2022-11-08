@@ -583,6 +583,10 @@ class _NewUserFormState extends State<NewUserForm> {
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
+                                  if(selectedDoctorInfo == null){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
+                                  }
+
                                   if(selectedDoctorInfo!.status.toString() == "Online"){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
                                   }

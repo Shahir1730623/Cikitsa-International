@@ -284,12 +284,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       CircleAvatar(//or 15.0
                                         radius: 30,
                                         backgroundColor: Colors.grey[100],
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Image.asset(
-                                            "assets/Logo.png",
-                                            fit: BoxFit.fitWidth,
-                                          ),
+                                        foregroundImage: NetworkImage(
+                                          (snapshot.value as Map)["doctorImageUrl"],
                                         ),
                                       ),
 

@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../global/global.dart';
+
 class VideoConsultationDashboard extends StatefulWidget {
   const VideoConsultationDashboard({Key? key}) : super(key: key);
 
@@ -15,6 +17,15 @@ class VideoConsultationDashboard extends StatefulWidget {
 }
 
 class _VideoConsultationDashboardState extends State<VideoConsultationDashboard> {
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedServiceDatabaseParentName = "consultations";
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;

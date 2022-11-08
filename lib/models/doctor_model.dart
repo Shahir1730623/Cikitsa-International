@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 class DoctorModel{
   String? doctorId;
   String? doctorName;
+  String? doctorImageUrl;
   String? specialization;
   String? degrees;
   String? experience;
@@ -19,6 +20,7 @@ class DoctorModel{
   DoctorModel.fromSnapshot(DataSnapshot snapshot){
     doctorId = snapshot.key;
     doctorName = (snapshot.value as dynamic)["name"];
+    doctorImageUrl = (snapshot.value as dynamic)["imageUrl"];
     specialization = (snapshot.value as dynamic)["specialization"];
     degrees = (snapshot.value as dynamic)["degrees"];
     experience = (snapshot.value as dynamic)["experience"];

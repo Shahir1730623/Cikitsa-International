@@ -58,6 +58,8 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
         child: Column(
           children: [
             Container(
+              width: double.infinity,
+              height: 200,
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -65,8 +67,9 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
                       colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
                   )
               ),
-              child: Image.asset(
-                  "assets/doctor-1.png"
+              child: Image.network(
+                selectedConsultationInfo!.doctorImageUrl!,
+                fit: BoxFit.contain,
               ),
             ),
 

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../common_screens/choose_user2.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
 
@@ -16,6 +17,14 @@ class CIConsultationDashboard extends StatefulWidget {
 class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
 
   List<String> countryList = ["Bangladesh","India"];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedServiceDatabaseParentName = "CIConsultations";
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -212,7 +221,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
                         // Consultation History
                         GestureDetector(
                           onTap: (){
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser2()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser2()));
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),

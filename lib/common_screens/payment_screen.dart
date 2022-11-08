@@ -24,7 +24,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child("patientList")
         .child(patientId!);
 
-    if(selectedService == "CI Consultation"){
+   reference
+       .child(selectedServiceDatabaseParentName!)
+       .child(consultationId!)
+       .child("payment").set("Paid");
+
+    /*if(selectedService == "CI Consultation"){
            reference.child("CIConsultations")
           .child(consultationId!)
           .child("payment").set("Paid");
@@ -34,7 +39,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
            reference.child("consultations")
           .child(consultationId!)
           .child("payment").set("Paid");
-    }
+    }*/
 
   }
 

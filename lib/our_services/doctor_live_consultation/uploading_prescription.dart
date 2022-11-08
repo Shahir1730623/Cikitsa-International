@@ -45,8 +45,8 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
                   //or 15.0
                   radius: 60,
                   backgroundColor: Colors.grey[100],
-                  foregroundImage: const AssetImage(
-                    "assets/doctor-1.png",
+                  foregroundImage: NetworkImage(
+                    selectedConsultationInfo!.doctorImageUrl!,
                   ),
                 ),
               ),

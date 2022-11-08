@@ -27,5 +27,6 @@ CIConsultationModel? selectedCIConsultationInfo;
 
 String? selectedService;
 String? selectedCountry;
+String? selectedServiceDatabaseParentName;
 
 bool? pushNotify = false;

@@ -47,9 +47,10 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return ProgressDialog(message: "Fetching data...");
+          return ProgressDialog(message: "");
         }
     );
+
 
     Timer(const Duration(seconds: 1),()  {
       Navigator.pop(context);
@@ -60,6 +61,7 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     Future.delayed(Duration.zero, () {
       loadScreen();
     });

@@ -76,7 +76,7 @@ class _ChooseUserState extends State<ChooseUser> {
               child: Container(
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.lightBlueAccent
+                    color: Colors.blue
                 ),
                 child: const Icon(
                   Icons.arrow_back_outlined,
@@ -88,24 +88,93 @@ class _ChooseUserState extends State<ChooseUser> {
         ),
         body: Column(
           children: [
-            const SizedBox(height: 100,),
+            const SizedBox(height: 70,),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset("assets/doctor_new.png",width: 40),
+           Container(
+             child:  Row(
+               mainAxisAlignment: MainAxisAlignment.start,
+               children: [
+                 const SizedBox(width: 10),
 
-                SizedBox(width: height * 0.01,),
+                 CircleAvatar(
+                   radius: 25,
+                   backgroundColor: Colors.grey[100],
+                   foregroundImage: NetworkImage(
+                     selectedDoctorInfo!.doctorImageUrl!,
+                   ),
+                 ),
 
-                Text(
-                  "Orthopedics",
-                  style: GoogleFonts.montserrat(
-                      fontWeight: FontWeight.bold,fontSize: 17
-                  )
-                ),
+                 const SizedBox(width: 10),
 
-              ],
-            ),
+                 Expanded(
+                   flex: 2,
+                   child:  Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       Text(
+                           selectedDoctorInfo!.doctorName!,
+                           style: GoogleFonts.montserrat(
+                               fontWeight: FontWeight.bold,fontSize: 13
+                           )
+                       ),
+
+                       const SizedBox(height: 5),
+
+                       Text(
+                           selectedDoctorInfo!.specialization!,
+                           style: GoogleFonts.montserrat(fontSize: 13
+                           )
+                       ),
+
+                       const SizedBox(height: 5),
+
+                       Text(
+                           selectedDoctorInfo!.workplace!,
+                           style: GoogleFonts.montserrat(fontSize: 13
+                           )
+                       ),
+
+                     ],
+                   ),
+                 ),
+
+                 Expanded(
+                   flex: 1,
+                   child: Column(
+                     crossAxisAlignment: CrossAxisAlignment.center,
+                     children: [
+                       SizedBox(height: 5,),
+
+                       Text(
+                           "Patient in Queue",
+                           textAlign: TextAlign.center,
+                           style: GoogleFonts.montserrat(
+                               fontWeight: FontWeight.bold,fontSize: 10,color: Colors.blue
+                           )
+                       ),
+
+                       const SizedBox(height: 5,),
+
+                       CircleAvatar(
+                         radius: 20,
+                         backgroundColor: Colors.blue,
+                         child: Text(
+                           "0",
+                           style: TextStyle(
+                               fontWeight: FontWeight.bold,color: Colors.white
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
+                 ),
+
+                 SizedBox(width: 5,),
+
+
+               ],
+             ),
+           ),
 
             SizedBox(height: height * 0.001),
 
