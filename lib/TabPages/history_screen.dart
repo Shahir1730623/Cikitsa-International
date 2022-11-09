@@ -62,7 +62,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
         ElevatedButton(
           onPressed: () async {
-            await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: "You just took water! Huurray!", dateTime: '08-11-2022 18:27:00');
+            //await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: "You just took water! Huurray!", dateTime: '08-11-2022 18:27:00');
           },
 
           child: const Text(

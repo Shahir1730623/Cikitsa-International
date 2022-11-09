@@ -201,7 +201,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context){
-                                  return const Center(child: CircularProgressIndicator());
+                                  return ProgressDialog(message: "message");
                                 }
                             );
 

@@ -33,7 +33,7 @@ class _ChooseUserState extends State<ChooseUser> {
         }
     );
 
-    Timer(const Duration(seconds: 1),()  {
+    Timer(const Duration(seconds: 2),()  {
       Navigator.pop(context);
     });
   }
@@ -90,7 +90,8 @@ class _ChooseUserState extends State<ChooseUser> {
           children: [
             const SizedBox(height: 70,),
 
-           Container(
+           (selectedDoctorInfo != null)?
+            Container(
              child:  Row(
                mainAxisAlignment: MainAxisAlignment.start,
                children: [
@@ -174,7 +175,7 @@ class _ChooseUserState extends State<ChooseUser> {
 
                ],
              ),
-           ),
+           ) : Container(),
 
             SizedBox(height: height * 0.001),
 
@@ -192,7 +193,7 @@ class _ChooseUserState extends State<ChooseUser> {
                               context: context,
                               barrierDismissible: false,
                               builder: (BuildContext context){
-                                return const Center(child: CircularProgressIndicator());
+                                return ProgressDialog(message: "");
                               }
                           );
 

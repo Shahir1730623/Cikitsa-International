@@ -1,20 +1,25 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
-import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/common_screens/payment_screen.dart';
+import 'package:app/models/consultation_payload_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../global/global.dart';
-import '../main_screen.dart';
+import '../models/push_notification_screen.dart';
 import '../service_file/local_notification_service.dart';
 import '../widgets/progress_dialog.dart';
 import 'choose_user.dart';
+import '../service_file/storage_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class SelectSchedule extends StatefulWidget {
   const SelectSchedule({Key? key}) : super(key: key);
@@ -34,12 +39,33 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
   void onNotificationListener(String? payload){
     if(payload!=null && payload.isNotEmpty){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => CountDownScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
     }
     else{
-      //
+     //
     }
   }
+
+  // Image Storage
+  late List<String> imageList;
+  File? image;
+  final picker = ImagePicker();
+  final Storage storage = Storage();
+
+  Future<void> getImageGallery() async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if(pickedFile != null){
+        image = File(pickedFile.path);
+      }
+      else{
+        Fluttertoast.showToast(msg: "No file selected");
+      }
+
+    });
+  }
+
+
 
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
@@ -150,7 +176,10 @@ class _SelectScheduleState extends State<SelectSchedule> {
     formattedDate = DateFormat('yyyy-MM-dd').format(date);
     formattedTime = DateFormat('HH:mm').format(df);
     String dateTime = formattedDate! + ' ' + formattedTime!;
-    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: "You just took water! Hurray!", dateTime: dateTime);
+
+    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
+    String payloadJsonString = consultationPayloadModel.toJsonString();
+    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
 
 
   }
@@ -376,11 +405,13 @@ class _SelectScheduleState extends State<SelectSchedule> {
                               const SizedBox(width: 10,),
                               Expanded(
                                 child: DropdownButtonFormField(
-                                  decoration: const InputDecoration(
+                                  decoration:  InputDecoration(
+                                    isDense: true,
                                     enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
+                                      borderSide: const BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(15)
                                     ),
-                                    focusedBorder: UnderlineInputBorder(
+                                    focusedBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(color: Colors.blue),
                                     ),
                                   ) ,
@@ -453,8 +484,9 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 onPressed: () =>
                                     problemTextEditingController.clear(),
                               ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
+                              enabledBorder:  OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(15)
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -473,7 +505,63 @@ class _SelectScheduleState extends State<SelectSchedule> {
                           ),
 
 
-                          SizedBox(height: height * 0.12,),
+                          SizedBox(height: height * 0.01,),
+
+                          // Image Picker
+                          GestureDetector(
+                            onTap: (){
+                              getImageGallery();
+                              Fluttertoast.showToast(msg: "Pressed");
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                  style: BorderStyle.solid,
+                                ),
+                              ) ,
+                              child: Row(
+                                  children: [
+                                    Image.asset("assets/add-image.png",width: 40,),
+
+                                    SizedBox(width: 10,),
+
+                                    Expanded(
+                                      child: Text(
+                                          "Upload report and previous prescriptions",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                          )
+                                      ),
+                                    ),
+                                  ]
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: height * 0.01,),
+
+                          // Image Displayed
+                          image != null ?
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                                color: Colors.white
+                            ),
+
+                            child: Image.file(image!.absolute,fit: BoxFit.fill),
+
+                          ) : Container(),
+
+                          SizedBox(height: height * 0.02,),
 
                           // Consultation fee
                           Row(

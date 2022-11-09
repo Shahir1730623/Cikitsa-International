@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:app/common_screens/confirmation_page.dart';
 import 'package:app/common_screens/coundown_screen.dart';
+import 'package:app/widgets/progress_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -194,7 +196,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           context: context,
                           barrierDismissible: false,
                           builder: (BuildContext context){
-                            return const Center(child: CircularProgressIndicator());
+                            return ProgressDialog(message: "");
                           }
                       );
 
@@ -203,20 +205,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
-
-                        if(selectedDoctorInfo == null){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                          pushNotify = true;
-                        }
-
-                        if(selectedDoctorInfo!.status == "Online"){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
-                        }
-
-                        else{
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                          pushNotify = true;
-                        }
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ConfirmationPageScreen()));
 
                       });
                     },

@@ -1,5 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -103,11 +102,10 @@ class LocalNotificationService {
   }
 
   void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
-    print('id $id');
+    //print('id $id');
   }
 
   void onSelectNotification(String? payload) {
-    print('payload $payload');
     if (payload != null && payload.isNotEmpty) {
       onNotificationClick.add(payload);
     }

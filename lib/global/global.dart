@@ -25,7 +25,7 @@ DoctorModel? selectedDoctorInfo;
 ConsultationModel? selectedConsultationInfo;
 CIConsultationModel? selectedCIConsultationInfo;
 
-String? selectedService;
+String selectedService = "";
 String? selectedCountry;
 String? selectedServiceDatabaseParentName;
 

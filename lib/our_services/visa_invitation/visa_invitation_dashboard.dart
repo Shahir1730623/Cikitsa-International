@@ -1,28 +1,27 @@
-import 'package:app/common_screens/choose_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../common_screens/choose_user.dart';
 import '../../common_screens/choose_user2.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
 
-class CIConsultationDashboard extends StatefulWidget {
-  const CIConsultationDashboard({Key? key}) : super(key: key);
+class VisaInvitationDashboard extends StatefulWidget {
+  const VisaInvitationDashboard({Key? key}) : super(key: key);
 
   @override
-  State<CIConsultationDashboard> createState() => _CIConsultationDashboardState();
+  State<VisaInvitationDashboard> createState() => _VisaInvitationDashboardState();
 }
 
-class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
-
+class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
   List<String> countryList = ["Bangladesh","India"];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    selectedServiceDatabaseParentName = "CIConsultations";
+    selectedServiceDatabaseParentName = "visaConsultations";
   }
 
   @override
@@ -83,7 +82,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "CI Consultation",
+                                  "Visa Invitation",
                                   style: GoogleFonts.montserrat(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -97,12 +96,12 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
 
                         SizedBox(height: height * 0.02,),
 
-                        Image.asset("assets/consultationImages/consultation-2.png",width: 80),
+                        Image.asset("assets/visaInvitationImages/passport.png",width: 80),
 
                         SizedBox(height: height * 0.02,),
 
                         Text(
-                          "Do you want to travel Abroad\nfor medical Purposes?",
+                          "Do you want to get visa appointment?",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.montserrat(
                               color: Colors.black,
@@ -140,6 +139,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
                               borderSide: BorderSide(color: Colors.blue),
                             ),
                           ) ,
+                          isDense: true,
                           isExpanded: true,
                           iconSize: 30,
                           dropdownColor: Colors.white,
@@ -163,7 +163,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
                               value: country,
                               child: Text(
                                 country,
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.black,height: 0.0),
                               ),
                             );
                           }).toList(),

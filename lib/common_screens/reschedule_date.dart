@@ -1,13 +1,20 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app/common_screens/payment_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../global/global.dart';
+import '../models/consultation_payload_model.dart';
+import '../models/push_notification_screen.dart';
+import '../service_file/local_notification_service.dart';
+import '../service_file/storage_service.dart';
 import '../widgets/progress_dialog.dart';
 
 class RescheduleDate extends StatefulWidget {
@@ -20,6 +27,40 @@ class RescheduleDate extends StatefulWidget {
 class _RescheduleDateState extends State<RescheduleDate> {
   final _formKey = GlobalKey<FormState>();
 
+  late final LocalNotificationService service;
+
+  void listenToNotification(){
+    service.onNotificationClick.stream.listen(onNotificationListener);
+  }
+
+  void onNotificationListener(String? payload){
+    if(payload!=null && payload.isNotEmpty){
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+    }
+    else{
+      //
+    }
+  }
+
+  // Image Storage
+  late List<String> imageList;
+  File? image;
+  final picker = ImagePicker();
+  final Storage storage = Storage();
+
+  Future<void> getImageGallery() async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if(pickedFile != null){
+        image = File(pickedFile.path);
+      }
+      else{
+        Fluttertoast.showToast(msg: "No file selected");
+      }
+
+    });
+  }
+
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
   String? formattedDate,formattedTime;
@@ -31,7 +72,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
     DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(), //get today's date
-        firstDate:DateTime(2022), //DateTime.now() - not to allow to choose before today.
+        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
         lastDate: DateTime(2030)
     );
 
@@ -119,6 +160,16 @@ class _RescheduleDateState extends State<RescheduleDate> {
       reference.set(consultationInfoMap);
     }
 
+    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+    var df =  DateFormat.jm().parse(formattedTime!);
+    formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    formattedTime = DateFormat('HH:mm').format(df);
+    String dateTime = formattedDate! + ' ' + formattedTime!;
+
+    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
+    String payloadJsonString = consultationPayloadModel.toJsonString();
+    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
+
 
   }
 
@@ -128,6 +179,9 @@ class _RescheduleDateState extends State<RescheduleDate> {
     super.initState();
     problemTextEditingController.addListener(() => setState(() {}));
     relationTextEditingController.addListener(() => setState(() {}));
+    service = LocalNotificationService();
+    service.intialize();
+    listenToNotification();
   }
 
   @override
@@ -136,38 +190,6 @@ class _RescheduleDateState extends State<RescheduleDate> {
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: GestureDetector(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.white
-                ),
-                child: const Icon(
-                  Icons.arrow_back_outlined,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            "Reschedule Date",
-            style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-            ),
-          ),
-        ),
-
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(
@@ -183,7 +205,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
               Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
@@ -196,19 +218,42 @@ class _RescheduleDateState extends State<RescheduleDate> {
                         children: [
                           // Book Now
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                "Book Now",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      color: Colors.blue
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_back_outlined,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
+
+                              SizedBox(width: height * 0.08),
+
+                              Row(
+                                children: [
+                                  Text(
+                                    "Book Now",
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
+
+                          SizedBox(height: height * 0.03,),
 
                           // Date
                           Text(
@@ -349,11 +394,13 @@ class _RescheduleDateState extends State<RescheduleDate> {
                               SizedBox(width: 10,),
                               Expanded(
                                 child: DropdownButtonFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
+                                    isDense: true,
                                     enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
+                                      borderSide: const BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(15)
                                     ),
-                                    focusedBorder: UnderlineInputBorder(
+                                    focusedBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(color: Colors.blue),
                                     ),
                                   ) ,
@@ -389,67 +436,6 @@ class _RescheduleDateState extends State<RescheduleDate> {
 
                           SizedBox(height: height * 0.03,),
 
-                          // Consultation For
-                          Text(
-                            "Consultation For",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/relations.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10,),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: relationTextEditingController,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-
-                                  decoration:  InputDecoration(
-                                    labelText: "Relation",
-                                    hintText: "Specify relation",
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
-                                    ),
-                                    focusedBorder: const UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.blue),
-                                    ),
-                                    hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                                    labelStyle: TextStyle(color: Colors.black, fontSize: 15),
-
-                                    suffixIcon: relationTextEditingController.text.isEmpty
-                                        ? Container(width: 0)
-                                        : IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () =>
-                                          relationTextEditingController.clear(),
-                                    ),
-
-                                  ),
-
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: height * 0.03,),
 
                           // Describe the problem
                           Text(
@@ -486,8 +472,9 @@ class _RescheduleDateState extends State<RescheduleDate> {
                                 onPressed: () =>
                                     problemTextEditingController.clear(),
                               ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(15)
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -506,7 +493,63 @@ class _RescheduleDateState extends State<RescheduleDate> {
                           ),
 
 
-                          SizedBox(height: height * 0.12,),
+                          SizedBox(height: height * 0.01,),
+
+                          // Image Picker
+                          GestureDetector(
+                            onTap: (){
+                              getImageGallery();
+                              Fluttertoast.showToast(msg: "Pressed");
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                  style: BorderStyle.solid,
+                                ),
+                              ) ,
+                              child: Row(
+                                  children: [
+                                    Image.asset("assets/add-image.png",width: 40,),
+
+                                    SizedBox(width: 10,),
+
+                                    Expanded(
+                                      child: Text(
+                                          "Upload report and previous prescriptions",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                          )
+                                      ),
+                                    ),
+                                  ]
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: height * 0.01,),
+
+                          // Image Displayed
+                          image != null ?
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                                color: Colors.white
+                            ),
+
+                            child: Image.file(image!.absolute,fit: BoxFit.fill),
+
+                          ) : Container(),
+
+                          SizedBox(height: height * 0.02,),
 
                           // Consultation fee
                           Row(

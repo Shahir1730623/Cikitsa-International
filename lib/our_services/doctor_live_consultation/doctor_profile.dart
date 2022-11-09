@@ -292,7 +292,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                 // Saving selected doctor id
                                 //saveSelectedDoctorIdToDatabase();
 
-                                Timer(const Duration(seconds: 2),()  {
+                                Timer(const Duration(seconds: 1),()  {
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
                                 });

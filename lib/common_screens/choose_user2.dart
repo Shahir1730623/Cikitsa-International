@@ -115,7 +115,7 @@ class _ChooseUser2State extends State<ChooseUser2> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context){
-                                  return const Center(child: CircularProgressIndicator());
+                                  return ProgressDialog(message: "message");
                                 }
                             );
 

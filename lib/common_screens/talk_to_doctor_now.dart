@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:app/common_screens/payment_screen.dart';
@@ -27,7 +26,6 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
 
   late List<String> imageList;
-
   File? image;
   final picker = ImagePicker();
 
@@ -114,38 +112,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: GestureDetector(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.white
-                ),
-                child: const Icon(
-                  Icons.arrow_back_outlined,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            "Talk to doctor now",
-            style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-            ),
-          ),
-        ),
-
         body: Container(
           alignment: Alignment.center,
           decoration: const BoxDecoration(
@@ -161,7 +127,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
               Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
@@ -172,18 +138,40 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Book Now
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                "Fill up the form",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      color: Colors.blue
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_back_outlined,
+                                    color: Colors.white,
+                                  ),
                                 ),
+                              ),
+
+                              SizedBox(width: height * 0.050),
+                              // Book Now
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Fill up the form",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -219,9 +207,11 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                               const SizedBox(width: 10,),
                               Expanded(
                                 child: DropdownButtonFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
+                                    isDense: true,
                                     enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black),
+                                      borderSide: const BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(15)
                                     ),
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(color: Colors.blue),
@@ -294,8 +284,9 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                 onPressed: () =>
                                     problemTextEditingController.clear(),
                               ),
-                              enabledBorder: const OutlineInputBorder(
+                              enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(15)
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -316,6 +307,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
 
                           SizedBox(height: height * 0.02,),
 
+                          // Image Picker
                           GestureDetector(
                             onTap: (){
                               getImageGallery();
@@ -337,7 +329,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                   children: [
                                     Image.asset("assets/add-image.png",width: 40,),
 
-                                    SizedBox(width: 10,),
+                                    const SizedBox(width: 10,),
 
                                     Expanded(
                                       child: Text(
@@ -354,18 +346,20 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                             ),
                           ),
 
+                          // Image Displayed
+                          image != null ?
                           Container(
                             width: 100,
                             height: 100,
                             decoration: const BoxDecoration(
-                             color: Colors.white
+                                color: Colors.white
                             ),
 
-                            child: image != null ? Image.file(image!.absolute,fit: BoxFit.fill) : Container() ,
+                            child: Image.file(image!.absolute,fit: BoxFit.fill),
 
-                          ),
+                          ) : Container(),
 
-                          SizedBox(height: height * 0.05,),
+                          image == null ? SizedBox(height: height * 0.2,) : SizedBox(height: height * 0.1,),
 
 
                           // Consultation fee

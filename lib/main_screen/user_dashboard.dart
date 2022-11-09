@@ -4,6 +4,7 @@ import 'package:app/models/user_model.dart';
 import 'package:app/our_services/ci_consultation/ci_consultation_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:app/our_services/online_pharmacy/pharmacy_dashboard.dart';
+import 'package:app/our_services/visa_invitation/visa_invitation_dashboard.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
+import '../models/consultation_payload_model.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/push_notification_dialog.dart';
 
@@ -30,7 +32,6 @@ class _UserDashboardState extends State<UserDashboard> {
   // Enable Push Notifications
   readCurrentUserInformation() async {
     currentFirebaseUser = firebaseAuth.currentUser;
-
     await FirebaseDatabase.instance.ref()
         .child("User")
         .child(currentFirebaseUser!.uid)
@@ -62,7 +63,7 @@ class _UserDashboardState extends State<UserDashboard> {
     // TODO: implement initState
     super.initState();
     //readCurrentUserInformation();
-    Future.delayed(Duration.zero, () {
+    /*Future.delayed(Duration.zero, () {
       if(pushNotify == true){
         pushNotify = false;
         loadScreen();
@@ -71,7 +72,7 @@ class _UserDashboardState extends State<UserDashboard> {
       else{
         // Do nothing
       }
-    });
+    });*/
 
   }
 
@@ -477,6 +478,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                  ),
                                ),
                              ),
+
                              GestureDetector(
                                onTap: (){
                                  Navigator.push(context, MaterialPageRoute(builder: (context) => VideoConsultationDashboard()));
@@ -510,33 +512,40 @@ class _UserDashboardState extends State<UserDashboard> {
                                  ),
                                ),
                              ),
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/visa.png",
-                                     height: 50,
-                                     width: 50,
-                                   ),
 
-                                   const SizedBox(height: 10),
-
-                                   Text(
-                                     "Visa Invitation",
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
+                             GestureDetector(
+                               onTap: (){
+                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationDashboard()));
+                                 selectedService = "Visa Invitation";
+                               },
+                               child: Container(
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(10),
+                                   color: Colors.white,
+                                 ),
+                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
+                                 child: Column(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Image.asset(
+                                       "assets/visa.png",
+                                       height: 50,
+                                       width: 50,
                                      ),
-                                   )
 
-                                 ],
+                                     const SizedBox(height: 10),
+
+                                     Text(
+                                       "Visa Invitation",
+                                       style: GoogleFonts.montserrat(
+                                           color: Colors.black,
+                                           fontSize: 12,
+                                           fontWeight: FontWeight.bold
+                                       ),
+                                     )
+
+                                   ],
+                                 ),
                                ),
                              ),
 
