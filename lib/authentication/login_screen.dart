@@ -267,6 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       return ProgressDialog(message: "Validating phone number...");
                                     }
                                 );
+
                                 await FirebaseAuth.instance.verifyPhoneNumber(
                                   phoneNumber: '${selectedCode + phoneNumber!}',
                                   verificationCompleted: (PhoneAuthCredential credential) {},

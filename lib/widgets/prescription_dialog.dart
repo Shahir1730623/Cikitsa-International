@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../global/global.dart';
+
 class PrescriptionDialog extends StatefulWidget {
   const PrescriptionDialog({Key? key}) : super(key: key);
 
@@ -29,7 +31,7 @@ class _PrescriptionDialogState extends State<PrescriptionDialog> {
             SizedBox(height: height * 0.04,),
 
             Text(
-              "Your prescription is\nbeing uploaded",
+              (selectedService == "CI Consultation") ? "Your CI Form is\nbeing uploaded" : "Your prescription is\nbeing uploaded",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -53,7 +55,7 @@ class _PrescriptionDialogState extends State<PrescriptionDialog> {
             SizedBox(height: height * 0.005,),
 
             Text(
-              'You will receive notification once your\nprescription is uploaded',
+              (selectedService == "CI Consultation") ? 'You will receive notification once your\nForm is uploaded' : 'You will receive notification once your\nprescription is uploaded',
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -62,7 +64,7 @@ class _PrescriptionDialogState extends State<PrescriptionDialog> {
               ),
             ),
 
-            SizedBox(height: height * 0.05,),
+            SizedBox(height: height * 0.03,),
 
             SizedBox(
               width: double.infinity,

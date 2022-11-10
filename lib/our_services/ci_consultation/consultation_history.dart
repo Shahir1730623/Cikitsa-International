@@ -86,7 +86,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dr. Maman Somberan',
+                      'Maman Somberan',
                       style: GoogleFonts.montserrat(
                           color: Colors.black,
                           fontSize: 15,
@@ -269,14 +269,14 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                     // Divider
                                     Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
 
-                                    const SizedBox(height: 20,),
+                                    const SizedBox(height: 15,),
 
                                     Row(
                                       children: [
                                         CircleAvatar(
                                           radius: 30,
                                           backgroundColor: Colors.grey[200],
-                                          foregroundImage: AssetImage("assets/doctor-1.png"),
+                                          foregroundImage: AssetImage("assets/doctor_new.png"),
                                         ),
 
                                         SizedBox(width: 10,),
@@ -285,7 +285,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Shamser Ahmed',
+                                              (snapshot.value as Map)["consultantName"].toString(),
                                               style: GoogleFonts.montserrat(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
@@ -297,9 +297,8 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                             Text(
                                               'Consultant',
                                               style: GoogleFonts.montserrat(
-                                                fontSize: 14,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold
+                                                color: Colors.grey,
+                                                fontSize: 15
                                             ),
                                            ),
 
@@ -308,9 +307,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                             Text(
                                               "Status: " + (snapshot.value as Map)["consultationType"].toString(),
                                               style: GoogleFonts.montserrat(
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold
+                                                fontWeight: FontWeight.bold
                                               ),
                                             ),
 

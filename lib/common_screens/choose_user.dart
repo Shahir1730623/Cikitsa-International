@@ -90,7 +90,7 @@ class _ChooseUserState extends State<ChooseUser> {
           children: [
             const SizedBox(height: 70,),
 
-           (selectedDoctorInfo != null)?
+           (selectedServiceDatabaseParentName == "consultations")?
             Container(
              child:  Row(
                mainAxisAlignment: MainAxisAlignment.start,

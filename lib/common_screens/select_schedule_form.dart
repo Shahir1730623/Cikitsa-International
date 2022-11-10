@@ -39,10 +39,13 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
   void onNotificationListener(String? payload){
     if(payload!=null && payload.isNotEmpty){
+      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
+      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
       Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+
     }
     else{
-     //
+      print('payload empty');
     }
   }
 
@@ -138,6 +141,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     if(selectedService == "CI Consultation"){
       Map CIConsultationInfoMap = {
         "id" : consultationId,
+        "consultantName" : "TBA",
         "date" : formattedDate,
         "time" : formattedTime,
         "selectedCountry" : selectedCountry,
@@ -179,7 +183,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
     ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
     String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
+    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
 
 
   }

@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:app/main_screen.dart';
+import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/booking_detail.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
+import '../models/consultation_model.dart';
 import '../widgets/progress_dialog.dart';
 import 'coundown_screen.dart';
 
@@ -18,6 +22,45 @@ class ConfirmationPageScreen extends StatefulWidget {
 }
 
 class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
+
+  retrieveConsultationInfo(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child(selectedServiceDatabaseParentName!)
+        .child(consultationId!);
+
+    if(selectedService == "CI Consultation"){
+      // Fetching data to store in selectedCIConsultationInfo
+      reference.once().then((dataSnap){
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+        }
+
+        else{
+          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        }
+
+      });
+    }
+
+    else{
+      // Fetching data to store in selectedConsultationInfo
+      reference.once().then((dataSnap){
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+        }
+
+        else{
+          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        }
+
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -32,9 +75,10 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
           }
       );
 
-      Timer(const Duration(seconds: 3),()  {
+      retrieveConsultationInfo();
+      Timer(const Duration(seconds: 1),()  {
         Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetailsScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
 
       });
 

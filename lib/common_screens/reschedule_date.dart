@@ -127,6 +127,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
     if(selectedService == "CI Consultation"){
       Map CIConsultationInfoMap = {
         "id" : consultationId,
+        "consultantName" : "TBA",
         "date" : formattedDate,
         "time" : formattedTime,
         "selectedCountry" : selectedCountry,
@@ -168,7 +169,7 @@ class _RescheduleDateState extends State<RescheduleDate> {
 
     ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
     String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now\nPlease Click here to join now", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
+    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
 
 
   }

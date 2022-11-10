@@ -1,5 +1,6 @@
 import 'package:app/global/global.dart';
 import 'package:app/widgets/prescription_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,15 @@ class UploadingPrescription extends StatefulWidget {
 }
 
 class _UploadingPrescriptionState extends State<UploadingPrescription> {
+
+  setConsultationInfoToCompleted(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!).child(selectedServiceDatabaseParentName!).child(consultationId!).child("consultationType").set("Completed");
+  }
+
   void loadScreen() {
     showDialog(
         context: context,
@@ -27,6 +37,7 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadScreen();
+      setConsultationInfoToCompleted();
     });
   }
 
@@ -41,18 +52,28 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
           child: Column(
             children: [
               Center(
-                child: CircleAvatar(
+                child: (selectedService == "CI Consultation") ?
+                CircleAvatar(
+                  //or 15.0
+                  radius: 60,
+                  backgroundColor: Colors.grey[100],
+                  foregroundImage: const AssetImage(
+                    "assets/doctor_new.png",
+                  ),
+                ) :
+                CircleAvatar(
                   //or 15.0
                   radius: 60,
                   backgroundColor: Colors.grey[100],
                   foregroundImage: NetworkImage(
                     selectedConsultationInfo!.doctorImageUrl!,
                   ),
-                ),
+                )
               ),
+
               SizedBox(height: height * 0.05),
               Text(
-                selectedConsultationInfo!.doctorName!,
+                (selectedService == "CI Consultation") ? selectedCIConsultationInfo!.consultantName!: selectedConsultationInfo!.doctorName!,
                 style: GoogleFonts.montserrat(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

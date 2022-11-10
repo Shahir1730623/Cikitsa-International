@@ -13,15 +13,19 @@ class TimerController extends GetxController{
   int remainingSeconds = 1;
   final time = '00.00'.obs;
   static BuildContext? context;
+  int countDownSeconds = 10;
 
   @override
   void onReady(){
-    _startTimer(10);
+    _startTimer(countDownSeconds);
     super.onReady();
   }
 
   @override
   void onClose(){
+    if(_timer != null){
+      _timer!.cancel();
+    }
     super.onClose();
   }
 
@@ -41,13 +45,7 @@ class TimerController extends GetxController{
 
         Timer(const Duration(seconds: 5),()  {
           Navigator.pop(context!);
-          if(selectedService == "CI Consultation"){
-            Navigator.pushAndRemoveUntil(context!, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
-            pushNotify = false;
-          }
-          else{
-            Navigator.push(context!, MaterialPageRoute(builder: (context) => UploadingPrescription()));
-          }
+          Navigator.push(context!, MaterialPageRoute(builder: (context) => UploadingPrescription()));
 
         });
 

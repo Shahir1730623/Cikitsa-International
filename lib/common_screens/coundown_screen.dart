@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -12,109 +13,146 @@ import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../models/ci_consultation_model.dart';
 import '../models/consultation_model.dart';
+import '../our_services/doctor_live_consultation/uploading_prescription.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/timer.dart';
 
-class CountDownScreen extends GetView<TimerController>  {
+class CountDownScreen extends StatefulWidget {
   const CountDownScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    Get.put(TimerController());
-    TimerController.context = context;
+  State<CountDownScreen> createState() => _CountDownScreenState();
+}
 
-    retrieveConsultationDataFromDatabase() {
-      DatabaseReference reference = FirebaseDatabase.instance.ref()
-          .child("Users")
-          .child(currentFirebaseUser!.uid)
-          .child("patientList")
-          .child(patientId!);
+class _CountDownScreenState extends State<CountDownScreen> {
+  retrieveConsultationDataFromDatabase() {
+    DatabaseReference reference = FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!);
 
-      /*if(selectedService == "CI Consultation"){
-        reference.child("CIConsultations").child(consultationId!).once().then((dataSnap){
-          DataSnapshot snapshot = dataSnap.snapshot;
-          if (snapshot.exists) {
-            selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
-          }
+    if(selectedService == "CI Consultation"){
+      reference.child("CIConsultations").child(consultationId!).once().then((dataSnap){
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+        }
 
-          else{
-            Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
-          }
+        else{
+          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        }
 
-        });
-      }*/
-
-
-
-      if(selectedService != "CI Consultation"){
-        reference.child("consultations").child(consultationId!).once().then((dataSnap){
-          DataSnapshot snapshot = dataSnap.snapshot;
-          if (snapshot.exists) {
-            selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-          }
-
-          else{
-            Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
-          }
-
-        });
-      }
-    }
-
-    setConsultationInfoToCompleted(){
-      FirebaseDatabase.instance.ref()
-          .child("Users")
-          .child(currentFirebaseUser!.uid)
-          .child("patientList")
-          .child(patientId!).child(selectedServiceDatabaseParentName!).child(consultationId!).child("consultationType").set("Completed");
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context){
-            return ProgressDialog(message: "Please wait...");
-          }
-      );
-
-      retrieveConsultationDataFromDatabase();
-      setConsultationInfoToCompleted();
-
-      Timer(const Duration(seconds: 1),()  {
-        Navigator.pop(context);
       });
+    }
+
+    if(selectedService != "CI Consultation"){
+      reference.child("consultations").child(consultationId!).once().then((dataSnap){
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+        }
+
+        else{
+          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        }
+
+      });
+    }
+  }
+
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Please wait...");
+        }
+    );
+
+    retrieveConsultationDataFromDatabase();
+
+    Timer(const Duration(seconds: 1),()  {
+      Navigator.pop(context);
     });
 
+  }
 
-    Future<bool> showExitPopup() async {
-      return await showDialog(
-        //show confirm dialogue
-        //the return value will be from "Yes" or "No" options
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Exit App'),
-          content: Text('Do you want to exit an App?'),
-          actions:[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              //return false when click on "NO"
-              child:Text('No'),
-            ),
+  Future<bool> showExitPopup() async {
+    return await showDialog(
+      //show confirm dialogue
+      //the return value will be from "Yes" or "No" options
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Exit App'),
+        content: Text('Do you want to exit an App?'),
+        actions:[
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            //return false when click on "NO"
+            child:Text('No'),
+          ),
 
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              //return true when click on "Yes"
-              child:Text('Yes'),
-            ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            //return true when click on "Yes"
+            child:Text('Yes'),
+          ),
 
-          ],
-        ),
-      )??false; //if showDialog had returned null, then return false
-    }
+        ],
+      ),
+    )??false; //if showDialog had returned null, then return false
+  }
+
+  late Timer _timer;
+  int _start = 10;
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(oneSec, (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+          });
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context){
+                return ProgressDialog(message: "Redirecting to video call...");
+              }
+          );
+
+          Timer(const Duration(seconds: 5),()  {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UploadingPrescription()));
+          });
+        }
+
+        else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startTimer();
+  }
 
 
+  @override
+  Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return WillPopScope(
       onWillPop: showExitPopup,
       child: Scaffold(
@@ -170,26 +208,26 @@ class CountDownScreen extends GetView<TimerController>  {
                 shape: BoxShape.circle,
               ),
 
-              child:Container(
+              child: Container(
                 padding: EdgeInsets.all(40),
                 decoration: const BoxDecoration(
                   color:  Color(0xFF53E5FF),
                   shape: BoxShape.circle,
                 ),
-                child: Obx(()=>Center(
+
+                child: Center(
                   child: Text(
-                    controller.time.value,
+                    "$_start",
                     style: const TextStyle(
-                      fontSize: 30, color: Colors.white,
+                        fontSize: 30, color: Colors.white
                     ),
                   ),
                 )
                 ),
               ),
-            ),
 
             SizedBox(height: height * 0.05),
-            
+
           ],
         ),
       ),
@@ -197,5 +235,8 @@ class CountDownScreen extends GetView<TimerController>  {
 
   }
 }
+
+
+
 
 

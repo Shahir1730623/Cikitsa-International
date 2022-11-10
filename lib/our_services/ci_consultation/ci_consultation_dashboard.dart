@@ -1,6 +1,7 @@
 import 'package:app/common_screens/choose_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../common_screens/choose_user2.dart';
@@ -23,6 +24,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
     // TODO: implement initState
     super.initState();
     selectedServiceDatabaseParentName = "CIConsultations";
+    selectedDoctorInfo = null;
   }
 
   @override

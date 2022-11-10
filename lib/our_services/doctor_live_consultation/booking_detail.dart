@@ -28,9 +28,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
           },
-          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          icon: const Icon(Icons.arrow_back_ios,color: Colors.black,),
         ),
       ),
       body: ListView(
@@ -71,15 +71,16 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                         RichText(
                           text: TextSpan(
                             children: [
-                              TextSpan(text: 'Tap ', style: TextStyle(fontSize: 13)),
+                              const TextSpan(text: 'Tap ', style: TextStyle(fontSize: 13)),
 
-                              (selectedDoctorInfo!.status == "Online") ?
-                              const TextSpan(text: 'Enter Waiting Room', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13)) :
-                              const TextSpan(text: 'Return to dashboard', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13)),
+                              (selectedDoctorInfo == null || selectedDoctorInfo!.status == "Offline") ?
+                              const TextSpan(text: 'Return to dashboard', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13)):
+                              const TextSpan(text: 'Enter Waiting Room', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13)) ,
 
-                              (selectedDoctorInfo!.status == "Online") ?
-                              const TextSpan(text: ' to enter video call', style: TextStyle(fontSize: 13)):
-                              const TextSpan(text: ''),
+
+                              (selectedDoctorInfo == null || selectedDoctorInfo!.status == "Offline") ?
+                              const TextSpan(text: '') :
+                              const TextSpan(text: ' to enter video call', style: TextStyle(fontSize: 13)),
                             ],
 
                               style: const TextStyle(
@@ -112,7 +113,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.calendar_month),
+                            child: const Icon(Icons.calendar_month),
                           ),
 
                           const SizedBox(width: 10,),
@@ -120,15 +121,15 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Date & Time',style: TextStyle(fontWeight: FontWeight.bold,),),
+                              const Text('Date & Time',style: TextStyle(fontWeight: FontWeight.bold,)),
 
-                              SizedBox(height: 5,),
+                              const SizedBox(height: 5,),
 
-                              Text('Monday, 20 Jun 2022',style: TextStyle(color: Colors.grey,),),
+                              (selectedDoctorInfo != null) ? Text(selectedConsultationInfo!.date!,style: TextStyle(color: Colors.grey,),) : Text(selectedCIConsultationInfo!.date!,style: TextStyle(color: Colors.grey,),),
 
-                              SizedBox(height: 5,),
+                              const SizedBox(height: 5,),
 
-                              Text('08:00 AM',style: TextStyle(color: Colors.grey,),),
+                              (selectedDoctorInfo != null) ? Text(selectedConsultationInfo!.time!,style: TextStyle(color: Colors.grey,),) : Text(selectedCIConsultationInfo!.time!,style: TextStyle(color: Colors.grey,),)
                             ],
                           ),
 
@@ -158,11 +159,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Appointment Type',style: TextStyle(fontWeight: FontWeight.bold,),),
+                              const Text('Appointment Type',style: TextStyle(fontWeight: FontWeight.bold,),),
 
                               const SizedBox(height: 5,),
 
-                              Text('Video Call',style: TextStyle(color: Colors.grey,),),
+                              const Text('Video Call',style: TextStyle(color: Colors.grey,)),
 
                               const SizedBox(height: 10,),
 
@@ -188,7 +189,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                                 ),
 
-                                child: (selectedDoctorInfo!.status == "Online") ? const Text('Enter Waiting Room') : const Text('Return to dashboard') ,
+                                child: (selectedDoctorInfo == null || selectedDoctorInfo!.status == "Offline") ? const Text('Return to dashboard') : const Text('Enter Waiting Room') ,
                               ),
                             ],
                           ),
@@ -201,24 +202,32 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                 const SizedBox(height: 20,),
 
-                const Text(
+                (selectedDoctorInfo != null) ? const Text(
                   'Doctor Info',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,fontSize: 20,
+                  ),
+                ) :
+                const Text(
+                  'Consultant Info',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,fontSize: 20,
                   ),
                 ),
 
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
 
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(//or 15.0
+                    (selectedDoctorInfo != null) ? CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey[100],
-                      foregroundImage: AssetImage(
-                        "assets/doctor_new.png",
-                      ),
+                      foregroundImage: NetworkImage(selectedDoctorInfo!.doctorImageUrl!),
+                    ) : CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.grey[100],
+                      foregroundImage: AssetImage('assets/doctor_new.png'),
                     ),
 
                     const SizedBox(width: 10,),
@@ -226,11 +235,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(selectedDoctorInfo!.doctorName! ,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                        (selectedDoctorInfo != null) ? Text(selectedConsultationInfo!.doctorName!, style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),) : Text(selectedCIConsultationInfo!.consultantName!, style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
 
                         const SizedBox(height: 5,),
 
-                        Text(selectedDoctorInfo!.specialization!,style: const TextStyle(color: Colors.grey,fontSize: 15),),
+                        (selectedDoctorInfo != null) ? Text(selectedDoctorInfo!.specialization!, style: const TextStyle(color: Colors.grey,fontSize: 15),) : const Text("Consultant", style: TextStyle(color: Colors.grey,fontSize: 15),),
                       ],
                     ),
                     
@@ -265,7 +274,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     ),
 
                     Text(
-                      selectedDoctorInfo!.fee!,
+                      (selectedDoctorInfo != null) ? selectedConsultationInfo!.doctorFee! : selectedCIConsultationInfo!.consultantFee!,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 17
@@ -315,7 +324,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     ),
 
                     Text(
-                      selectedDoctorInfo!.fee!,
+                      (selectedDoctorInfo != null) ? selectedConsultationInfo!.doctorFee! : selectedCIConsultationInfo!.consultantFee!,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,

@@ -20,12 +20,12 @@ class SplashScreen extends StatefulWidget {
 
 
 class _SplashScreenState extends State<SplashScreen> {
-  startTimer(){
+  startTimer() async{
     //Fetching the User Data
     firebaseAuth.currentUser != null ? AssistantMethods.readOnlineUserCurrentInfo() : null;
 
     Timer(const Duration(seconds: 5),() async {
-      if(firebaseAuth.currentUser!=null){
+      if(await firebaseAuth.currentUser!=null){
         // send User to main screen
         currentFirebaseUser = firebaseAuth.currentUser;
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));

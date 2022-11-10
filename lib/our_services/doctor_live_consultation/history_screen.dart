@@ -192,14 +192,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               context: context,
                               barrierDismissible: false,
                               builder: (BuildContext context){
-                                return const Center(child: CircularProgressIndicator());
+                                return ProgressDialog(message: 'message');
                               }
                           );
 
                           consultationId = (snapshot.value as Map)["id"];
                           retrieveConsultationDataFromDatabase(consultationId!);
 
-                          Timer(const Duration(seconds: 3),()  {
+                          Timer(const Duration(seconds: 1),()  {
                             Navigator.pop(context);
                             Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreenDetails()));
                           });

@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class CIConsultationModel{
   String? id;
+  String? consultantName;
   String? date;
   String? time;
   String? selectedCountry;
@@ -15,6 +16,7 @@ class CIConsultationModel{
     id = snapshot.key;
     date = (snapshot.value as dynamic)["date"];
     time = (snapshot.value as dynamic)["time"];
+    consultantName = (snapshot.value as dynamic)["consultantName"];
     selectedCountry = (snapshot.value as dynamic)["selectedCountry"];
     consultantFee = (snapshot.value as dynamic)["consultantFee"];
     consultationType = (snapshot.value as dynamic)["consultationType"];

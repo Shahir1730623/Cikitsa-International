@@ -31,17 +31,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
        .child(consultationId!)
        .child("payment").set("Paid");
 
-    /*if(selectedService == "CI Consultation"){
-           reference.child("CIConsultations")
-          .child(consultationId!)
-          .child("payment").set("Paid");
-    }
-
-    else{
-           reference.child("consultations")
-          .child(consultationId!)
-          .child("payment").set("Paid");
-    }*/
 
   }
 
@@ -63,10 +52,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
         backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {  },
-          icon: const Icon(Icons.arrow_back_outlined,color: Colors.black,),
-        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

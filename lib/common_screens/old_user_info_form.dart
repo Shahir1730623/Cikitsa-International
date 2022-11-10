@@ -475,7 +475,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
                                   }
 
-
                                   else{
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
                                   }

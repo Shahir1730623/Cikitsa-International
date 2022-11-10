@@ -62,18 +62,6 @@ class _UserDashboardState extends State<UserDashboard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //readCurrentUserInformation();
-    /*Future.delayed(Duration.zero, () {
-      if(pushNotify == true){
-        pushNotify = false;
-        loadScreen();
-      }
-
-      else{
-        // Do nothing
-      }
-    });*/
-
   }
 
   @override
@@ -115,7 +103,7 @@ class _UserDashboardState extends State<UserDashboard> {
                             CircleAvatar(
                               backgroundColor: Colors.blue,
                               child: Text(
-                                currentUserInfo!.name![0],
+                                "K",
                                 style: GoogleFonts.montserrat(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white

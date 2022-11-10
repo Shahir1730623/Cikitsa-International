@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../main_screen.dart';
+import '../models/consultation_model.dart';
 import '../service_file/storage_service.dart';
 import '../widgets/progress_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -43,6 +44,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   }
 
 
+
   final Storage storage = Storage();
   //late final path;
   //late final fileName;
@@ -71,7 +73,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   saveConsultationInfo() async {
     consultationId = idGenerator();
 
-
     Map consultationInfoMap = {
       "id" : consultationId,
       "date" : formattedDate,
@@ -88,14 +89,19 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "payment" : "Pending",
     };
 
-    FirebaseDatabase.instance.ref().child("Users")
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId!)
         .child("consultations")
-        .child(consultationId!).set(consultationInfoMap);
+        .child(consultationId!);
+
+    // Saving data to database
+    reference.set(consultationInfoMap);
 
   }
+
 
   @override
   void initState() {
