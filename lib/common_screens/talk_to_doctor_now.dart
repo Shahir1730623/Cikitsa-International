@@ -66,7 +66,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     return now.microsecondsSinceEpoch.toString();
   }
 
-  String formattedDate = DateFormat('yMd').format(DateTime.now());// 28/03/2020
+  String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());// 28/03/2020
   String formattedTime = DateFormat.jm().format(DateTime.now());
 
 

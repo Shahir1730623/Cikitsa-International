@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:app/home/home_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/splash_screen/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +17,7 @@ class _InitializationState extends State<Initialization> {
 
   startTimer(){
     Timer(const Duration(seconds: 5),() async {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserDashboard()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SplashScreen()));
     });
 
   }

@@ -1,14 +1,11 @@
-import 'dart:io';
+//import 'dart:io';
 
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
-class FirebaseMLApi {
+/*class FirebaseMLApi {
   static Future<String> recogniseText(File imageFile) async {
     if (imageFile == null) {
       return 'No selected image';
-    }
-
-    else {
+    } else {
       final visionImage = FirebaseVisionImage.fromFile(imageFile);
       final textRecognizer = FirebaseVision.instance.textRecognizer();
       try {
@@ -17,9 +14,7 @@ class FirebaseMLApi {
 
         final text = extractText(visionText);
         return text.isEmpty ? 'No text found in the image' : text;
-      }
-
-      catch (error) {
+      } catch (error) {
         return error.toString();
       }
     }
@@ -39,4 +34,4 @@ class FirebaseMLApi {
 
     return text;
   }
-}
+}*/

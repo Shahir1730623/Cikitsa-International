@@ -6,6 +6,7 @@ import 'package:app/common_screens/select_schedule_form.dart';
 import 'package:app/common_screens/talk_to_doctor_now.dart';
 import 'package:app/home/home_screen.dart';
 import 'package:app/main_screen.dart';
+import 'package:app/widgets/progress_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -576,7 +577,7 @@ class _NewUserFormState extends State<NewUserForm> {
                                     context: context,
                                     barrierDismissible: false,
                                     builder: (BuildContext context){
-                                      return const Center(child: CircularProgressIndicator());
+                                      return ProgressDialog(message: 'message');
                                     }
                                 );
                                 saveNewUserInfo();

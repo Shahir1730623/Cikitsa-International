@@ -45,8 +45,6 @@ dependencies:
   flutter_otp_text_field: ^1.1.1
   fluttertoast: ^8.1.1
   get: ^4.6.5
-  agora_uikit: ^1.0.4
-  agora_rtc_engine: ^5.2.0
   intl: ^0.17.0
   firebase_storage: ^11.0.3
   file_picker: ^5.2.2
@@ -59,6 +57,12 @@ dependencies:
   timezone: ^0.8.0
   rxdart: ^0.27.4
   flutter_countdown_timer: ^4.1.0
+  google_mlkit_text_recognition: ^0.5.0
+  http: ^0.13.5
+  agora_rtc_engine: ^6.0.0
+  permission_handler: ^10.2.0
+
+
 
 
 dev_dependencies:
@@ -93,6 +97,7 @@ flutter:
      - assets/pharmacyImages/
      - assets/consultationImages/
      - assets/visaInvitationImages/
+     - assets/tessdata/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

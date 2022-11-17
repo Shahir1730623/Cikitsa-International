@@ -2,8 +2,11 @@ import 'package:app/TabPages/history_screen.dart';
 import 'package:app/TabPages/subscription_screen.dart';
 import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/main_screen/user_profile_screen.dart';
+import 'package:app/our_services/ci_consultation/ci_consultation_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
+import 'package:app/our_services/online_pharmacy/pharmacy_dashboard.dart';
 import 'package:flutter/material.dart';
 
 
@@ -40,48 +43,59 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         controller: tabController,
         children:  const [
           UserDashboard(),
-          HistoryScreen(),
+          CIConsultationDashboard(),
           VideoConsultationDashboard(),
-          SubscriptionScreen(),
-          CountDownScreen(),
+          PharmacyDashboard(),
+          UserProfileScreen(),
         ],
       ),
 
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home,size: 35),
+        items: const [
+          BottomNavigationBarItem(
+            icon: ImageIcon(
+              size: 30,
+              AssetImage(
+                "assets/NavigationBarItem/home.png",
+              ),
+            ),
             label: "Home",
           ),
 
           BottomNavigationBarItem(
-            icon: Image.asset(
-              "assets/NavigationBarItem/clipboard.png",
-              height: 30,
+            icon: ImageIcon(
+              size: 30,
+              AssetImage(
+                "assets/NavigationBarItem/operator.png",
+              ),
             ),
-            label: "History",
+            label: "Consult",
           ),
 
           BottomNavigationBarItem(
-            icon: Image.asset(
-              "assets/NavigationBarItem/doctor.png",
-              height: 30,
+            icon: ImageIcon(
+              size: 30,
+              AssetImage(
+                "assets/NavigationBarItem/doctor.png",
+              ),
             ),
             label: "Find Doctor",
           ),
 
           BottomNavigationBarItem(
-            icon: Image.asset(
-              "assets/NavigationBarItem/subscription.png",
-              height: 30,
+            icon: ImageIcon(
+              size: 30,
+              AssetImage(
+                "assets/NavigationBarItem/medicine.png",
+              ),
             ),
-            label: "Subscription",
+            label: "Medicine",
           ),
 
           BottomNavigationBarItem(
-            icon: Image.asset(
-              "assets/NavigationBarItem/menu.png",
-              height: 30,
+            icon: Icon(
+              Icons.menu,
+              size: 30,
             ),
             label: "More",
           ),

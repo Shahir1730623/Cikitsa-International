@@ -14,21 +14,7 @@ packages:
       name: agora_rtc_engine
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.3.1"
-  agora_rtm:
-    dependency: transitive
-    description:
-      name: agora_rtm
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.1"
-  agora_uikit:
-    dependency: "direct main"
-    description:
-      name: agora_uikit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
+    version: "6.0.0"
   args:
     dependency: transitive
     description:
@@ -331,8 +317,22 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  http:
+  google_mlkit_commons:
     dependency: transitive
+    description:
+      name: google_mlkit_commons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  google_mlkit_text_recognition:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_text_recognition
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
+  http:
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -387,6 +387,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.17.0"
+  iris_event:
+    dependency: transitive
+    description:
+      name: iris_event
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   js:
     dependency: transitive
     description:
@@ -500,7 +507,7 @@ packages:
     source: hosted
     version: "2.1.3"
   permission_handler:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: permission_handler
       url: "https://pub.dartlang.org"
@@ -568,7 +575,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.5"
+    version: "0.27.6"
   sky_engine:
     dependency: transitive
     description: flutter

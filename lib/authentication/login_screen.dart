@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String selectedCode = "+88";
   String? phoneNumber;
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,6 +37,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
     phoneTextEditingController.addListener(() => setState(() {}) );
   }
+
+  void sendOtp() async{
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: selectedCode + phoneNumber!,
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {
+        print("Message:$e");
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        verifyId = verificationId;
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+
+
+  }
+
+
+
 
   void checkCountry(){
     if(selectedCountry == "Bangladesh"){
@@ -78,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(
-                    height: 40 ,
+                    height: 20 ,
                   ),
 
                   Padding(
@@ -173,11 +195,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           items: countryTypeList.map((country){
                             return DropdownMenuItem(
+                              value: country,
                               child: Text(
                                 country,
                                 style: const TextStyle(color: Colors.black),
                               ),
-                              value: country,
                             );
                           }).toList(),
                         ),
@@ -190,8 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           height: 55,
                           decoration: BoxDecoration(
-                              border: Border.all(width: 1.5, color: Colors.black),
-                              borderRadius: BorderRadius.circular(10)
+                            color: Colors.white,
+                            border: Border.all(width: 1.5, color: Colors.grey.shade500),
+                            borderRadius: BorderRadius.circular(10)
                           ),
 
                           child: Row(
@@ -268,17 +291,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                 );
 
-                                await FirebaseAuth.instance.verifyPhoneNumber(
-                                  phoneNumber: '${selectedCode + phoneNumber!}',
-                                  verificationCompleted: (PhoneAuthCredential credential) {},
-                                  verificationFailed: (FirebaseAuthException e) {},
-                                  codeSent: (String verificationId, int? resendToken) {
-                                    verifyId = verificationId;
-                                    userPhoneNumber = '${selectedCode + phoneNumber!}';
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => OTPScreen()));
-                                  },
-                                  codeAutoRetrievalTimeout: (String verificationId) {},
-                                );
+                                sendOtp();
+
+                                Timer(const Duration(seconds: 2),()  {
+                                  Navigator.pop(context);
+                                  userPhoneNumber = selectedCode + phoneNumber!;
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const OTPScreen()));
+                                });
                               },
 
                               style: ElevatedButton.styleFrom(

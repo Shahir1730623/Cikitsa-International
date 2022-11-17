@@ -31,7 +31,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
        .child(consultationId!)
        .child("payment").set("Paid");
 
-
   }
 
 
@@ -144,25 +143,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
               // Button
               Center(
-                child: Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: ()  {
-                      //
-                    },
-                    style: ElevatedButton.styleFrom(
-                        primary: Color(0xffEFEFEF),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20))),
+                child: ElevatedButton.icon(
+                  onPressed: ()  {
+                    //
+                  },
+                  style: ElevatedButton.styleFrom(
+                      primary: Color(0xffEFEFEF),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
 
-                    icon: Image.asset("assets/security.png",width: 20,),
+                  icon: Image.asset("assets/security.png",width: 20,),
 
-                    label: Text(
-                      "Payment is 100% secured",
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                      ),
+                  label: Text(
+                    "Payment is 100% secured",
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
                     ),
                   ),
                 ),

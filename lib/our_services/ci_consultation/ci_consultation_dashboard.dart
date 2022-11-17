@@ -24,7 +24,9 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
     // TODO: implement initState
     super.initState();
     selectedServiceDatabaseParentName = "CIConsultations";
+    selectedService = "CI Consultation";
     selectedDoctorInfo = null;
+    Fluttertoast.showToast(msg: "$selectedService ${selectedServiceDatabaseParentName!}");
   }
 
   @override

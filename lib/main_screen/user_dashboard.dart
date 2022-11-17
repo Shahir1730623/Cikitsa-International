@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/main_screen/user_profile_screen.dart';
 import 'package:app/models/user_model.dart';
 import 'package:app/our_services/ci_consultation/ci_consultation_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
@@ -98,19 +99,24 @@ class _UserDashboardState extends State<UserDashboard> {
                           ],
                         ),
 
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.blue,
-                              child: Text(
-                                "K",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> UserProfileScreen()));
+                          },
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                child: Text(
+                                  currentUserInfo!.name![0],
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -434,7 +440,6 @@ class _UserDashboardState extends State<UserDashboard> {
                              GestureDetector(
                                onTap: (){
                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDashboard()));
-                                 selectedService = "CI Consultation";
                                },
                                child: Container(
                                  decoration: BoxDecoration(

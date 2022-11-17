@@ -4,7 +4,7 @@ import '../global/global.dart';
 import '../models/user_model.dart';
 
 class AssistantMethods{
-  static void readOnlineUserCurrentInfo() {
+  static void readOnlineUserCurrentInfo() async {
     currentFirebaseUser = firebaseAuth.currentUser;
     DatabaseReference reference = FirebaseDatabase.instance.ref()
         .child("Users").child(currentFirebaseUser!.uid);

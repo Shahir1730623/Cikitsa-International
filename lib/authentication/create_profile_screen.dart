@@ -16,6 +16,17 @@ class CreateProfile extends StatefulWidget {
 }
 
 class _CreateProfileState extends State<CreateProfile> {
+  TextEditingController nameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameTextEditingController.addListener(() => setState(() {}));
+    emailTextEditingController.addListener(() => setState(() {}));
+  }
+
   saveNameToDatabase(){
     showDialog(
         context: context,
@@ -29,8 +40,9 @@ class _CreateProfileState extends State<CreateProfile> {
     reference.child(currentFirebaseUser!.uid).once().then((userKey) {
       final snapshot = userKey.snapshot;
       if (snapshot.exists) {
-        reference.child(currentFirebaseUser!.uid).child("name").set(userName);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Initialization()));
+        reference.child(currentFirebaseUser!.uid).child("name").set(nameTextEditingController.text);
+        reference.child(currentFirebaseUser!.uid).child("email").set(emailTextEditingController.text);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Initialization()));
       }
 
       });
@@ -57,7 +69,6 @@ class _CreateProfileState extends State<CreateProfile> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -73,14 +84,14 @@ class _CreateProfileState extends State<CreateProfile> {
                     ],
                   ),
 
-                  SizedBox(height: 50,),
+                  SizedBox(height: 30,),
 
                   Image.asset(
                     "assets/id-card.png",
                     height: height * 0.15,
                   ),
 
-                  const SizedBox(height: 20,),
+                  const SizedBox(height: 30,),
 
                   const Text(
                     "Provide your Name",
@@ -103,12 +114,13 @@ class _CreateProfileState extends State<CreateProfile> {
 
                   const SizedBox(height: 50,),
 
-                  // Name Field
+                  // Full name Container
                   Container(
-                    height: 55,
+                    height: 60,
                     decoration: BoxDecoration(
-                        border: Border.all(width: 1.5, color: Colors.black),
-                        borderRadius: BorderRadius.circular(10)
+                      color: Colors.white,
+                      border: Border.all(width: 1.5, color: Colors.grey.shade400),
+                      borderRadius: BorderRadius.circular(15)
                     ),
 
                     child: Row(
@@ -118,26 +130,149 @@ class _CreateProfileState extends State<CreateProfile> {
                           width: 10,
                         ),
 
-                        // Phone TextField
+                        // Country Code
+                        Icon(Icons.person,size: 30,),
+
+                        const SizedBox(
+                          width: 5,
+                        ),
+
+                        // Border
+                        const Text(
+                          "|",
+                          style: TextStyle(fontSize: 40, color: Colors.black),
+                        ),
+
+                        const SizedBox(
+                          width: 10,
+                        ),
+
+                        // Full Name TextField
                         Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.name,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Name",
+                          child: TextFormField(
+                            keyboardType: TextInputType.name,
+                            maxLines: null,
+                            controller: nameTextEditingController,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelText: "Full Name",
+                              hintText: "Full Name",
+                              suffixIcon: nameTextEditingController.text.isEmpty
+                                  ? Container(width: 0)
+                                  : IconButton(
+                                icon: Icon(Icons.close),
+                                onPressed: () =>
+                                    nameTextEditingController.clear(),
                               ),
 
-                              onChanged:(value) {
-                                userName = value;
-                              },
-                            )
-                        )
+                              hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 16),
+                              labelStyle:
+                              const TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "The field is empty";
+                              }
+
+                              else {
+                                return null;
+                              }
+                            },
+                          ),
+                        ),
+
                       ],
                     ),
 
+
                   ),
 
-                  const SizedBox(height: 250),
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+
+                  // Email Container
+                  Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(width: 1.5, color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(15)
+                    ),
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+
+                        // Country Code
+                        Icon(Icons.email,size: 30,),
+
+                        const SizedBox(
+                          width: 5,
+                        ),
+
+                        // Border
+                        const Text(
+                          "|",
+                          style: TextStyle(fontSize: 40, color: Colors.black),
+                        ),
+
+                        const SizedBox(
+                          width: 10,
+                        ),
+
+                        // Full Name TextField
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            maxLines: null,
+                            controller: emailTextEditingController,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelText: "Email",
+                              hintText: "Email",
+                              suffixIcon: emailTextEditingController.text.isEmpty
+                                  ? Container(width: 0)
+                                  : IconButton(
+                                icon: Icon(Icons.close),
+                                onPressed: () =>
+                                    emailTextEditingController.clear(),
+                              ),
+
+                              hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 15),
+                              labelStyle:
+                              const TextStyle(color: Colors.black, fontSize: 15),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "The field is empty";
+                              }
+
+                              else {
+                                return null;
+                              }
+                            },
+                          ),
+                        )
+
+                      ],
+                    ),
+
+
+                  ),
+
+                  SizedBox(height: height * 0.25),
 
                   SizedBox(
                     width: double.infinity,

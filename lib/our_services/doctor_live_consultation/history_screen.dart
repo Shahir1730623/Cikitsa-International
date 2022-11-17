@@ -24,28 +24,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
   String consultationStatus = "Scheduled";
 
   void retrieveConsultationDataFromDatabase(String consultationId) {
-        FirebaseDatabase.instance.ref().child("Users")
+    FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId!)
         .child("consultations").child(consultationId).once().then((dataSnap) {
-          DataSnapshot snapshot = dataSnap.snapshot;
-          if(snapshot.exists){
-            selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-          }
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+      }
 
-          else{
-            Fluttertoast.showToast(msg: "No consultation record exist");
-          }
+      else {
+        Fluttertoast.showToast(msg: "No consultation record exist");
+      }
     });
-
-
   }
 
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -53,7 +54,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
-          onTap: (){
+          onTap: () {
             Navigator.pop(context);
           },
           child: Padding(
@@ -74,9 +75,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: Text(
           "Telemedicine History",
           style: GoogleFonts.montserrat(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black
           ),
         ),
       ),
@@ -90,11 +91,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: ()  {
+                    onPressed: () {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (BuildContext context){
+                          builder: (BuildContext context) {
                             return ProgressDialog(message: "Please wait...");
                           }
                       );
@@ -104,12 +105,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       });
 
 
-                      Timer(const Duration(seconds: 1),()  {
+                      Timer(const Duration(seconds: 1), () {
                         Navigator.pop(context);
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (consultationStatus == "Scheduled") ? Colors.white : Colors.grey.shade200,
+                        primary: (consultationStatus == "Scheduled") ? Colors
+                            .white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -130,11 +132,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 const SizedBox(width: 5,),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: ()  {
+                    onPressed: () {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (BuildContext context){
+                          builder: (BuildContext context) {
                             return ProgressDialog(message: "Please wait...");
                           }
                       );
@@ -143,13 +145,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         consultationStatus = "Completed";
                       });
 
-                      Timer(const Duration(seconds: 1),()  {
+                      Timer(const Duration(seconds: 1), () {
                         Navigator.pop(context);
                       });
-
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (consultationStatus == "Completed") ? Colors.white : Colors.grey.shade200,
+                        primary: (consultationStatus == "Completed") ? Colors
+                            .white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -182,16 +184,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index) {
-                    final consultationType = (snapshot.value as Map)["consultationType"].toString();
+                  itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                      Animation<double> animation, int index) {
+                    final consultationType = (snapshot
+                        .value as Map)["consultationType"].toString();
 
-                    if(consultationStatus == consultationType){
+                    if (consultationStatus == consultationType) {
                       return GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (BuildContext context){
+                              builder: (BuildContext context) {
                                 return ProgressDialog(message: 'message');
                               }
                           );
@@ -199,15 +203,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           consultationId = (snapshot.value as Map)["id"];
                           retrieveConsultationDataFromDatabase(consultationId!);
 
-                          Timer(const Duration(seconds: 1),()  {
+                          Timer(const Duration(seconds: 1), () {
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreenDetails()));
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => HistoryScreenDetails()));
                           });
-
-
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -278,14 +282,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 children: [
                                   // Left Column
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       // Doc image
-                                      CircleAvatar(//or 15.0
+                                      CircleAvatar( //or 15.0
                                         radius: 30,
                                         backgroundColor: Colors.grey[100],
                                         foregroundImage: NetworkImage(
-                                          (snapshot.value as Map)["doctorImageUrl"],
+                                          (snapshot
+                                              .value as Map)["doctorImageUrl"],
                                         ),
                                       ),
 
@@ -297,11 +303,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   // Right Column
                                   Flexible(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment
+                                          .start,
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["doctorName"].toString(),
+                                          (snapshot.value as Map)["doctorName"]
+                                              .toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15,
@@ -312,10 +320,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                         // Doctor Specialization
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceBetween,
                                           children: [
                                             Text(
-                                              (snapshot.value as Map)["specialization"].toString(),
+                                              (snapshot
+                                                  .value as Map)["specialization"]
+                                                  .toString(),
                                               style: GoogleFonts.montserrat(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 13,
@@ -325,8 +336,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             // Status
                                             Container(
                                               decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(50),
-                                                  color: (consultationStatus == "Scheduled") ? Colors.blue : Colors.grey.shade200
+                                                  borderRadius: BorderRadius
+                                                      .circular(50),
+                                                  color: (consultationStatus ==
+                                                      "Scheduled")
+                                                      ? Colors.blue
+                                                      : Colors.grey.shade200
                                               ),
 
                                               height: 30,
@@ -336,7 +351,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 angle: 180 * pi / 180,
                                                 child: Icon(
                                                   Icons.arrow_back_ios_new,
-                                                  color: (consultationStatus == "Scheduled") ? Colors.white : Colors.black,
+                                                  color: (consultationStatus ==
+                                                      "Scheduled") ? Colors
+                                                      .white : Colors.black,
                                                   size: 20,
                                                 ),
                                               ),
@@ -350,7 +367,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                         // Workplace
                                         Text(
-                                          "Workplace: " + (snapshot.value as Map)["workplace"].toString(),
+                                          "Workplace: " + (snapshot
+                                              .value as Map)["workplace"]
+                                              .toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 13,
@@ -361,7 +380,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         const SizedBox(height: 15),
 
                                         Text(
-                                          "Status: " + (snapshot.value as Map)["consultationType"].toString(),
+                                          "Status: " + (snapshot
+                                              .value as Map)["consultationType"]
+                                              .toString(),
                                           style: GoogleFonts.montserrat(
                                               fontSize: 13,
                                               fontWeight: FontWeight.bold
@@ -381,10 +402,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       );
                     }
 
-                    else{
+                    else {
                       return Container();
                     }
-
                   }
               ),
             )

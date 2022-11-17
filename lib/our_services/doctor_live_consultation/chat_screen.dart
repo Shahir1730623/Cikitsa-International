@@ -1,11 +1,11 @@
-import 'package:app/our_services/doctor_live_consultation/video_call_screen.dart';
-import 'package:app/widgets/message_bubble.dart';
-import 'package:app/widgets/message_text_field.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+//import 'package:app/our_services/doctor_live_consultation/video_call_screen.dart';
+//import 'package:app/widgets/message_bubble.dart';
+//import 'package:app/widgets/message_text_field.dart';
+//import 'package:flutter/cupertino.dart';
+//import 'package:flutter/material.dart';
+//import 'package:google_fonts/google_fonts.dart';
 
-class ChatScreen extends StatefulWidget {
+/*class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
 
   @override
@@ -96,6 +96,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     );
   }
-}
+}*/
 
 

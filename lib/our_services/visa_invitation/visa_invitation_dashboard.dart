@@ -1,3 +1,5 @@
+import 'package:app/our_services/visa_invitation/text_recognition_screen.dart';
+import 'package:app/our_services/visa_invitation/visa_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -174,7 +176,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                         // New Invitation History
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => VisaFormScreen()));
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),
@@ -271,7 +273,9 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
 
                         // How to book Consultation
                         GestureDetector(
-                          onTap: (){},
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TextRecognitionScreen()));
+                          },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),
                             height: height * 0.1,

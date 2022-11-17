@@ -5,6 +5,7 @@ import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/live_consultation_category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../global/global.dart';
@@ -24,6 +25,8 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
     // TODO: implement initState
     super.initState();
     selectedServiceDatabaseParentName = "consultations";
+    selectedService = "Doctor Live Consultation";
+    Fluttertoast.showToast(msg: selectedService + " " + selectedServiceDatabaseParentName!);
   }
 
   @override

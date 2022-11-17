@@ -61,11 +61,11 @@ class _OTPScreenState extends State<OTPScreen> {
               'phone' : userPhoneNumber
             };
 
-            DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child('Users');
+            DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child("Users");
             databaseReference.child(firebaseUser.uid).set(userMap);
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
-          };
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateProfile()));
+          }
 
       });
 
@@ -89,7 +89,7 @@ class _OTPScreenState extends State<OTPScreen> {
           elevation: 0,
           leading: IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen()), (Route<dynamic> route) => false);
             },
             icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
@@ -241,7 +241,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamedAndRemoveUntil(context, 'phone', (route) => false);
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen()), (Route<dynamic> route) => false);
                             },
 
                             child: const Text(

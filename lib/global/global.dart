@@ -30,3 +30,12 @@ String? selectedCountry;
 String? selectedServiceDatabaseParentName;
 
 bool? pushNotify = false;
+String tempToken = "";
+bool isBroadcaster = true;
+
+// Agora
+/*const appId = 'dda00641d5894ee0b40aec14845f364b';
+const token = '007eJxTYJjTs78ij+/l1Wo530P6Nf87Cp5ueH7Q9ZbHyoln9u9aF2imwJCSkmhgYGZimGJqYWmSmmqQZGKQmJpsaGJhYppmbGaSdH9SSXJDICND06E+ZkYGCATxWRhKUotLGBgAMcEiuw==';*/
+
+String? channelName;
+int? tokenRole;
