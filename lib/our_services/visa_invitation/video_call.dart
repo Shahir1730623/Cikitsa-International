@@ -49,6 +49,9 @@ class _AgoraScreenState extends State<AgoraScreen> {
       appId: appId,
     ));
 
+    Random random = Random();
+    int uid = random.nextInt(100);
+
     // Register the event handler to receive Agora Engine callbacks
     agoraEngine.registerEventHandler(
       RtcEngineEventHandler(
@@ -76,11 +79,11 @@ class _AgoraScreenState extends State<AgoraScreen> {
 
         onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
           Fluttertoast.showToast(msg: 'Token expiring');
-          /*isTokenExpiring = true;
+          isTokenExpiring = true;
           setState(() {
             // fetch a new token when the current token is about to expire
-            fetchToken(uid, channelName, tokenRole!);
-          });*/
+            fetchToken(uid, channelName!, tokenRole!);
+          });
         },
       ),
     );
@@ -91,8 +94,6 @@ class _AgoraScreenState extends State<AgoraScreen> {
     // Start local preview
     await agoraEngine.startPreview();
 
-    Random random = Random();
-    int uid = random.nextInt(100);
 
     /*await agoraEngine.joinChannel(
       token: token,

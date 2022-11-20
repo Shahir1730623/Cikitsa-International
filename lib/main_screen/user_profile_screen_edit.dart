@@ -70,7 +70,7 @@ class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Transform.translate(
-                          offset: const Offset(-15, 0),
+                          offset: const Offset(-10, 0),
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
@@ -90,7 +90,7 @@ class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
                         ),
 
                         Transform.translate(
-                          offset: const Offset(20, 0),
+                          offset: const Offset(10, 0),
                           child: Image.asset(
                             "assets/Logo.png",
                             width: 100,

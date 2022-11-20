@@ -12,7 +12,7 @@ import '../widgets/progress_dialog.dart';
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
 
   static String verificationId = "";
 
@@ -54,9 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
 
-
-
-
   void checkCountry(){
     if(selectedCountry == "Bangladesh"){
       setState(() {
@@ -70,7 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
         selectedCode = "+91";
       });
     }
-
   }
 
 
@@ -131,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
 
-                                SizedBox(
+                                const SizedBox(
                                   height: 30,
                                 ),
 
@@ -229,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 40,
                                 child: Text(
                                   selectedCode,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16
                                   ),
                                 ),

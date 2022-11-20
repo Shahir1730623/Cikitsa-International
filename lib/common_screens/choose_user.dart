@@ -113,7 +113,7 @@ class _ChooseUserState extends State<ChooseUser> {
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
                        Text(
-                           selectedDoctorInfo!.doctorName!,
+                          "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
                            style: GoogleFonts.montserrat(
                                fontWeight: FontWeight.bold,fontSize: 13
                            )

@@ -26,6 +26,7 @@ class _NewUserFormState extends State<NewUserForm> {
   TextEditingController firstNameTextEditingController = TextEditingController();
   TextEditingController lastNameTextEditingController = TextEditingController();
   TextEditingController ageTextEditingController = TextEditingController();
+  TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController weightTextEditingController = TextEditingController();
   TextEditingController heightTextEditingController = TextEditingController();
   TextEditingController genderTextEditingController = TextEditingController();
@@ -56,6 +57,7 @@ class _NewUserFormState extends State<NewUserForm> {
       "firstName": firstNameTextEditingController.text.trim(),
       "lastName": lastNameTextEditingController.text.trim(),
       "age": ageTextEditingController.text.trim(),
+      "phone": phoneTextEditingController.text.trim(),
       "weight": weightTextEditingController.text.trim(),
       "height": heightTextEditingController.text.trim(),
       "gender": genderTextEditingController.text.trim(),
@@ -80,6 +82,7 @@ class _NewUserFormState extends State<NewUserForm> {
     firstNameTextEditingController.addListener(() => setState(() {}));
     lastNameTextEditingController.addListener(() => setState(() {}));
     ageTextEditingController.addListener(() => setState(() {}));
+    phoneTextEditingController.addListener(() => setState(() {}));
     weightTextEditingController.addListener(() => setState(() {}));
     heightTextEditingController.addListener(() => setState(() {}));
     genderTextEditingController.addListener(() => setState(() {}));
@@ -277,6 +280,61 @@ class _NewUserFormState extends State<NewUserForm> {
                           const TextStyle(color: Colors.grey, fontSize: 15),
                       labelStyle:
                           const TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "The field is empty";
+                      } else
+                        return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+
+                  // Phone Number Field
+                  Text(
+                    "Phone Number",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  TextFormField(
+                    controller: phoneTextEditingController,
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: "Phone Number",
+                      hintText: "Phone Number",
+                      prefixIcon: IconButton(
+                        icon: Image.asset(
+                          "assets/user.png",
+                          height: 18,
+                        ),
+                        onPressed: () {},
+                      ),
+                      suffixIcon: phoneTextEditingController.text.isEmpty
+                          ? Container(width: 0)
+                          : IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () =>
+                            phoneTextEditingController.clear(),
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      hintStyle:
+                      const TextStyle(color: Colors.grey, fontSize: 15),
+                      labelStyle:
+                      const TextStyle(color: Colors.black, fontSize: 15),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {

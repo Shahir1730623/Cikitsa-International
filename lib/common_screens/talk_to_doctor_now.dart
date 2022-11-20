@@ -78,7 +78,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
       "date" : formattedDate,
       "time" : formattedTime,
       "doctorId" : selectedDoctorInfo!.doctorId,
-      "doctorName" : selectedDoctorInfo!.doctorName,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
@@ -414,7 +414,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
 
                                 Timer(const Duration(seconds: 3),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(),)));
                                 });
 
 

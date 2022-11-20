@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/common_screens/confirmation_page.dart';
 import 'package:app/common_screens/coundown_screen.dart';
+import 'package:app/models/patient_model.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,14 +14,23 @@ import '../global/global.dart';
 import '../main_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({Key? key}) : super(key: key);
+  String? formattedDate;
+  String? formattedTime;
+  String? visitationReason;
+  String? problem;
+  PaymentScreen({Key? key,required this.formattedDate,required this.formattedTime,required this.visitationReason,required this.problem}) : super(key: key);
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  updatePaymentStatus(){
+  String idGenerator() {
+    final now = DateTime.now();
+    return now.microsecondsSinceEpoch.toString();
+  }
+
+  void updatePaymentStatus(){
    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
@@ -30,7 +40,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
        .child(selectedServiceDatabaseParentName!)
        .child(consultationId!)
        .child("payment").set("Paid");
+  }
 
+  void fetchPatientData(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users").child("patientList").child(patientId!);
+    reference.once().then((snap) {
+      final snapshot = snap.snapshot;
+      if (snapshot.exists) {
+        selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
+      }
+    });
+  }
+
+  void saveConsultationInfoForDoctor(){
+    String consultationId = idGenerator();
+    Map doctorLiveConsultationForDoctor = {
+      "id" : consultationId,
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
+      "consultantFee" : "500",
+      "patientId" : selectedPatientInfo!.id!,
+      "patienName" : selectedPatientInfo!.firstName! + " " + selectedPatientInfo!.firstName!,
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "consultationType" : "Upcoming",
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Pending"
+    };
+    /*DatabaseReference reference = FirebaseDatabase.instance.ref().child("Consultants")
+        .child("1")
+        .child("upcoming_consultations")
+        .child(consultationId)*/
   }
 
 
@@ -184,6 +226,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       // Update Payment information
                       updatePaymentStatus();
+                      fetchPatientData();
+                      saveConsultationInfoForDoctor();
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);

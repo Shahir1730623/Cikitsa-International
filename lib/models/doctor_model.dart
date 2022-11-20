@@ -2,7 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 
 class DoctorModel{
   String? doctorId;
-  String? doctorName;
+  String? doctorFirstName;
+  String? doctorLastName;
+  String? doctorPhone;
+  String? doctorEmail;
   String? doctorImageUrl;
   String? specialization;
   String? degrees;
@@ -13,13 +16,16 @@ class DoctorModel{
   String? fee;
   String? status;
 
-  DoctorModel(this.doctorId, this.doctorName, this.specialization, this.degrees,
+  DoctorModel(this.doctorId, this.doctorFirstName, this.doctorLastName, this.specialization, this.degrees,
       this.experience, this.workplace, this.rating, this.totalVisits, this.fee, this.status
   );
 
   DoctorModel.fromSnapshot(DataSnapshot snapshot){
     doctorId = snapshot.key;
-    doctorName = (snapshot.value as dynamic)["name"];
+    doctorFirstName = (snapshot.value as dynamic)["firstName"];
+    doctorLastName = (snapshot.value as dynamic)["lastName"];
+    doctorPhone = (snapshot.value as dynamic)["phone"];
+    doctorEmail = (snapshot.value as dynamic)["email"];
     doctorImageUrl = (snapshot.value as dynamic)["imageUrl"];
     specialization = (snapshot.value as dynamic)["specialization"];
     degrees = (snapshot.value as dynamic)["degrees"];

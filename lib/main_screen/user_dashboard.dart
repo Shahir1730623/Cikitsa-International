@@ -516,7 +516,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                    borderRadius: BorderRadius.circular(10),
                                    color: Colors.white,
                                  ),
-                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
+                                 margin: const EdgeInsets.fromLTRB(5,10,5,10),
                                  child: Column(
                                    mainAxisAlignment: MainAxisAlignment.center,
                                    children: [

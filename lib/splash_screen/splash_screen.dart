@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/authentication/initialization_screen.dart';
 import 'package:app/authentication/login_screen.dart';
+import 'package:app/doctor_screens/doctor_dashboard.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/splash_screen/welcome_screen.dart';
@@ -28,11 +29,17 @@ class _SplashScreenState extends State<SplashScreen> {
       if(await firebaseAuth.currentUser!=null){
         // send User to main screen
         currentFirebaseUser = firebaseAuth.currentUser;
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));
+        if(currentUserInfo != null){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));
+        }
+
+        else{
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DoctorDashboard()));
+        }
       }
       else{
         // send User to login screen
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => WelcomeScreen()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const WelcomeScreen()));
       }
 
     });

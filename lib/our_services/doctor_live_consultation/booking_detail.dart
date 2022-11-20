@@ -174,7 +174,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                     //pushNotify = true;
                                   }
 
-                                  if(selectedDoctorInfo!.status == "Online"){
+                                  else if(selectedDoctorInfo!.status == "Online"){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
                                   }
 

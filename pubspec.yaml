@@ -98,6 +98,8 @@ flutter:
      - assets/consultationImages/
      - assets/visaInvitationImages/
      - assets/tessdata/
+     - assets/authenticationImages/
+     - assets/doctorImages/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

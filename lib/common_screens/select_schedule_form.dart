@@ -45,7 +45,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
     }
     else{
-      print('payload empty');
+      Fluttertoast.showToast(msg: 'payload empty');
     }
   }
 
@@ -81,7 +81,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(), //get today's date
-        firstDate:DateTime(2022), //DateTime.now() - not to allow to choose before today.
+        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
         lastDate: DateTime(2030)
     );
 
@@ -89,6 +89,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
       setState(() {
         date = pickedDate;
         formattedDate = DateFormat('dd-MM-yyyy').format(date);
+        Fluttertoast.showToast(msg: formattedDate.toString());
         dateCounter++;
       });
     }
@@ -102,13 +103,14 @@ class _SelectScheduleState extends State<SelectSchedule> {
   pickTime() async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: time, //get today's date
+      initialTime: TimeOfDay.fromDateTime(DateTime.now()), //get today's date
     );
 
     if(pickedTime != null ){
       setState(() {
         time = pickedTime;
         formattedTime = time.format(context);
+        Fluttertoast.showToast(msg: formattedTime.toString());
         timeCounter++;
       });
     }
@@ -161,7 +163,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         "date" : formattedDate,
         "time" : formattedTime,
         "doctorId" : selectedDoctorInfo!.doctorId,
-        "doctorName" : selectedDoctorInfo!.doctorName,
+        "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
         "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
         "specialization" : selectedDoctorInfo!.specialization,
         "doctorFee" : selectedDoctorInfo!.fee,
@@ -176,7 +178,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     }
 
     // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
-    var df =  DateFormat.jm().parse(formattedTime!);
+    var df = DateFormat.jm().parse(formattedTime!);
     formattedDate = DateFormat('yyyy-MM-dd').format(date);
     formattedTime = DateFormat('HH:mm').format(df);
     String dateTime = formattedDate! + ' ' + formattedTime!;
@@ -613,7 +615,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(),)));
                                 });
 
 

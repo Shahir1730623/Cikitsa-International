@@ -2,6 +2,7 @@ import 'package:app/authentication/initialization_screen.dart';
 import 'package:app/common_screens/confirmation_page.dart';
 import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/common_screens/reschedule_date.dart';
+import 'package:app/doctor_screens/doctor_dashboard.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/appointment_summary.dart';
 import 'package:app/our_services/doctor_live_consultation/booking_detail.dart';

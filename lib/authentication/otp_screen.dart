@@ -47,24 +47,24 @@ class _OTPScreenState extends State<OTPScreen> {
       ).user;
 
       if(firebaseUser != null){
-        DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
+        DatabaseReference reference = FirebaseDatabase.instance.ref().child(userType!);
         reference.child(firebaseAuth.currentUser!.uid).once().then((userKey) {
           final snapshot = userKey.snapshot;
           if (snapshot.exists) {
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const SplashScreen()));
           }
 
           else{
-            Map userMap = {
+            /*Map userMap = {
               'id' : firebaseUser.uid,
               'phone' : userPhoneNumber
-            };
+            };*/
 
-            DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child("Users");
-            databaseReference.child(firebaseUser.uid).set(userMap);
+            //DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child(userType!);
+            //databaseReference.child(firebaseUser.uid).set(userMap);
             currentFirebaseUser = firebaseUser;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateProfile()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateProfile(id: firebaseUser.uid, phone: userPhoneNumber)));
           }
 
       });

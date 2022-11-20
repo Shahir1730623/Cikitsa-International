@@ -1,4 +1,5 @@
 import 'package:app/authentication/login_screen.dart';
+import 'package:app/authentication/select_user_type.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -92,7 +93,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()),);
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectUserType()),);
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.lightBlue,

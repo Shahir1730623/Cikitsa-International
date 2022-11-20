@@ -16,12 +16,14 @@ var verifyId;
 String? patientId;
 String? consultationId;
 String? doctorId;
+String? userType;
 
-PatientModel patientModel = PatientModel();
 UserModel userData = UserModel();
 
 UserModel? currentUserInfo;
+DoctorModel? currentDoctorInfo;
 DoctorModel? selectedDoctorInfo;
+PatientModel? selectedPatientInfo;
 ConsultationModel? selectedConsultationInfo;
 CIConsultationModel? selectedCIConsultationInfo;
 
@@ -39,3 +41,4 @@ const token = '007eJxTYJjTs78ij+/l1Wo530P6Nf87Cp5ueH7Q9ZbHyoln9u9aF2imwJCSkmhgYG
 
 String? channelName;
 int? tokenRole;
+

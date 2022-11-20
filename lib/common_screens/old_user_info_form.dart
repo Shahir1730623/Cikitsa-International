@@ -23,6 +23,7 @@ class OldUserForm extends StatefulWidget {
 class _OldUserFormState extends State<OldUserForm> {
   TextEditingController nameTextEditingController = TextEditingController(text: "");
   TextEditingController ageTextEditingController = TextEditingController(text: "");
+  TextEditingController phoneTextEditingController = TextEditingController(text: "");
   TextEditingController weightTextEditingController = TextEditingController(text: "");
   TextEditingController heightTextEditingController = TextEditingController(text: "");
   TextEditingController relationTextEditingController = TextEditingController(text: "");
@@ -58,6 +59,7 @@ class _OldUserFormState extends State<OldUserForm> {
       if (snapshot.exists) {
         nameTextEditingController.text = (snapshot.value as Map)["firstName"] + " " +  (snapshot.value as Map)["lastName"];
         ageTextEditingController.text = (snapshot.value as Map)["age"];
+        phoneTextEditingController.text = (snapshot.value as Map)["phone"];
         genderTextEditingController.text = (snapshot.value as Map)["gender"];
         relationTextEditingController.text = (snapshot.value as Map)["relation"];
         weightTextEditingController.text = (snapshot.value as Map)["weight"];
@@ -206,6 +208,62 @@ class _OldUserFormState extends State<OldUserForm> {
 
                   SizedBox(
                     height: height * 0.03,
+                  ),
+
+                  // Phone Number Field
+                  Text(
+                    "Phone Number",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  TextFormField(
+                    controller: phoneTextEditingController,
+                    readOnly: true,
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: "Phone Number",
+                      hintText: "Phone Number",
+                      prefixIcon: IconButton(
+                        icon: Image.asset(
+                          "assets/user.png",
+                          height: 18,
+                        ),
+                        onPressed: () {},
+                      ),
+                      suffixIcon: phoneTextEditingController.text.isEmpty
+                          ? Container(width: 0)
+                          : IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () =>
+                            phoneTextEditingController.clear(),
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      hintStyle:
+                      const TextStyle(color: Colors.grey, fontSize: 15),
+                      labelStyle:
+                      const TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "The field is empty";
+                      } else
+                        return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
                   ),
 
                   // Gender,Relation

@@ -23,9 +23,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   TextEditingController feeTextEditingController = TextEditingController();
 
   static List<DoctorModel> doctorList = [
-    DoctorModel("1", "Dr. Ventakesh Rajkumar", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "10", "Evercare Hospital", "5", "10", "500","Online"),
-    DoctorModel("2", "Dr. Narendar Dasaraju", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "Square Hospital", "5", "10", "500","Online"),
-    DoctorModel("3", "Dr. Rajesh Krishnamoorhty", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "United Hospital", "5", "10", "500","Offline"),
+    //DoctorModel("1", "Dr. Ventakesh Rajkumar", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "10", "Evercare Hospital", "5", "10", "500","Online"),
+    //DoctorModel("2", "Dr. Narendar Dasaraju", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "Square Hospital", "5", "10", "500","Online"),
+    //DoctorModel("3", "Dr. Rajesh Krishnamoorhty", "Orthopedics", "MBBS, MPH, MS(Orthopedics),FCSPS(Orthopedics)", "15", "United Hospital", "5", "10", "500","Offline"),
   ];
 
   void saveExistingUserConsultationInfo() async {
@@ -34,7 +34,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       var imageUrl = await reference.getDownloadURL();
       Map doctorInfoMap = {
         "id" : doctorList[index].doctorId,
-        "name" : doctorList[index].doctorName,
+        //"name" : doctorList[index].doctorName,
         "specialization" : doctorList[index].specialization,
         "degrees" : doctorList[index].degrees,
         "experience" : doctorList[index].experience,
