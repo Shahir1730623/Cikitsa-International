@@ -8,7 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
-import '../home/home_screen.dart';
 import '../widgets/progress_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -43,14 +42,13 @@ class _CreateProfileState extends State<CreateProfile> {
     "Neurologists",
     "Urologists",
     "Psychiatrists",
-    "Pathologist"
-        "Radiologists",
+    "Pathologist",
+    "Radiologists",
     "Rheumatologists",
     "Orthopedics",
     "Urologist"
   ];
   List<String> doctorExperienceList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"];
-
   String? selectedSpecialization;
   String? selectedExperience;
 
@@ -394,7 +392,7 @@ class _CreateProfileState extends State<CreateProfile> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "Full Name",
+                                "First Name",
                                 style: GoogleFonts.montserrat(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -406,15 +404,15 @@ class _CreateProfileState extends State<CreateProfile> {
                             height: height * 0.02,
                           ),
                           TextFormField(
-                            controller: nameTextEditingController,
+                            controller: firstNameTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
                             decoration: InputDecoration(
                               fillColor: Colors.white,
                               filled: true,
-                              labelText: "Name",
-                              hintText: "Name",
+                              labelText: "First Name",
+                              hintText: "First Name",
                               prefixIcon: IconButton(
                                 icon: Image.asset(
                                   "assets/user.png",
@@ -422,12 +420,77 @@ class _CreateProfileState extends State<CreateProfile> {
                                 ),
                                 onPressed: () {},
                               ),
-                              suffixIcon: nameTextEditingController.text.isEmpty
+                              suffixIcon: firstNameTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: const Icon(Icons.close),
                                 onPressed: () =>
-                                    nameTextEditingController.clear(),
+                                    firstNameTextEditingController.clear(),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                              ),
+                              hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 15),
+                              labelStyle:
+                              const TextStyle(
+                                  color: Colors.black, fontSize: 15),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "The field is empty";
+                              } else
+                                return null;
+                            },
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+
+                          // Last Name Field
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Last Name",
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: height * 0.02,
+                          ),
+                          TextFormField(
+                            controller: lastNameTextEditingController,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              filled: true,
+                              labelText: "Last Name",
+                              hintText: "Last Name",
+                              prefixIcon: IconButton(
+                                icon: Image.asset(
+                                  "assets/user.png",
+                                  height: 18,
+                                ),
+                                onPressed: () {},
+                              ),
+                              suffixIcon: lastNameTextEditingController.text.isEmpty
+                                  ? Container(width: 0)
+                                  : IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () =>
+                                    lastNameTextEditingController.clear(),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(

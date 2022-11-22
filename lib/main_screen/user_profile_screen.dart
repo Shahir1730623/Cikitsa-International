@@ -333,6 +333,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       // Contact Us
                       GestureDetector(
                         onTap: (){
+                          currentUserInfo = null;
                           firebaseAuth.signOut();
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => SplashScreen()), (Route<dynamic> route) => false);
                         },

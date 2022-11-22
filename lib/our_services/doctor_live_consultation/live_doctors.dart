@@ -192,7 +192,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index) {
-                      final doctorName = (snapshot.value as Map)["name"].toString();
+                      final doctorName = (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString();
                       final workplace = (snapshot.value as Map)["workplace"].toString();
                       if(searchTextEditingController.text.isEmpty){
                         return GestureDetector(
@@ -315,7 +315,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["name"].toString(),
+                                        (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 17,

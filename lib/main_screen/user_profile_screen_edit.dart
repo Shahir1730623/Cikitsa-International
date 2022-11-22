@@ -1,11 +1,16 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
+import '../widgets/progress_dialog.dart';
 
 class UserProfileScreenEdit extends StatefulWidget {
   const UserProfileScreenEdit({Key? key}) : super(key: key);
@@ -15,10 +20,65 @@ class UserProfileScreenEdit extends StatefulWidget {
 }
 
 class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
-
   TextEditingController nameTextEditingController = TextEditingController(text: currentUserInfo!.name!);
   TextEditingController emailTextEditingController = TextEditingController(text: currentUserInfo!.email);
   TextEditingController phoneTextEditingController = TextEditingController(text: currentUserInfo!.phone!);
+
+  String imageUrl = "";
+  XFile? imageFile;
+
+  // PickImage
+  Future pickImage(ImageSource source) async {
+    try{
+      // Pick an Image
+
+      final pickedImage = await ImagePicker().pickImage(source: source);
+      if(pickedImage!=null){
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return ProgressDialog(message: "Please wait...");
+            }
+        );
+
+        imageFile = pickedImage;
+        firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('patientImages/'+ currentUserInfo!.id! +'.png');
+
+        // Upload the image to firebase storage
+        try{
+          await reference.putFile(File(imageFile!.path));
+          imageUrl = await reference.getDownloadURL();
+        }
+
+        catch(e){
+          print(e);
+        }
+
+        Timer(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
+      }
+    }
+
+    catch(e){
+      imageFile = null;
+      setState(() {});
+    }
+  }
+
+  updateImageUrl(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
+    reference.child(currentFirebaseUser!.uid).once().then((userKey) {
+      final snapshot = userKey.snapshot;
+      if (snapshot.exists) {
+        reference.child(currentFirebaseUser!.uid).child("imageUrl").set(imageUrl);
+        setState(() {
+          currentUserInfo!.imageUrl = imageUrl;
+        });
+      }
+    });
+  }
 
   updateUserInformation(){
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users");
@@ -145,8 +205,15 @@ class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(50)),
                           child: IconButton(
-                              onPressed: () {
-                                //
+                              onPressed: () async {
+                                await pickImage(ImageSource.gallery);
+                                if(imageUrl.isEmpty){
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please upload an image")));
+                                }
+
+                                else{
+                                  updateImageUrl();
+                                }
                               },
                               icon: Icon(
                                 Icons.camera_alt,

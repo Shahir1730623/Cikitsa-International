@@ -33,7 +33,7 @@ class _NewUserFormState extends State<NewUserForm> {
   TextEditingController relationTextEditingController = TextEditingController();
 
 
-  List<String> genderTypesList = ["Male", "Female"];
+  List<String> genderTypesList = ["Male", "Female","Other"];
   String? selectedGender;
 
 
@@ -57,10 +57,10 @@ class _NewUserFormState extends State<NewUserForm> {
       "firstName": firstNameTextEditingController.text.trim(),
       "lastName": lastNameTextEditingController.text.trim(),
       "age": ageTextEditingController.text.trim(),
-      "phone": phoneTextEditingController.text.trim(),
+      "phone": "+88${phoneTextEditingController.text.trim()}",
+      "gender" : selectedGender,
       "weight": weightTextEditingController.text.trim(),
       "height": heightTextEditingController.text.trim(),
-      "gender": genderTextEditingController.text.trim(),
       "relation" : relationTextEditingController.text.trim()
     };
 
@@ -160,11 +160,11 @@ class _NewUserFormState extends State<NewUserForm> {
                               onPressed: () =>
                                   firstNameTextEditingController.clear(),
                             ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                       ),
                       hintStyle:
                           const TextStyle(color: Colors.grey, fontSize: 15),
@@ -215,11 +215,11 @@ class _NewUserFormState extends State<NewUserForm> {
                               onPressed: () =>
                                   lastNameTextEditingController.clear(),
                             ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                       ),
                       hintStyle:
                           const TextStyle(color: Colors.grey, fontSize: 15),
@@ -270,11 +270,11 @@ class _NewUserFormState extends State<NewUserForm> {
                               onPressed: () =>
                                   lastNameTextEditingController.clear(),
                             ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                       ),
                       hintStyle:
                           const TextStyle(color: Colors.grey, fontSize: 15),
@@ -313,7 +313,7 @@ class _NewUserFormState extends State<NewUserForm> {
                       hintText: "Phone Number",
                       prefixIcon: IconButton(
                         icon: Image.asset(
-                          "assets/user.png",
+                          "assets/phone-call.png",
                           height: 18,
                         ),
                         onPressed: () {},
@@ -325,11 +325,11 @@ class _NewUserFormState extends State<NewUserForm> {
                         onPressed: () =>
                             phoneTextEditingController.clear(),
                       ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                       ),
                       hintStyle:
                       const TextStyle(color: Colors.grey, fontSize: 15),
@@ -364,46 +364,50 @@ class _NewUserFormState extends State<NewUserForm> {
                             SizedBox(
                               height: height * 0.01,
                             ),
-                            TextFormField(
-                              controller: genderTextEditingController,
-                              style: const TextStyle(
-                                color: Colors.black,
-                              ),
+                            DropdownButtonFormField(
                               decoration: InputDecoration(
-                                labelText: "Gender",
-                                hintText: "Gender",
+                                filled: true,
+                                fillColor: Colors.white,
                                 prefixIcon: IconButton(
+                                  onPressed: () {},
                                   icon: Image.asset(
                                     "assets/gender.png",
                                     height: 18,
                                   ),
-                                  onPressed: () {},
                                 ),
-                                suffixIcon: genderTextEditingController
-                                    .text.isEmpty
-                                    ? Container(width: 0)
-                                    : IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () =>
-                                      genderTextEditingController.clear(),
+                                isDense: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                                 ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                                hintStyle: const TextStyle(
-                                    color: Colors.grey, fontSize: 15),
-                                labelStyle: const TextStyle(
-                                    color: Colors.black, fontSize: 15),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "The field is empty";
-                                } else
-                                  return null;
+                              isExpanded: true,
+                              iconSize: 30,
+                              dropdownColor: Colors.white,
+                              hint: const Text(
+                                "Select Gender",
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              value: selectedGender,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedGender = newValue.toString();
+                                });
                               },
+                              items: genderTypesList.map((reason) {
+                                return DropdownMenuItem(
+                                  value: reason,
+                                  child: Text(
+                                    reason,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                );
+                              }).toList(),
                             ),
                             SizedBox(
                               height: height * 0.01,
@@ -443,11 +447,11 @@ class _NewUserFormState extends State<NewUserForm> {
                                   ),
                                   onPressed: () {},
                                 ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                                 ),
                                 hintStyle: const TextStyle(
                                     color: Colors.grey, fontSize: 15),
@@ -505,11 +509,11 @@ class _NewUserFormState extends State<NewUserForm> {
                                         onPressed: () =>
                                             weightTextEditingController.clear(),
                                       ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                                 ),
                                 hintStyle: const TextStyle(
                                     color: Colors.grey, fontSize: 15),
@@ -569,11 +573,11 @@ class _NewUserFormState extends State<NewUserForm> {
                                         onPressed: () =>
                                             heightTextEditingController.clear(),
                                       ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade500),
                                 ),
                                 hintStyle: const TextStyle(
                                     color: Colors.grey, fontSize: 15),

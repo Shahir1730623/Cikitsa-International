@@ -14,6 +14,7 @@ import '../global/global.dart';
 import '../models/ci_consultation_model.dart';
 import '../models/consultation_model.dart';
 import '../our_services/doctor_live_consultation/uploading_prescription.dart';
+import '../our_services/visa_invitation/video_call.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/timer.dart';
 
@@ -123,7 +124,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
           Timer(const Duration(seconds: 5),()  {
             Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UploadingPrescription()));
+            channelName = consultationId;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
           });
         }
 

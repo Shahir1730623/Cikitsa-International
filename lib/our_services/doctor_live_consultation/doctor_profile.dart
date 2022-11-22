@@ -104,7 +104,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
                 child: Image.network(
                   selectedDoctorInfo!.doctorImageUrl!,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                 ),
               ),
 

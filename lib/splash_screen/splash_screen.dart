@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));
         }
 
-        else{
+        else if(currentDoctorInfo != null){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DoctorDashboard()));
         }
       }

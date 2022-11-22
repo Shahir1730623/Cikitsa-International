@@ -43,11 +43,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void fetchPatientData(){
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users").child("patientList").child(patientId!);
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!);
     reference.once().then((snap) {
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
+        Fluttertoast.showToast(msg: "Successfully retrieved Patient Info");
+        saveConsultationInfoForDoctor();
+      }
+      else{
+        Fluttertoast.showToast(msg: "Unsuccessful to retrieve patient info");
       }
     });
   }
@@ -60,19 +68,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "time" : widget.formattedTime,
       "consultantFee" : "500",
       "patientId" : selectedPatientInfo!.id!,
-      "patienName" : selectedPatientInfo!.firstName! + " " + selectedPatientInfo!.firstName!,
+      "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
+      "patientAge" : selectedPatientInfo!.age!,
+      "gender": selectedPatientInfo!.gender!,
+      "height" : selectedPatientInfo!.height!,
+      "weight" : selectedPatientInfo!.weight!,
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "specialization" : selectedDoctorInfo!.specialization,
       "consultationType" : "Upcoming",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
-      "payment" : "Pending"
+      "payment" : "Paid"
     };
-    /*DatabaseReference reference = FirebaseDatabase.instance.ref().child("Consultants")
-        .child("1")
-        .child("upcoming_consultations")
-        .child(consultationId)*/
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors").child(selectedDoctorInfo!.doctorId!).child("consultations").child(consultationId);
+    reference.set(doctorLiveConsultationForDoctor);
   }
 
 
@@ -227,7 +238,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       // Update Payment information
                       updatePaymentStatus();
                       fetchPatientData();
-                      saveConsultationInfoForDoctor();
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);

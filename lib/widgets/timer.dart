@@ -13,7 +13,7 @@ class TimerController extends GetxController{
   int remainingSeconds = 1;
   final time = '00.00'.obs;
   static BuildContext? context;
-  int countDownSeconds = 10;
+  int countDownSeconds = 30;
 
   @override
   void onReady(){

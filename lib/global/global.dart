@@ -18,7 +18,6 @@ String? consultationId;
 String? doctorId;
 String? userType;
 
-UserModel userData = UserModel();
 
 UserModel? currentUserInfo;
 DoctorModel? currentDoctorInfo;

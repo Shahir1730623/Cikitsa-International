@@ -1,8 +1,14 @@
+import 'dart:async';
+
+import 'package:app/doctor_screens/doctor_live_consultations.dart';
+import 'package:app/our_services/doctor_live_consultation/doctor_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../splash_screen/splash_screen.dart';
+import '../widgets/progress_dialog.dart';
+import 'doctor_profile_edit.dart';
 
 
 class DoctorDashboard extends StatefulWidget {
@@ -16,6 +22,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       body: ListView(
         children: [
           Stack(
@@ -34,9 +41,14 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
               Positioned(
                 top: 20,
                 left: 20,
-                child: CircleAvatar(
-                  radius: 20,
-                  foregroundImage: NetworkImage(currentDoctorInfo!.doctorImageUrl!),
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorProfileEdit()));
+                  },
+                  child: CircleAvatar(
+                    radius: 20,
+                    foregroundImage: NetworkImage(currentDoctorInfo!.doctorImageUrl!),
+                  ),
                 ),
               ),
 
@@ -92,7 +104,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         ),
                       ),
 
-                      const SizedBox(height: 30,),
+                      const SizedBox(height: 20,),
 
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -104,6 +116,9 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             minimumSize: const Size(100, 40),
                           ),
                           onPressed: () {
+                            currentDoctorInfo = null;
+                            firebaseAuth.signOut();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
                           },
                           child: Row(
                             children: const [
@@ -151,16 +166,21 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                     children: [
                       Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(width: 1,color: Colors.grey.shade400),
-                            ),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              child: Image.asset(
-                                "assets/doctor (1).png"
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultation()));
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(width: 1,color: Colors.grey.shade400),
+                              ),
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: Image.asset(
+                                  "assets/doctor (1).png"
+                                ),
                               ),
                             ),
                           ),

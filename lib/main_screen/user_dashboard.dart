@@ -30,24 +30,6 @@ class _UserDashboardState extends State<UserDashboard> {
   List secondListImages = ["sugar-blood-level","bone-1","brainstorm"];
   List secondListNames = ["Diabetes Specialist","Orthopedics","Psychiatrist"];
 
-  // Enable Push Notifications
-  readCurrentUserInformation() async {
-    currentFirebaseUser = firebaseAuth.currentUser;
-    await FirebaseDatabase.instance.ref()
-        .child("User")
-        .child(currentFirebaseUser!.uid)
-        .once()
-        .then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.exists){
-        userData.id = (snapshot.value as Map)["id"];
-        userData.name = (snapshot.value as Map)["name"];
-        userData.phone = (snapshot.value as Map)["phone"];
-      }
-
-    });
-
-  }
 
   void loadScreen(){
     showDialog(

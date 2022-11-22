@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:app/models/consultation_model.dart';
-import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,20 +7,43 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../global/global.dart';
-import '../../widgets/progress_dialog.dart';
+import '../global/global.dart';
+import '../widgets/progress_dialog.dart';
 
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+class DoctorLiveConsultation extends StatefulWidget {
+  const DoctorLiveConsultation({Key? key}) : super(key: key);
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<DoctorLiveConsultation> createState() => _DoctorLiveConsultationState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  String consultationStatus = "Scheduled";
+class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
+  String consultationStatus = "Upcoming";
 
-  void retrieveConsultationDataFromDatabase(String consultationId) {
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
+
+    Timer(const Duration(seconds: 2),()  {
+      Navigator.pop(context);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
+  }
+
+  /*void retrieveConsultationDataFromDatabase(String consultationId) {
     FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
@@ -38,8 +58,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         Fluttertoast.showToast(msg: "No consultation record exist");
       }
     });
-  }
-
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +89,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ),
 
         title: Text(
-          "Telemedicine History",
+          "Telemedicine",
           style: GoogleFonts.montserrat(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -98,7 +117,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       );
 
                       setState(() {
-                        consultationStatus = "Scheduled";
+                        consultationStatus = "Upcoming";
                       });
 
 
@@ -107,7 +126,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (consultationStatus == "Scheduled") ? Colors
+                        primary: (consultationStatus == "Upcoming") ? Colors
                             .white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -173,22 +192,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
             Flexible(
               child: FirebaseAnimatedList(
-                  query: FirebaseDatabase.instance.ref().child("Users")
+                  query: FirebaseDatabase.instance.ref().child("Doctors")
                       .child(currentFirebaseUser!.uid)
-                      .child("patientList")
-                      .child(patientId!)
                       .child("consultations"),
 
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                      Animation<double> animation, int index) {
-                    final consultationType = (snapshot
-                        .value as Map)["consultationType"].toString();
+                  itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                    final consultationType = (snapshot.value as Map)["consultationType"].toString();
 
                     if (consultationStatus == consultationType) {
                       return GestureDetector(
-                        onTap: () {
+                        /*onTap: () {
                           showDialog(
                               context: context,
                               barrierDismissible: false,
@@ -205,10 +220,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) => HistoryScreenDetails()));
                           });
-                        },
+                        },*/
+
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -279,16 +294,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 children: [
                                   // Left Column
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       // Doc image
                                       CircleAvatar( //or 15.0
                                         radius: 30,
-                                        backgroundColor: Colors.grey[100],
-                                        foregroundImage: NetworkImage(
-                                          (snapshot
-                                              .value as Map)["doctorImageUrl"],
+                                        backgroundColor: Colors.lightBlue,
+                                        child: Text(
+                                          (snapshot.value as Map)["patientName"][0],
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontSize: 30
+                                          ),
                                         ),
                                       ),
 
@@ -300,13 +318,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   // Right Column
                                   Flexible(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["doctorName"]
-                                              .toString(),
+                                          (snapshot.value as Map)["patientName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15,
@@ -317,16 +333,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                         // Doctor Specialization
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment
-                                              .spaceBetween,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              (snapshot
-                                                  .value as Map)["specialization"]
-                                                  .toString(),
+                                              "Age: " + (snapshot.value as Map)["patientAge"].toString(),
                                               style: GoogleFonts.montserrat(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 13,
+                                                fontSize: 14,
                                               ),
                                             ),
 
@@ -362,26 +375,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                         const SizedBox(height: 5),
 
-                                        // Workplace
-                                        Text(
-                                          "Workplace: " + (snapshot
-                                              .value as Map)["workplace"]
-                                              .toString(),
-                                          style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text((snapshot.value as Map)["gender"].toString(),
+                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+
+                                            const Text(" - "),
+                                            Text("${(snapshot.value as Map)["weight"]} kg",
+                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+                                            const Text(" - "),
+
+                                            Text("${(snapshot.value as Map)["height"]} feet",
+                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+                                          ],
                                         ),
 
+                                        const SizedBox(height: 10),
 
-                                        const SizedBox(height: 15),
 
                                         Text(
-                                          "Status: " + (snapshot
-                                              .value as Map)["consultationType"]
-                                              .toString(),
+                                          "Status: ${(snapshot.value as Map)["consultationType"]}",
                                           style: GoogleFonts.montserrat(
-                                              fontSize: 13,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.bold
                                           ),
                                         ),
