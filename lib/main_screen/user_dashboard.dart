@@ -87,6 +87,12 @@ class _UserDashboardState extends State<UserDashboard> {
                           },
                           child: Row(
                             children: [
+                              (currentUserInfo!.imageUrl != null) ? CircleAvatar(
+                                backgroundColor: Colors.lightBlue,
+                                foregroundImage: NetworkImage(
+                                  currentUserInfo!.imageUrl!,
+                                ),
+                              ) :
                               CircleAvatar(
                                 backgroundColor: Colors.blue,
                                 child: Text(

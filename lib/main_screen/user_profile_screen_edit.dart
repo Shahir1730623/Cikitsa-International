@@ -31,7 +31,6 @@ class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
   Future pickImage(ImageSource source) async {
     try{
       // Pick an Image
-
       final pickedImage = await ImagePicker().pickImage(source: source);
       if(pickedImage!=null){
         showDialog(
@@ -193,7 +192,7 @@ class _UserProfileScreenEditState extends State<UserProfileScreenEdit> {
                       ),
                     ),
 
-                    // Edit Circle
+                    // Upload image Circle
                     Container(
                       transform: Matrix4.translationValues(0.0, -35.0, 0.0),
                       padding: EdgeInsets.all(4),

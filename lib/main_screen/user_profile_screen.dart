@@ -74,11 +74,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                       // Profile Image CircleAvatar
                       DottedBorder(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           borderType: BorderType.Oval,
                           radius: const Radius.circular(20),
                           color: Colors.blue,
-                          dashPattern: [25,10],
+                          dashPattern: const [25,10],
                           strokeWidth: 3,
                           child: (currentUserInfo!.imageUrl != null) ? CircleAvatar(
                             radius: 70,
@@ -334,6 +334,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       GestureDetector(
                         onTap: (){
                           currentUserInfo = null;
+                          loggedInUser = "";
                           firebaseAuth.signOut();
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => SplashScreen()), (Route<dynamic> route) => false);
                         },

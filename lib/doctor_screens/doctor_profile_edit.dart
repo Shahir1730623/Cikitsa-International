@@ -195,7 +195,7 @@ class _DoctorProfileEditState extends State<DoctorProfileEdit> {
                         ),
                       ),
 
-                      // Edit Circle
+                      // Upload image Circle
                       Container(
                         transform: Matrix4.translationValues(0.0, -35.0, 0.0),
                         padding: const EdgeInsets.all(4),

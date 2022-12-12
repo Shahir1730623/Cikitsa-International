@@ -13,13 +13,18 @@ class UploadingPrescription extends StatefulWidget {
 }
 
 class _UploadingPrescriptionState extends State<UploadingPrescription> {
-
   setConsultationInfoToCompleted(){
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId!).child(selectedServiceDatabaseParentName!).child(consultationId!).child("consultationType").set("Completed");
+
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("consultations")
+        .child(consultationId!).child("consultationType").set("Completed");
   }
 
   void loadScreen() {
@@ -48,7 +53,7 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               Center(

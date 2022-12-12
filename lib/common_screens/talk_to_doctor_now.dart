@@ -26,16 +26,27 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
 
-  late List<String> imageList;
-  File? image;
-  final picker = ImagePicker();
+  late List<File> imageList;
+  //File? image;
+  File? imageFile;
 
-  Future<void> getImageGallery() async{
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  Future<void> pickImages() async{
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
-      if(pickedFile != null){
-        image = File(pickedFile.path);
+      if(pickedImage != null){
+        /*showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return ProgressDialog(message: "Please wait...");
+            }
+        );*/
+        imageList.add(File(pickedImage.path));
+
+        //imageFile = pickedImage as File?;
+        //firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('Patient Reports and Prescriptions/'+ currentUserInfo!.id! +'.png');
       }
+
       else{
         Fluttertoast.showToast(msg: "No file selected");
       }
@@ -69,38 +80,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());// 28/03/2020
   String formattedTime = DateFormat.jm().format(DateTime.now());
 
-
-  saveConsultationInfo() async {
-    consultationId = idGenerator();
-
-    Map consultationInfoMap = {
-      "id" : consultationId,
-      "date" : formattedDate,
-      "time" : formattedTime,
-      "doctorId" : selectedDoctorInfo!.doctorId,
-      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
-      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
-      "specialization" : selectedDoctorInfo!.specialization,
-      "doctorFee" : selectedDoctorInfo!.fee,
-      "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : "Now",
-      "visitationReason": selectedReasonOfVisit,
-      "problem": problemTextEditingController.text.trim(),
-      "payment" : "Pending",
-    };
-
-
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!)
-        .child("consultations")
-        .child(consultationId!);
-
-    // Saving data to database
-    reference.set(consultationInfoMap);
-
-  }
 
 
   @override
@@ -219,7 +198,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                       borderSide: const BorderSide(color: Colors.black),
                                       borderRadius: BorderRadius.circular(15)
                                     ),
-                                    focusedBorder: UnderlineInputBorder(
+                                    focusedBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(color: Colors.blue),
                                     ),
                                   ) ,
@@ -316,7 +295,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                           // Image Picker
                           GestureDetector(
                             onTap: (){
-                              getImageGallery();
+                              pickImages();
                               Fluttertoast.showToast(msg: "Pressed");
                             },
                             child: Container(
@@ -353,7 +332,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                           ),
 
                           // Image Displayed
-                          image != null ?
+                          imageFile != null ?
                           Container(
                             width: 100,
                             height: 100,
@@ -361,11 +340,30 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                 color: Colors.white
                             ),
 
-                            child: Image.file(image!.absolute,fit: BoxFit.fill),
+                            child: Image.file(imageFile!.absolute,fit: BoxFit.fill),
 
                           ) : Container(),
 
-                          image == null ? SizedBox(height: height * 0.2,) : SizedBox(height: height * 0.1,),
+                          imageFile == null ? SizedBox(height: height * 0.2,) : SizedBox(height: height * 0.1,),
+
+                          /*GridView.builder(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemBuilder: (context,index){
+                                return index == 0 ?
+                                Container() :
+                                Container(
+                                    margin: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: FileImage(imageList[index - 1]),
+                                            fit: BoxFit.cover
+                                        ))
+                                );
+                              }
+                          ),*/
 
 
                           // Consultation fee
@@ -409,12 +407,9 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                     }
                                 );
 
-                                // Saving consultation information
-                                saveConsultationInfo();
-
                                 Timer(const Duration(seconds: 3),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(),)));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(),)));
                                 });
 
 

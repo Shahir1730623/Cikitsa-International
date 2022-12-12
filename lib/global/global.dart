@@ -15,8 +15,10 @@ var verifyId;
 
 String? patientId;
 String? consultationId;
+String? doctorConsultationId;
 String? doctorId;
 String? userType;
+String? loggedInUser;
 
 
 UserModel? currentUserInfo;

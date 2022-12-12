@@ -14,6 +14,7 @@ class AssistantMethods{
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         currentUserInfo = UserModel.fromSnapshot(snapshot);
+        loggedInUser = "Patient";
       }
     });
 
@@ -24,6 +25,7 @@ class AssistantMethods{
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        loggedInUser = "Doctor";
       }
     });
 

@@ -27,13 +27,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 5),() async {
       if(await firebaseAuth.currentUser!=null){
-        // send User to main screen
+        // Send Patient to Patient Dashboard
         currentFirebaseUser = firebaseAuth.currentUser;
-        if(currentUserInfo != null){
+        if(loggedInUser == "Patient"){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreen()));
         }
 
-        else if(currentDoctorInfo != null){
+        // Send Doctor to Doctor Dashboard
+        else if(loggedInUser == "Doctor"){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DoctorDashboard()));
         }
       }

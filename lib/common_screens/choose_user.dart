@@ -156,7 +156,7 @@ class _ChooseUserState extends State<ChooseUser> {
 
                        const SizedBox(height: 5,),
 
-                       CircleAvatar(
+                       const CircleAvatar(
                          radius: 20,
                          backgroundColor: Colors.blue,
                          child: Text(
@@ -170,7 +170,7 @@ class _ChooseUserState extends State<ChooseUser> {
                    ),
                  ),
 
-                 SizedBox(width: 5,),
+                 const SizedBox(width: 5,),
 
 
                ],

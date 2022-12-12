@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:app/common_screens/confirmation_page.dart';
-import 'package:app/common_screens/coundown_screen.dart';
 import 'package:app/models/patient_model.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../global/global.dart';
 import '../main_screen.dart';
@@ -30,7 +30,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return now.microsecondsSinceEpoch.toString();
   }
 
-  void updatePaymentStatus(){
+  /*void updatePaymentStatus(){
    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
@@ -40,7 +40,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
        .child(selectedServiceDatabaseParentName!)
        .child(consultationId!)
        .child("payment").set("Paid");
-  }
+  }*/
 
   void fetchPatientData(){
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
@@ -52,7 +52,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (snapshot.exists) {
         selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
         Fluttertoast.showToast(msg: "Successfully retrieved Patient Info");
-        saveConsultationInfoForDoctor();
+        saveConsultationInfoForPatient(); // Saving consultation info for patient and doctor
       }
       else{
         Fluttertoast.showToast(msg: "Unsuccessful to retrieve patient info");
@@ -60,12 +60,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
+  saveConsultationInfoForPatient() async {
+    consultationId = idGenerator();
+    Map consultationInfoMap = {
+      "id" : consultationId,
+      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      "time" : DateFormat.jm().format(DateTime.now()),
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "doctorFee" : selectedDoctorInfo!.fee,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "consultationType" : "Now",
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid",
+    };
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("consultations")
+        .child(consultationId!);
+
+    reference.set(consultationInfoMap);
+
+    // Calling next method
+    saveConsultationInfoForDoctor();
+
+  }
+
   void saveConsultationInfoForDoctor(){
-    String consultationId = idGenerator();
     Map doctorLiveConsultationForDoctor = {
       "id" : consultationId,
-      "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      "time" : DateFormat.jm().format(DateTime.now()),
       "consultantFee" : "500",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
@@ -76,13 +107,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "specialization" : selectedDoctorInfo!.specialization,
-      "consultationType" : "Upcoming",
+      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Upcoming",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid"
     };
 
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors").child(selectedDoctorInfo!.doctorId!).child("consultations").child(consultationId);
+    DatabaseReference reference = FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("consultations")
+        .child(consultationId!);
+
     reference.set(doctorLiveConsultationForDoctor);
   }
 
@@ -236,12 +272,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       );
 
                       // Update Payment information
-                      updatePaymentStatus();
                       fetchPatientData();
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ConfirmationPageScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfirmationPageScreen()));
 
                       });
                     },

@@ -67,8 +67,7 @@ class _CreateProfileState extends State<CreateProfile> {
   }
 
   void saveNameToDatabase() async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage
-        .instance.ref('doctorImages/dummy-image.png');
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorImages/dummy-image.png');
     var imageUrl = await reference.getDownloadURL();
 
     if (userType == "Users") {

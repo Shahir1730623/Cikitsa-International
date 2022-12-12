@@ -206,7 +206,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                             );
 
                             doctorId = (snapshot.value as Map)["id"];
-                            Fluttertoast.showToast(msg: doctorId.toString());
+                            //Fluttertoast.showToast(msg: doctorId.toString());
                             retrieveDoctorDataFromDatabase(doctorId!);
 
                             Timer(const Duration(seconds: 3),()  {
@@ -233,7 +233,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                 children: [
                                   // Left Column
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       // Doc image
                                       CircleAvatar(
@@ -255,7 +255,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                             height: 15,
                                           ),
 
-                                          const SizedBox(width: 7,),
+                                          const SizedBox(width: 10,),
 
                                           Text(
                                             (snapshot.value as Map)["rating"].toString(),
@@ -265,7 +265,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                             ),
                                           ),
 
-                                          const SizedBox(width: 7,),
+                                          const SizedBox(width: 10,),
 
                                           Text(
                                             "(" + (snapshot.value as Map)["totalVisits"] + ")",
@@ -287,16 +287,16 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                           Text(
                                             "Fee",
                                             style: GoogleFonts.montserrat(
-                                              fontWeight: FontWeight.bold,
                                               fontSize: 18,
+                                              color: Colors.black
                                             ),
                                           ),
-
+                                          const SizedBox(height: 5,),
                                           Text(
-                                            (snapshot.value as Map)["fee"].toString(),
+                                            '৳' + (snapshot.value as Map)["fee"].toString(),
                                             style: GoogleFonts.montserrat(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                              fontSize: 20,
                                             ),
                                           ),
                                         ],
@@ -390,7 +390,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                     ),
                                   ),
 
-                                  SizedBox(height: 5,),
+                                  const SizedBox(height: 5,),
 
 
 

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:app/doctor_screens/doctor_upload_prescription.dart';
+import 'package:app/our_services/doctor_live_consultation/uploading_prescription.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
@@ -30,7 +32,7 @@ class _AgoraScreenState extends State<AgoraScreen> {
 
   //int tokenRole = 1; // use 1 for Host/Broadcaster, 2 for Subscriber/Audience
   String serverUrl = "https://agora-token-service-production-0ad7.up.railway.app"; // The base URL to your token server, for example "https://agora-token-service-production-92ff.up.railway.app"
-  int tokenExpireTime = 60; // Expire time in Seconds.
+  int tokenExpireTime = 300; // Expire time in Seconds.
   bool isTokenExpiring = false; // Set to true when the token is about to expire
 
   @override
@@ -245,7 +247,13 @@ class _AgoraScreenState extends State<AgoraScreen> {
                   onPressed: () {
                     //leave();
                     Timer(const Duration(seconds: 1),()  {
-                      Navigator.pop(context);
+                      if(loggedInUser == "Patient"){
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
+                      }
+                      else {
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorUploadPrescription()), (Route<dynamic> route) => false);
+                      }
+
                     });
 
                   },

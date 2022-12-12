@@ -106,7 +106,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
   }
 
   late Timer _timer;
-  int _start = 10;
+  int _start = 30;
   void startTimer() {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(oneSec, (Timer timer) {
@@ -125,6 +125,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
           Timer(const Duration(seconds: 5),()  {
             Navigator.pop(context);
             channelName = consultationId;
+            Fluttertoast.showToast(msg: channelName!);
+            tokenRole = 2;
             Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
           });
         }
