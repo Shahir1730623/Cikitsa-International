@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../models/consultation_model.dart';
+import '../widgets/doctor_visa_confirmation_dialog.dart';
 import '../widgets/progress_dialog.dart';
 import 'coundown_screen.dart';
 
@@ -62,25 +63,44 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
     }
   }
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 3),(){
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context){
-            return ProgressDialog(message: "");
-          }
-      );
+      if(selectedService == "Visa Consultation"){
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context){
+              return const VisaConfirmationProgressDialog();
+            }
+        );
 
-      retrieveConsultationInfo();
-      Timer(const Duration(seconds: 1),()  {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
+        Timer(const Duration(seconds: 3),()  {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
+        });
+      }
 
-      });
+      else{
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context){
+              return ProgressDialog(message: "");
+            }
+        );
+
+        retrieveConsultationInfo();
+        Timer(const Duration(seconds: 5),()  {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
+        });
+      }
+
+
 
 
 
@@ -107,7 +127,7 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
 
                 Text(
                   "Payment Confirmed",
-              style: GoogleFonts.montserrat(
+                style: GoogleFonts.montserrat(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 25,

@@ -30,18 +30,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return now.microsecondsSinceEpoch.toString();
   }
 
-  /*void updatePaymentStatus(){
-   DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!);
-
-   reference
-       .child(selectedServiceDatabaseParentName!)
-       .child(consultationId!)
-       .child("payment").set("Paid");
-  }*/
-
   void fetchPatientData(){
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
@@ -60,7 +48,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
-  saveConsultationInfoForPatient() async {
+  void saveConsultationInfoForPatient() async {
     consultationId = idGenerator();
     Map consultationInfoMap = {
       "id" : consultationId,
@@ -120,6 +108,41 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child(consultationId!);
 
     reference.set(doctorLiveConsultationForDoctor);
+  }
+
+  void saveVisaInvitationInfoForPatient() async {
+    String invitationId = idGenerator();
+    Map visaInvitationInfoMap = {
+      "id" : invitationId,
+      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      "time" : DateFormat.jm().format(DateTime.now()),
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "doctorFee" : selectedDoctorInfo!.fee,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "patientID" : selectedPatientInfo!.id,
+      "patientName" : patientName,
+      "patientDateOfBirth" : patientDateOfBirth,
+      "patientIDNo" : patientIDNo,
+      "attendantName" : attendantName,
+      "attendantDateOfBirth" : attendantDateOfBirth,
+      "attendantIDNo" : attendantIDNo,
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid",
+    };
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("visaInvitation")
+        .child(invitationId);
+
+    reference.set(visaInvitationInfoMap);
+
   }
 
 
@@ -272,7 +295,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       );
 
                       // Update Payment information
-                      fetchPatientData();
+                       if(selectedService == "Doctor Live Consultation"){
+                         fetchPatientData();
+                       }
+
+                      else if (selectedService == "Visa Consultation"){
+                         saveVisaInvitationInfoForPatient();
+                      }
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);

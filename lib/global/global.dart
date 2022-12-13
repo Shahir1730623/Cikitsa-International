@@ -43,3 +43,13 @@ const token = '007eJxTYJjTs78ij+/l1Wo530P6Nf87Cp5ueH7Q9ZbHyoln9u9aF2imwJCSkmhgYG
 String? channelName;
 int? tokenRole;
 
+//Visa invitation
+String? patientName;
+String? patientDateOfBirth;
+String? patientIDNo;
+
+String? attendantName;
+String? attendantDateOfBirth;
+String? attendantIDNo;
+
+

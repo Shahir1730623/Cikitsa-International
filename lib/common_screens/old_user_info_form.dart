@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
+import '../our_services/visa_invitation/visa_form_screen.dart';
 
 
 class OldUserForm extends StatefulWidget {
@@ -512,7 +513,7 @@ class _OldUserFormState extends State<OldUserForm> {
                             ),
                             height: 70,
                             width: 70,
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             child: ElevatedButton(
                               onPressed: () {
                                 showDialog(
@@ -525,7 +526,11 @@ class _OldUserFormState extends State<OldUserForm> {
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
-                                  if(selectedDoctorInfo == null){
+                                  if(selectedService == "Visa Consultation"){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaFormScreen()));
+                                  }
+
+                                  else if(selectedService == "CI Consultation"){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
                                   }
 
@@ -538,7 +543,6 @@ class _OldUserFormState extends State<OldUserForm> {
                                   }
 
                                 });
-
 
                               },
 

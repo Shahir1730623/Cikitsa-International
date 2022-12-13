@@ -439,6 +439,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
                                                               Timer(const Duration(seconds: 5),()  {
                                                                 Navigator.pop(context);
+                                                                consultationId = (snapshot.value as Map)["id"];
                                                                 channelName = (snapshot.value as Map)["id"];
                                                                 Fluttertoast.showToast(msg: channelName!);
                                                                 tokenRole = 1;

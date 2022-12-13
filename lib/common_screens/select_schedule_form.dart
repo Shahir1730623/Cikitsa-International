@@ -68,8 +68,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
     });
   }
 
-
-
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
   String? formattedDate,formattedTime;
@@ -186,8 +184,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
     ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
     String payloadJsonString = consultationPayloadModel.toJsonString();
     await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
-
-
   }
 
   @override
@@ -463,9 +459,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 fontSize: 20
                             ),
                           ),
-
-                          SizedBox(height: height * 0.02,),
-
+                          SizedBox(height: height * 0.01,),
                           TextFormField(
                             keyboardType: TextInputType.multiline,
                             maxLines: null,

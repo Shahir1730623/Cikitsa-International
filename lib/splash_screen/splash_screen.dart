@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../assistants/assistant_methods.dart';
+import '../doctor_screens/doctor_upload_prescription.dart';
 import '../global/global.dart';
 
 class SplashScreen extends StatefulWidget {

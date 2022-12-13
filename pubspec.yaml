@@ -61,6 +61,11 @@ dependencies:
   http: ^0.13.5
   agora_rtc_engine: ^6.0.0
   permission_handler: ^10.2.0
+  path_provider:
+  dio:
+  gallery_saver:
+  image_cropper:
+  flutter_image_compress:
 
 
 

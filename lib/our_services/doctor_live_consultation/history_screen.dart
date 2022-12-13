@@ -335,8 +335,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius
                                                       .circular(50),
-                                                  color: (consultationStatus ==
-                                                      "Scheduled")
+                                                  color: (consultationStatus == "Scheduled")
                                                       ? Colors.blue
                                                       : Colors.grey.shade200
                                               ),
@@ -348,9 +347,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 angle: 180 * pi / 180,
                                                 child: Icon(
                                                   Icons.arrow_back_ios_new,
-                                                  color: (consultationStatus ==
-                                                      "Scheduled") ? Colors
-                                                      .white : Colors.black,
+                                                  color: (consultationStatus == "Scheduled") ? Colors.white : Colors.black,
                                                   size: 20,
                                                 ),
                                               ),
@@ -364,9 +361,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                         // Workplace
                                         Text(
-                                          "Workplace: " + (snapshot
-                                              .value as Map)["workplace"]
-                                              .toString(),
+                                          "Workplace: " + (snapshot.value as Map)["workplace"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 13,

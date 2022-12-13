@@ -1,34 +1,21 @@
 import 'dart:async';
 
-import 'package:app/common_screens/choose_user.dart';
-import 'package:app/models/doctor_model.dart';
-import 'package:app/our_services/doctor_live_consultation/live_doctors.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../common_screens/new_user_info_form.dart';
+import '../../common_screens/choose_user.dart';
 import '../../global/global.dart';
 import '../../widgets/progress_dialog.dart';
 
-class DoctorProfile extends StatefulWidget {
-  const DoctorProfile({Key? key}) : super(key: key);
+class VisaDoctorDetails extends StatefulWidget {
+  const VisaDoctorDetails({Key? key}) : super(key: key);
 
   @override
-  State<DoctorProfile> createState() => _DoctorProfileState();
+  State<VisaDoctorDetails> createState() => _VisaDoctorDetailsState();
 }
 
-class _DoctorProfileState extends State<DoctorProfile> {
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
+class _VisaDoctorDetailsState extends State<VisaDoctorDetails> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -46,8 +33,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
               padding: const EdgeInsets.all(10.0),
               child: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Colors.white
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    color: Colors.white
                 ),
                 child: const Icon(
                   Icons.arrow_back_outlined,
@@ -56,26 +43,6 @@ class _DoctorProfileState extends State<DoctorProfile> {
               ),
             ),
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(top:19.0),
-              child: Text(
-                selectedDoctorInfo!.status.toString(),
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0,left: 2),
-              child: Icon(
-                  Icons.circle,
-                  color: ((selectedDoctorInfo!.status.toString() == "Online") ? CupertinoColors.systemGreen : Colors.grey.shade400)
-            ))
-          ],
         ),
 
         backgroundColor: Colors.white,
@@ -105,9 +72,9 @@ class _DoctorProfileState extends State<DoctorProfile> {
               Text(
                 "Doctor Profile",
                 style: GoogleFonts.montserrat(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black
                 ),
               ),
 
@@ -262,7 +229,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           SizedBox(height: 10,),
 
                           const Text(
-                            "Lorem ipsum dolor sit amet, incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet, incididunt ut labore et dolore"
+                              "Lorem ipsum dolor sit amet, incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet, incididunt ut labore et dolore"
                           ),
 
                           SizedBox(height: height * 0.1),
@@ -271,7 +238,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           SizedBox(
                             width: double.infinity,
                             height: 45,
-                            child: ElevatedButton.icon(
+                            child: ElevatedButton(
                               onPressed: ()  {
                                 showDialog(
                                     context: context,
@@ -281,33 +248,29 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                     }
                                 );
 
-                                // Saving selected doctor id
-                                //saveSelectedDoctorIdToDatabase();
-
                                 Timer(const Duration(seconds: 1),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
                                 });
 
 
                               },
 
                               style: ElevatedButton.styleFrom(
-                                  primary: (((selectedDoctorInfo!.status.toString() == "Online") ? Colors.blue : Colors.grey.shade300 )),
+                                  primary: Colors.blue,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
-
-                              icon: Icon(Icons.video_call),
-                              label: Text(
-                                (((selectedDoctorInfo!.status.toString() == "Online") ? "Talk to Doctor Now" : "Schedule Appointment" )),
+                              child: Text(
+                                "Select Doctor",
                                 style: GoogleFonts.montserrat(
-                                  fontSize: 15,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  color: (((selectedDoctorInfo!.status.toString() == "Online") ? Colors.white : Colors.black ))
+                                  fontSize: 15
                                 ),
                               ),
+
+                              ),
                             ),
-                          ),
 
                           const SizedBox(height: 10),
 

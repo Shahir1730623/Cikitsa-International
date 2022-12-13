@@ -47,7 +47,6 @@ class _LiveDoctorsState extends State<LiveDoctors> {
       }
 
     });
-
   }
 
   void loadScreen(){
@@ -192,7 +191,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index) {
-                      final doctorName = (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString();
+                      final doctorName = "Dr. " + (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString();
                       final workplace = (snapshot.value as Map)["workplace"].toString();
                       if(searchTextEditingController.text.isEmpty){
                         return GestureDetector(
@@ -206,7 +205,6 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                             );
 
                             doctorId = (snapshot.value as Map)["id"];
-                            //Fluttertoast.showToast(msg: doctorId.toString());
                             retrieveDoctorDataFromDatabase(doctorId!);
 
                             Timer(const Duration(seconds: 3),()  {
@@ -315,7 +313,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                       children: [
                                         // Doctor Name
                                         Text(
-                                        (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString(),
+                                        "Dr. " + (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 17,
@@ -409,15 +407,14 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context){
-                                  return const Center(child: CircularProgressIndicator());
+                                  return ProgressDialog(message: "message");
                                 }
                             );
 
                             doctorId = (snapshot.value as Map)["id"];
-                            Fluttertoast.showToast(msg: doctorId.toString());
                             retrieveDoctorDataFromDatabase(doctorId!);
 
-                            Timer(const Duration(seconds: 4),()  {
+                            Timer(const Duration(seconds: 3),()  {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
                             });
@@ -441,19 +438,14 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                 children: [
                                   // Left Column
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       // Doc image
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10.0),//or 15.0
-                                        child: Container(
-                                          height: 70.0,
-                                          width: 70.0,
-                                          color: Colors.grey[100],
-                                          child: Image.asset(
-                                            "assets/Logo.png",
-                                            fit: BoxFit.fill,
-                                          ),
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Colors.grey[100],
+                                        foregroundImage: NetworkImage(
+                                          (snapshot.value as Map)["imageUrl"].toString(),
                                         ),
                                       ),
 
@@ -468,7 +460,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                             height: 15,
                                           ),
 
-                                          const SizedBox(width: 7,),
+                                          const SizedBox(width: 10,),
 
                                           Text(
                                             (snapshot.value as Map)["rating"].toString(),
@@ -478,7 +470,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                             ),
                                           ),
 
-                                          const SizedBox(width: 7,),
+                                          const SizedBox(width: 10,),
 
                                           Text(
                                             "(" + (snapshot.value as Map)["totalVisits"] + ")",
@@ -500,16 +492,16 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                           Text(
                                             "Fee",
                                             style: GoogleFonts.montserrat(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                                fontSize: 18,
+                                                color: Colors.black
                                             ),
                                           ),
-
+                                          const SizedBox(height: 5,),
                                           Text(
-                                            (snapshot.value as Map)["fee"].toString(),
+                                            '৳' + (snapshot.value as Map)["fee"].toString(),
                                             style: GoogleFonts.montserrat(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                              fontSize: 20,
                                             ),
                                           ),
                                         ],
@@ -528,7 +520,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["name"].toString(),
+                                          "Dr. " + (snapshot.value as Map)["firstName"].toString() + " " + (snapshot.value as Map)["lastName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 17,
@@ -603,7 +595,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                                     ),
                                   ),
 
-                                  SizedBox(height: 5,),
+                                  const SizedBox(height: 5,),
 
 
 
