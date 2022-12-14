@@ -100,14 +100,6 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
 
   Future pickImages() async {
     try{
-      // Pick an Image
-      /*var imageSource =  await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const UploadImageDialog();
-          }
-      );*/
       final pickedImages = await ImagePicker().pickMultiImage();
       if(pickedImages != null){
         showDialog(
@@ -133,8 +125,8 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
     }
   }
 
-  Future<String> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ patientId! + "/medical_document/"+ idGenerator() + ".png" );
+  Future<void> uploadFile(File file) async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ patientId! + "/medical_documents/"+ idGenerator() + ".png" );
 
     // Upload the image to firebase storage
     try{
@@ -146,8 +138,8 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
       print(e);
     }
 
-    String url = await reference.getDownloadURL();
-    return url;
+    //String url = await reference.getDownloadURL();
+    //return url;
   }
 
   @override
@@ -505,7 +497,6 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
                             return ProgressDialog(message: "Please wait...");
                           }
                       );
-
                       for (int i = 0; i < imageList.length; i++) {
                         await uploadFile(imageList[i]);
                         //downloadUrls.add(url);
@@ -513,7 +504,7 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
 
                       Timer(const Duration(seconds: 5),()  {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: '', formattedTime: '', visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim())));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: '', formattedTime: '', visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: selectedCenter,)));
                       });
 
 

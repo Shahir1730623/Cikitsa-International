@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:app/common_screens/payment_screen.dart';
@@ -25,34 +27,58 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 }
 
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
+  List<File> imageList = [];
 
-  late List<File> imageList;
-  //File? image;
-  File? imageFile;
 
-  Future<void> pickImages() async{
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-    setState(() {
-      if(pickedImage != null){
-        /*showDialog(
+  Future pickImages() async {
+    try{
+      final pickedImages = await ImagePicker().pickMultiImage();
+      if(pickedImages != null){
+        showDialog(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return ProgressDialog(message: "Please wait...");
+              return ProgressDialog(message: "");
             }
-        );*/
-        imageList.add(File(pickedImage.path));
+        );
 
-        //imageFile = pickedImage as File?;
-        //firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('Patient Reports and Prescriptions/'+ currentUserInfo!.id! +'.png');
+        pickedImages.forEach((image) {
+          imageList.add(File(image.path));
+        });
+        setState(() {});
+        Navigator.pop(context);
+
       }
+    }
 
-      else{
-        Fluttertoast.showToast(msg: "No file selected");
-      }
-
-    });
+    catch(e){
+      print(e);
+    }
   }
+
+  String idGenerator() {
+    final now = DateTime.now();
+    return now.microsecondsSinceEpoch.toString();
+  }
+
+
+  Future<void> uploadFile(File file) async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+
+    // Upload the image to firebase storage
+    try{
+      await reference.putFile(File(file.path));
+      //imageUrl = await reference.getDownloadURL();
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    //String url = await reference.getDownloadURL();
+    //return url;
+  }
+
 
 
 
@@ -72,11 +98,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   ];
   String? selectedReasonOfVisit;
 
-  String idGenerator() {
-    final now = DateTime.now();
-    return now.microsecondsSinceEpoch.toString();
-  }
-
   String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());// 28/03/2020
   String formattedTime = DateFormat.jm().format(DateTime.now());
 
@@ -88,6 +109,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     super.initState();
     problemTextEditingController.addListener(() => setState(() {}));
     relationTextEditingController.addListener(() => setState(() {}));
+    consultationId = idGenerator();
   }
 
 
@@ -294,16 +316,17 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
 
                           // Image Picker
                           GestureDetector(
-                            onTap: (){
-                              pickImages();
-                              Fluttertoast.showToast(msg: "Pressed");
+                            onTap: () async {
+                              await pickImages();
+                              var snackBar = const SnackBar(content: Text("Uploaded successfully"));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
                             child: Container(
-                              margin: EdgeInsets.all(15),
-                              padding: EdgeInsets.all(15),
+                              margin: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
                                   color: Colors.black,
                                   width: 0.5,
@@ -330,41 +353,38 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                               ),
                             ),
                           ),
+                          // Display Image Container
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Container(
+                              width: Get.width,
+                              height: 150,
+                              child: imageList.isEmpty
+                                  ? const Center(
+                                child: Text("No Images found"),
+                              )
+                                  : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (ctx, i) {
+                                  return Container(
+                                      width: 100,
+                                      margin: EdgeInsets.only(right: 10),
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black),
+                                          borderRadius: BorderRadius.circular(2)),
+                                      child: Image.file(
+                                        imageList[i],
+                                        fit: BoxFit.cover,
+                                      ));
+                                },
 
-                          // Image Displayed
-                          imageFile != null ?
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: const BoxDecoration(
-                                color: Colors.white
+                                itemCount: imageList.length,
+                              ),
                             ),
+                          ),
 
-                            child: Image.file(imageFile!.absolute,fit: BoxFit.fill),
-
-                          ) : Container(),
-
-                          imageFile == null ? SizedBox(height: height * 0.2,) : SizedBox(height: height * 0.1,),
-
-                          /*GridView.builder(
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemBuilder: (context,index){
-                                return index == 0 ?
-                                Container() :
-                                Container(
-                                    margin: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: FileImage(imageList[index - 1]),
-                                            fit: BoxFit.cover
-                                        ))
-                                );
-                              }
-                          ),*/
-
+                          SizedBox(height: height * 0.05,),
 
                           // Consultation fee
                           Row(
@@ -398,7 +418,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton(
-                              onPressed: ()  {
+                              onPressed: ()  async {
                                 showDialog(
                                     context: context,
                                     barrierDismissible: false,
@@ -407,9 +427,14 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                     }
                                 );
 
+                                for (int i = 0; i < imageList.length; i++) {
+                                  await uploadFile(imageList[i]);
+                                  //downloadUrls.add(url);
+                                }
+
                                 Timer(const Duration(seconds: 3),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(),)));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                                 });
 
 

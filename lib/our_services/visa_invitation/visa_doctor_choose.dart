@@ -100,7 +100,7 @@ class _VisaDoctorChooseState extends State<VisaDoctorChoose> {
                         children: [
                           Image.asset("assets/visaInvitationImages/passport.png", height: 35,),
 
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
 
                           Text(
                             "Visa Invitation",

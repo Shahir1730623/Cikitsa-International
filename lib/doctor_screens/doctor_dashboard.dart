@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/doctor_screens/doctor_live_consultations.dart';
+import 'package:app/doctor_screens/doctor_visa_invitation.dart';
 import 'package:app/our_services/doctor_live_consultation/doctor_profile.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -255,34 +256,39 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             ],
                           ),
 
-                          Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(width: 1,color: Colors.grey.shade400),
-                                ),
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: Image.asset(
-                                      "assets/prescription.png"
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorVisaInvitation()));
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(width: 1,color: Colors.grey.shade400),
+                                  ),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: Image.asset(
+                                        "assets/visaInvitationImages/passport.png"
+                                    ),
                                   ),
                                 ),
-                              ),
 
-                              const SizedBox(height: 10,),
+                                const SizedBox(height: 10,),
 
-                              Text(
-                                'Prescription\nGenerator',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade600
-                                ),
-                              )
+                                Text(
+                                  'Visa\nInvitation',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey.shade600
+                                  ),
+                                )
 
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),

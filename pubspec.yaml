@@ -102,7 +102,6 @@ flutter:
      - assets/pharmacyImages/
      - assets/consultationImages/
      - assets/visaInvitationImages/
-     - assets/tessdata/
      - assets/authenticationImages/
      - assets/doctorImages/
 

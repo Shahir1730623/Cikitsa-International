@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../global/global.dart';
+import '../../widgets/visa_confirmation_dialog.dart';
 
 class VisaInvitationConfirmationScreen extends StatefulWidget {
   const VisaInvitationConfirmationScreen({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class _VisaInvitationConfirmationScreenState extends State<VisaInvitationConfirm
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
-          return const PrescriptionDialog();
+          return const VisaConfirmationProgressDialog();
         });
   }
 
@@ -52,14 +53,24 @@ class _VisaInvitationConfirmationScreenState extends State<VisaInvitationConfirm
                   )
               ),
 
-              SizedBox(height: height * 0.05),
+              SizedBox(height: height * 0.03),
               Text(
-                selectedConsultationInfo!.doctorName!,
+                "Dr. " + selectedDoctorInfo!.doctorFirstName! +" " + selectedDoctorInfo!.doctorLastName!,
                 style: GoogleFonts.montserrat(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 25),
               ),
+              SizedBox(height: height * 0.01),
+              Text(
+                selectedDoctorInfo!.specialization!,
+                style: GoogleFonts.montserrat(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18
+                ),
+              ),
+
               SizedBox(height: height * 0.5),
               Text(
                 "This may take several minutes",

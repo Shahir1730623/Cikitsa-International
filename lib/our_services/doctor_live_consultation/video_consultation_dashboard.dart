@@ -26,7 +26,6 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
     super.initState();
     selectedServiceDatabaseParentName = "consultations";
     selectedService = "Doctor Live Consultation";
-    Fluttertoast.showToast(msg: selectedService + " " + selectedServiceDatabaseParentName!);
   }
 
   @override

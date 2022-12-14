@@ -6,6 +6,7 @@ import 'package:app/models/doctor_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/patient_model.dart';
+import '../models/visa_invitation_model.dart';
 
 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 User? currentFirebaseUser;
@@ -15,6 +16,7 @@ var verifyId;
 
 String? patientId;
 String? consultationId;
+String? invitationId;
 String? doctorConsultationId;
 String? doctorId;
 String? userType;
@@ -27,6 +29,7 @@ DoctorModel? selectedDoctorInfo;
 PatientModel? selectedPatientInfo;
 ConsultationModel? selectedConsultationInfo;
 CIConsultationModel? selectedCIConsultationInfo;
+VisaInvitationModel? selectedVisaInvitationInfo;
 
 String selectedService = "";
 String? selectedCountry;

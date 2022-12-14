@@ -18,7 +18,8 @@ class PaymentScreen extends StatefulWidget {
   String? formattedTime;
   String? visitationReason;
   String? problem;
-  PaymentScreen({Key? key,required this.formattedDate,required this.formattedTime,required this.visitationReason,required this.problem}) : super(key: key);
+  String? selectedCenter;
+  PaymentScreen({Key? key,required this.formattedDate,required this.formattedTime,required this.visitationReason,required this.problem,required this.selectedCenter}) : super(key: key);
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -39,8 +40,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
-        Fluttertoast.showToast(msg: "Successfully retrieved Patient Info");
-        saveConsultationInfoForPatient(); // Saving consultation info for patient and doctor
+        if(selectedService == "Doctor Live Consultation"){
+          saveConsultationInfoForPatient(); // Saving consultation info for patient and doctor
+        }
+
+        else if (selectedService == "Visa Consultation"){
+          saveVisaInvitationInfoForPatient();
+        }
+
       }
       else{
         Fluttertoast.showToast(msg: "Unsuccessful to retrieve patient info");
@@ -49,7 +56,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void saveConsultationInfoForPatient() async {
-    consultationId = idGenerator();
     Map consultationInfoMap = {
       "id" : consultationId,
       "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
@@ -111,7 +117,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void saveVisaInvitationInfoForPatient() async {
-    String invitationId = idGenerator();
+    invitationId = idGenerator();
     Map visaInvitationInfoMap = {
       "id" : invitationId,
       "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
@@ -119,19 +125,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
-      "specialization" : selectedDoctorInfo!.specialization,
-      "doctorFee" : selectedDoctorInfo!.fee,
       "workplace" : selectedDoctorInfo!.workplace,
-      "patientID" : selectedPatientInfo!.id,
+      "patientId" : patientId,
       "patientName" : patientName,
       "patientDateOfBirth" : patientDateOfBirth,
-      "patientIDNo" : patientIDNo,
+      "patientIdNo" : patientIDNo,
+      "patientGender" : selectedPatientInfo!.gender,
+      "patientWeight" : selectedPatientInfo!.weight,
+      "patientHeight" : selectedPatientInfo!.height,
       "attendantName" : attendantName,
       "attendantDateOfBirth" : attendantDateOfBirth,
-      "attendantIDNo" : attendantIDNo,
+      "attendantIdNo" : attendantIDNo,
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
+      "selectedVisaCenter" : widget.selectedCenter,
       "payment" : "Paid",
+      "status" : "Waiting"
     };
 
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
@@ -139,10 +148,42 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child("patientList")
         .child(patientId!)
         .child("visaInvitation")
-        .child(invitationId);
+        .child(invitationId!);
 
     reference.set(visaInvitationInfoMap);
+    saveVisaInvitationInfoForDoctor();
+  }
 
+  void saveVisaInvitationInfoForDoctor(){
+    Map visaInvitationInfoMap = {
+      "id" : invitationId,
+      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      "time" : DateFormat.jm().format(DateTime.now()),
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "patientId" : patientId,
+      "patientName" : patientName,
+      "patientDateOfBirth" : patientDateOfBirth,
+      "patientIdNo" : patientIDNo,
+      "patientGender" : selectedPatientInfo!.gender,
+      "patientWeight" : selectedPatientInfo!.weight,
+      "patientHeight" : selectedPatientInfo!.height,
+      "attendantName" : attendantName,
+      "attendantDateOfBirth" : attendantDateOfBirth,
+      "attendantIdNo" : attendantIDNo,
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "selectedVisaCenter" : widget.selectedCenter,
+      "payment" : "Paid",
+      "status" : "Waiting"
+    };
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("visaInvitation")
+        .child(invitationId!);
+
+    reference.set(visaInvitationInfoMap);
   }
 
 
@@ -294,14 +335,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           }
                       );
 
-                      // Update Payment information
-                       if(selectedService == "Doctor Live Consultation"){
-                         fetchPatientData();
-                       }
-
-                      else if (selectedService == "Visa Consultation"){
-                         saveVisaInvitationInfoForPatient();
-                      }
+                      fetchPatientData();
 
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);

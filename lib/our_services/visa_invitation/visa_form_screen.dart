@@ -1043,12 +1043,10 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               }
                           );
 
-                          // Update Payment information
-                          //fetchPatientData();
+                          saveVisaInvitationInfo();
 
                           Timer(const Duration(seconds: 3),()  {
                             Navigator.pop(context);
-                            saveVisaInvitationInfo();
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const MedicalDocumentsForm()));
 
                           });

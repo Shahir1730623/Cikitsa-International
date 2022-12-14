@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/main_screen.dart';
 import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/booking_detail.dart';
+import 'package:app/our_services/visa_invitation/visa_invitation_confirmation.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../models/consultation_model.dart';
-import '../widgets/doctor_visa_confirmation_dialog.dart';
+import '../widgets/visa_confirmation_dialog.dart';
 import '../widgets/progress_dialog.dart';
 import 'coundown_screen.dart';
 
@@ -62,8 +63,6 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
       });
     }
   }
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -80,7 +79,7 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
 
         Timer(const Duration(seconds: 3),()  {
           Navigator.pop(context);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VisaInvitationConfirmationScreen() ), (route) => false);
         });
       }
 
@@ -99,10 +98,6 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
           Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));
         });
       }
-
-
-
-
 
     });
 
