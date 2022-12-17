@@ -8,6 +8,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -50,30 +52,43 @@ class _SelectScheduleState extends State<SelectSchedule> {
   }
 
   // Image Storage
-  late List<String> imageList;
-  File? image;
-  final picker = ImagePicker();
+  List<File> imageList = [];
   final Storage storage = Storage();
-
-  Future<void> getImageGallery() async{
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if(pickedFile != null){
-        image = File(pickedFile.path);
-      }
-      else{
-        Fluttertoast.showToast(msg: "No file selected");
-      }
-
-    });
-  }
 
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
   String? formattedDate,formattedTime;
   int dateCounter = 0;
   int timeCounter = 0;
+  bool flag = false;
+  String selectedTime = " ";
 
+
+  Future pickImages() async {
+    try{
+      final pickedImages = await ImagePicker().pickMultiImage();
+      if(pickedImages != null){
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return ProgressDialog(message: "");
+            }
+        );
+
+        pickedImages.forEach((image) {
+          imageList.add(File(image.path));
+        });
+        setState(() {});
+        Navigator.pop(context);
+
+      }
+    }
+
+    catch(e){
+      print(e);
+    }
+  }
 
   pickDate() async {
     DateTime? pickedDate = await showDatePicker(
@@ -89,6 +104,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         formattedDate = DateFormat('dd-MM-yyyy').format(date);
         Fluttertoast.showToast(msg: formattedDate.toString());
         dateCounter++;
+        flag = true;
       });
     }
 
@@ -98,7 +114,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
   }
 
-  pickTime() async {
+  /*pickTime() async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(DateTime.now()), //get today's date
@@ -112,7 +128,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         timeCounter++;
       });
     }
-  }
+  }*/
 
 
   TextEditingController relationTextEditingController = TextEditingController();
@@ -131,6 +147,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     return now.microsecondsSinceEpoch.toString();
   }
 
+
   saveConsultationInfo() async {
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
@@ -143,7 +160,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
         "id" : consultationId,
         "consultantName" : "TBA",
         "date" : formattedDate,
-        "time" : formattedTime,
+        "time" : selectedTime,
         "selectedCountry" : selectedCountry,
         "consultantFee" : "500",
         "consultationType" : "Scheduled",
@@ -159,7 +176,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
       Map consultationInfoMap = {
         "id" : consultationId,
         "date" : formattedDate,
-        "time" : formattedTime,
+        "time" : selectedTime,
         "doctorId" : selectedDoctorInfo!.doctorId,
         "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
         "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
@@ -179,11 +196,11 @@ class _SelectScheduleState extends State<SelectSchedule> {
     var df = DateFormat.jm().parse(formattedTime!);
     formattedDate = DateFormat('yyyy-MM-dd').format(date);
     formattedTime = DateFormat('HH:mm').format(df);
-    String dateTime = formattedDate! + ' ' + formattedTime!;
+    String dateTime = formattedDate! + ' ' + selectedTime;
 
     ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
     String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: 'Appointment reminder', body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
+    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
   }
 
   @override
@@ -195,6 +212,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     service = LocalNotificationService();
     service.intialize();
     listenToNotification();
+    consultationId = idGenerator();
   }
 
   @override
@@ -322,62 +340,303 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ],
                           ),
 
-                          // Date
-                          Text(
-                            "Time",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          // Time Picker
+                          SizedBox(height: height * 0.03,),
+
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/medical.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                            children: const [
+                              Icon(
+                                Icons.access_time_outlined,
+                                color: Colors.black,
+                                size: 25,
+                              ),
+                              SizedBox(width: 10,),
+
+                              Text(
+                                "Available Slots",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18
                                 ),
                               ),
+                            ],
+                          ),
 
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 40,
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      pickTime();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: (Colors.white70),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          SizedBox(height: height * 0.01,),
+
+                          (flag == true) ?
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5,right: 5,top: 5,bottom: 0),
+                            child: GridView(gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 100.0,
+                              mainAxisSpacing: 20.0,
+                              crossAxisSpacing: 20.0,
+                              childAspectRatio: 2.0,
+                            ),
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              children: [
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedTime = "8:00 PM";
+                                    });
+                                  },
+
+                                  child: (selectedTime == "8:00 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
                                     ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+
+                                  ) : Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
                                     child: Text(
-                                      (timeCounter != 0) ? '${formattedTime}' :  "Select Time",
+                                      "8:00 PM",
                                       style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
                                       ),
                                     ),
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
 
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedTime = "8:20 PM";
+                                    });
+                                  },
+                                  child: (selectedTime == "8:20 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
 
-                          SizedBox(height: height * 0.03,),
+                                  ) : Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
+                                    child: Text(
+                                      "8:20 PM",
+                                      style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedTime = "8:40 PM";
+                                    });
+                                  },
+
+                                  child: (selectedTime == "8:40 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+
+                                  ) :  Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
+                                    child: Text(
+                                      "8:40 PM",
+                                      style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedTime = "9:00 PM";
+                                    });
+                                  },
+
+                                  child: (selectedTime == "9:00 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+
+                                  ) : Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
+                                    child: Text(
+                                      "9:00 PM",
+                                      style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                GestureDetector(
+                                  onTap: (){
+                                    setState((){
+                                      selectedTime = "9:20 PM";
+                                    });
+                                  },
+
+                                  child: (selectedTime == "9:20 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+
+                                  ) : Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
+                                    child: Text(
+                                      "9:20 PM",
+                                      style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                GestureDetector(
+                                  onTap: (){
+                                    setState((){
+                                      selectedTime = "9:40 PM";
+                                    });
+                                  },
+                                  child: (selectedTime == "9:40 PM") ?
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        selectedTime,
+                                        style: GoogleFonts.montserrat(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ),
+
+                                  ) :  Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
+                                    child: Text(
+                                      "9:40 PM",
+                                      style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ) : Container(),
+
+                          SizedBox(height: height * 0.05,),
 
                           // Reason of Consultation
                           Text(
@@ -507,18 +766,21 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
                           SizedBox(height: height * 0.01,),
 
+                          SizedBox(height: height * 0.02,),
+
                           // Image Picker
                           GestureDetector(
-                            onTap: (){
-                              getImageGallery();
-                              Fluttertoast.showToast(msg: "Pressed");
+                            onTap: () async {
+                              await pickImages();
+                              var snackBar = const SnackBar(content: Text("Uploaded successfully"));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
                             child: Container(
-                              margin: EdgeInsets.all(15),
-                              padding: EdgeInsets.all(15),
+                              margin: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
                                   color: Colors.black,
                                   width: 0.5,
@@ -529,7 +791,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   children: [
                                     Image.asset("assets/add-image.png",width: 40,),
 
-                                    SizedBox(width: 10,),
+                                    const SizedBox(width: 10,),
 
                                     Expanded(
                                       child: Text(
@@ -546,20 +808,37 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ),
                           ),
 
-                          SizedBox(height: height * 0.01,),
+                          // Display Image Container
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Container(
+                              width: Get.width,
+                              height: 150,
+                              child: imageList.isEmpty
+                                  ? const Center(
+                                child: Text("No Images found"),
+                              )
+                                  : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (ctx, i) {
+                                  return Container(
+                                      width: 100,
+                                      margin: EdgeInsets.only(right: 10),
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black),
+                                          borderRadius: BorderRadius.circular(2)),
+                                      child: Image.file(
+                                        imageList[i],
+                                        fit: BoxFit.cover,
+                                      ));
+                                },
 
-                          // Image Displayed
-                          image != null ?
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: const BoxDecoration(
-                                color: Colors.white
+                                itemCount: imageList.length,
+                              ),
                             ),
+                          ),
 
-                            child: Image.file(image!.absolute,fit: BoxFit.fill),
-
-                          ) : Container(),
 
                           SizedBox(height: height * 0.02,),
 
@@ -631,7 +910,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ),
                           ),
 
-
+                          SizedBox(height: height * 0.03),
 
                         ],
                       ),

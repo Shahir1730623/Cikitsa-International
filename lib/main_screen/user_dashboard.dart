@@ -6,6 +6,7 @@ import 'package:app/our_services/ci_consultation/ci_consultation_dashboard.dart'
 import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:app/our_services/online_pharmacy/pharmacy_dashboard.dart';
 import 'package:app/our_services/visa_invitation/visa_invitation_dashboard.dart';
+import 'package:app/push_notification/push_notification_system.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,9 @@ class _UserDashboardState extends State<UserDashboard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
+    pushNotificationSystem.initializeCloudMessaging(context);
+    pushNotificationSystem.generateRegistrationTokenForPatient();
   }
 
   @override

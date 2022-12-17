@@ -47,7 +47,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
       });
     }
 
-    if(selectedService != "CI Consultation"){
+    if(selectedService == "Doctor Live Consultation"){
       reference.child("consultations").child(consultationId!).once().then((dataSnap){
         DataSnapshot snapshot = dataSnap.snapshot;
         if (snapshot.exists) {

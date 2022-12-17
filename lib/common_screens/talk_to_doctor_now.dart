@@ -61,7 +61,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     return now.microsecondsSinceEpoch.toString();
   }
 
-
   Future<void> uploadFile(File file) async {
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
 
@@ -353,6 +352,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                               ),
                             ),
                           ),
+
                           // Display Image Container
                           Padding(
                             padding: const EdgeInsets.only(left: 20),

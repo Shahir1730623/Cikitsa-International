@@ -122,7 +122,7 @@ class _AgoraScreenState extends State<AgoraScreen> {
   }*/
 
   Future<void> fetchToken(int uid, String channelName, int tokenRole) async {
-    Fluttertoast.showToast(msg: "Server Url: ${serverUrl}channelName: ${channelName}uid: ${uid}Expiry: $tokenExpireTime");
+    //Fluttertoast.showToast(msg: "Server Url: ${serverUrl}channelName: ${channelName}uid: ${uid}Expiry: $tokenExpireTime");
     String url = "$serverUrl/rtc/$channelName/${tokenRole.toString()}/uid/${uid.toString()}?expiry=${tokenExpireTime.toString()}";
 
     // Send the request

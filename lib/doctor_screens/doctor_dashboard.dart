@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../our_services/visa_invitation/video_call.dart';
+import '../push_notification/push_notification_system.dart';
 import '../splash_screen/splash_screen.dart';
 import '../widgets/progress_dialog.dart';
 import 'doctor_profile_edit.dart';
@@ -24,12 +25,14 @@ class DoctorDashboard extends StatefulWidget {
 }
 
 class _DoctorDashboardState extends State<DoctorDashboard> {
-  //DatabaseReference reference = FirebaseDatabase.instance.ref().child("Doctors").child(currentDoctorInfo!.doctorId!).child('consultations');
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
+    pushNotificationSystem.initializeCloudMessaging(context);
+    pushNotificationSystem.generateRegistrationTokenForDoctor();
   }
 
   @override

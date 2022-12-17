@@ -237,13 +237,13 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                   width: 80,
                 ),
 
-                const SizedBox(height: 20,),
+                const SizedBox(height: 30,),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Attach your passport",
+                      "Attach your NID",
                       style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 25,
@@ -259,7 +259,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Please attach images of first two pages\nof the passport",
+                      "Please attach image of your front\npage of NID",
                       style: GoogleFonts.montserrat(
                           fontSize: 15,
                           color: Colors.grey
@@ -656,7 +656,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "Please attach first page of attendants NID",
+                          "Please attach image of front page\nof attendant's NID",
                           style: GoogleFonts.montserrat(
                               fontSize: 15,
                               color: Colors.grey

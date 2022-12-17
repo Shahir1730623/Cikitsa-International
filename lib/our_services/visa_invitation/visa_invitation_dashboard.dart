@@ -1,4 +1,4 @@
-import 'package:app/our_services/visa_invitation/text_recognition_screen.dart';
+import 'package:app/our_services/visa_invitation/join_with_code_screen.dart';
 import 'package:app/our_services/visa_invitation/visa_doctor_choose.dart';
 import 'package:app/our_services/visa_invitation/visa_form_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -178,7 +178,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                         // New Invitation History
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => VisaDoctorChoose()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaDoctorChoose()));
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),
@@ -276,7 +276,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                         // How to book Consultation
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TextRecognitionScreen()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const JoinWithCodeScreen()));
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),

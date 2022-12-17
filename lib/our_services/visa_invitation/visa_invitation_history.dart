@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:app/doctor_screens/doctor_visa_invitation_details.dart';
+import 'package:app/our_services/visa_invitation/visa_invitation_details.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,32 +9,37 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../global/global.dart';
-import '../models/visa_invitation_model.dart';
-import '../widgets/progress_dialog.dart';
+import '../../global/global.dart';
+import '../../models/visa_invitation_model.dart';
+import '../../widgets/progress_dialog.dart';
 
-class DoctorVisaInvitation extends StatefulWidget {
-  const DoctorVisaInvitation({Key? key}) : super(key: key);
+class VisaInvitationHistory extends StatefulWidget {
+  const VisaInvitationHistory({Key? key}) : super(key: key);
 
   @override
-  State<DoctorVisaInvitation> createState() => _DoctorVisaInvitationState();
+  State<VisaInvitationHistory> createState() => _VisaInvitationHistoryState();
 }
 
-class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
+class _VisaInvitationHistoryState extends State<VisaInvitationHistory> {
   String invitationStatus = "Waiting";
 
   void retrieveInvitationDataFromDatabase(String invitationId) {
-    FirebaseDatabase.instance.ref().child("Doctors")
+    FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
-        .child("visaInvitation").child(invitationId).once().then((dataSnap) {
-      DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        selectedVisaInvitationInfo = VisaInvitationModel.fromSnapshot(snapshot);
-      }
+        .child("patientList")
+        .child(patientId!)
+        .child("visaInvitation")
+        .child(invitationId)
+        .once()
+        .then((dataSnap) {
+          DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            selectedVisaInvitationInfo = VisaInvitationModel.fromSnapshot(snapshot);
+          }
 
-      else {
-        Fluttertoast.showToast(msg: "No consultation record exist");
-      }
+          else {
+            Fluttertoast.showToast(msg: "No consultation record exist");
+          }
     });
   }
 
@@ -90,7 +95,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
         ),
 
         title: Text(
-          "Visa Invitation",
+          "Invitations History",
           style: GoogleFonts.montserrat(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -127,7 +132,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (invitationStatus == "Waiting") ? Colors.white : Colors.grey.shade200,
+                        backgroundColor: (invitationStatus == "Waiting") ? Colors.white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -146,6 +151,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                   ),
                 ),
                 const SizedBox(width: 5,),
+
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
@@ -166,7 +172,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (invitationStatus == "Accepted") ? Colors.white : Colors.grey.shade200,
+                        backgroundColor: (invitationStatus == "Accepted") ? Colors.white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -191,13 +197,16 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
 
             Flexible(
               child: FirebaseAnimatedList(
-                  query: FirebaseDatabase.instance.ref().child("Doctors")
+                  query: FirebaseDatabase.instance.ref().child("Users")
                       .child(currentFirebaseUser!.uid)
+                      .child("patientList")
+                      .child(patientId!)
                       .child("visaInvitation"),
 
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                  itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                      Animation<double> animation, int index) {
                     final status = (snapshot.value as Map)["status"].toString();
 
                     if (invitationStatus == status) {
@@ -216,13 +225,11 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
 
                           Timer(const Duration(seconds: 1), () {
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => const DoctorVisaInvitationDetails()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationDetails()));
                           });
                         },
-
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -236,10 +243,10 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                               const SizedBox(height: 5,),
 
                               Text(
-                                "Applied Date",
+                                "Applied date",
                                 style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    color: Colors.blue
+                                  fontSize: 18,
+                                  color: Colors.blue,
                                 ),
                               ),
 
@@ -298,14 +305,9 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                       // Doc image
                                       CircleAvatar( //or 15.0
                                         radius: 30,
-                                        backgroundColor: Colors.lightBlue,
-                                        child: Text(
-                                          (snapshot.value as Map)["patientName"][0],
-                                          style: GoogleFonts.montserrat(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontSize: 30
-                                          ),
+                                        backgroundColor: Colors.grey[100],
+                                        foregroundImage: NetworkImage(
+                                          (snapshot.value as Map)["doctorImageUrl"],
                                         ),
                                       ),
 
@@ -321,10 +323,10 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["patientName"].toString(),
+                                          (snapshot.value as Map)["doctorName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 15,
+                                            fontSize: 16,
                                           ),
                                         ),
 
@@ -335,7 +337,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              "Date of Birth: " + (snapshot.value as Map)["patientDateOfBirth"].toString(),
+                                              (snapshot.value as Map)["specialization"],
                                               style: GoogleFonts.montserrat(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
@@ -345,11 +347,10 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                             // Status
                                             Container(
                                               decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(50),
-                                                  color: (invitationStatus == "Waiting")
-                                                      ? Colors.blue
-                                                      : Colors.grey.shade200
+                                                  borderRadius: BorderRadius.circular(50),
+                                                  color: (status == "Waiting")
+                                                      ? Colors.grey.shade200
+                                                      : Colors.blue
                                               ),
 
                                               height: 30,
@@ -359,7 +360,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                                 angle: 180 * pi / 180,
                                                 child: Icon(
                                                   Icons.arrow_back_ios_new,
-                                                  color: (invitationStatus == "Waiting") ? Colors.white : Colors.black,
+                                                  color: (status == "Waiting") ? Colors.black : Colors.white,
                                                   size: 20,
                                                 ),
                                               ),
@@ -371,28 +372,22 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
 
                                         const SizedBox(height: 5),
 
-                                        Row(
-                                          children: [
-                                            Text((snapshot.value as Map)["patientGender"].toString(),
-                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-
-                                            const Text(" - "),
-                                            Text("${(snapshot.value as Map)["patientWeight"]} kg",
-                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-                                            const Text(" - "),
-
-                                            Text("${(snapshot.value as Map)["patientHeight"]} feet",
-                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-                                          ],
+                                        // Workplace
+                                        Text(
+                                          (snapshot.value as Map)["workplace"],
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
                                         ),
 
-                                        const SizedBox(height: 10),
 
+                                        const SizedBox(height: 15),
 
                                         Text(
-                                          "Status: ${(snapshot.value as Map)["status"]}",
+                                          "Status: " + (snapshot.value as Map)["status"].toString(),
                                           style: GoogleFonts.montserrat(
-                                              fontSize: 14,
+                                              fontSize: 13,
                                               fontWeight: FontWeight.bold
                                           ),
                                         ),
@@ -421,5 +416,6 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
         ),
       ),
     );
+
   }
 }

@@ -66,6 +66,7 @@ dependencies:
   gallery_saver:
   image_cropper:
   flutter_image_compress:
+  firebase_messaging: ^14.1.4
 
 
 

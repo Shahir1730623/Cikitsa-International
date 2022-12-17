@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
+import '../our_services/visa_invitation/visa_invitation_history.dart';
 import '../widgets/progress_dialog.dart';
 
 class ChooseUser2 extends StatefulWidget {
@@ -125,6 +126,11 @@ class _ChooseUser2State extends State<ChooseUser2> {
                               if(selectedService == "CI Consultation"){
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ConsultationHistory()));
                               }
+
+                              else if (selectedService == "Visa Consultation"){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationHistory()));
+                              }
+
                               else{
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
                               }

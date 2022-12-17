@@ -1,7 +1,13 @@
 import 'package:app/doctor_screens/doctor_dashboard.dart';
+import 'package:app/widgets/progress_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../assistants/assistant_methods.dart';
+import '../global/global.dart';
 
 class PrescriptionDialogDoctor extends StatefulWidget {
   const PrescriptionDialogDoctor({Key? key}) : super(key: key);
@@ -29,7 +35,7 @@ class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
             SizedBox(height: height * 0.04,),
 
             Text(
-              "Your prescription is\being uploaded",
+              "Your prescription is\nbeing uploaded",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -69,7 +75,38 @@ class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
               height: 45,
               child: ElevatedButton(
                 onPressed: ()  {
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DoctorDashboard()), (Route<dynamic> route) => false);
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context){
+                        return ProgressDialog(message: "Please wait...");
+                      }
+                  );
+
+                  sendPrescriptionUploadNotificationToUser(){
+                    FirebaseDatabase.instance.ref()
+                        .child("Users")
+                        .child(userId!)
+                        .child("tokens").once().then((snapData){
+                      DataSnapshot snapshot = snapData.snapshot;
+                      if(snapshot.value != null){
+                        String deviceRegistrationToken = snapshot.value.toString();
+                        // send notification now
+                        AssistantMethods.sendPushNotificationToPatientNow(deviceRegistrationToken,context);
+                        Fluttertoast.showToast(msg: "Notification sent successfully");
+                      }
+
+                      else{
+                        Fluttertoast.showToast(msg: "Error sending notifications");
+                      }
+                    });
+
+                  }
+
+                  consultationId = null;
+                  patientId = null;
+                  userId = null;
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorDashboard()), (Route<dynamic> route) => false);
                 },
 
                 style: ElevatedButton.styleFrom(

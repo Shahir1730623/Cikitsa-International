@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:app/assistants/assistant_methods.dart';
 import 'package:app/common_screens/confirmation_page.dart';
 import 'package:app/models/patient_model.dart';
 import 'package:app/widgets/progress_dialog.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import '../global/global.dart';
@@ -89,6 +92,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void saveConsultationInfoForDoctor(){
     Map doctorLiveConsultationForDoctor = {
       "id" : consultationId,
+      "userId" : currentFirebaseUser!.uid,
       "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
       "time" : DateFormat.jm().format(DateTime.now()),
       "consultantFee" : "500",
@@ -114,10 +118,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child(consultationId!);
 
     reference.set(doctorLiveConsultationForDoctor);
+    sendNotificationToDoctor();
   }
 
   void saveVisaInvitationInfoForPatient() async {
-    invitationId = idGenerator();
     Map visaInvitationInfoMap = {
       "id" : invitationId,
       "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
@@ -125,6 +129,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+      "specialization" : selectedDoctorInfo!.specialization,
       "workplace" : selectedDoctorInfo!.workplace,
       "patientId" : patientId,
       "patientName" : patientName,
@@ -157,10 +162,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void saveVisaInvitationInfoForDoctor(){
     Map visaInvitationInfoMap = {
       "id" : invitationId,
+      "userId" : currentFirebaseUser!.uid,
       "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
       "time" : DateFormat.jm().format(DateTime.now()),
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "workplace" : selectedDoctorInfo!.workplace,
       "patientId" : patientId,
       "patientName" : patientName,
       "patientDateOfBirth" : patientDateOfBirth,
@@ -185,6 +194,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     reference.set(visaInvitationInfoMap);
   }
+
+  sendNotificationToDoctor(){
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("tokens").once().then((snapData){
+          DataSnapshot snapshot = snapData.snapshot;
+          if(snapshot!=null){
+            String deviceRegistrationToken = snapshot.value.toString();
+            // send notification now
+            AssistantMethods.sendPushNotificationToDoctorNow(deviceRegistrationToken,context);
+            Fluttertoast.showToast(msg: "Notification sent successfully");
+          }
+
+          else{
+            Fluttertoast.showToast(msg: "Error sending notifications");
+          }
+    });
+
+  }
+
 
 
   @override

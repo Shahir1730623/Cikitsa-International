@@ -126,7 +126,7 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
   }
 
   Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ patientId! + "/medical_documents/"+ idGenerator() + ".png" );
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/"+ idGenerator() + ".png" );
 
     // Upload the image to firebase storage
     try{
@@ -140,6 +140,13 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
 
     //String url = await reference.getDownloadURL();
     //return url;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    invitationId = idGenerator();
   }
 
   @override
@@ -181,7 +188,7 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Attach your passport",
+                      "Attach your Medical\nDocuments",
                       style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 25,
@@ -197,7 +204,7 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Please attach images of first two pages\nof the passport",
+                      "Please attach images of your past reports\nand prescriptions",
                       style: GoogleFonts.montserrat(
                           fontSize: 15,
                           color: Colors.grey

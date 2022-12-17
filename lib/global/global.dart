@@ -14,6 +14,7 @@ String? userPhoneNumber;
 String? userName;
 var verifyId;
 
+String? userId;
 String? patientId;
 String? consultationId;
 String? invitationId;
@@ -38,6 +39,7 @@ String? selectedServiceDatabaseParentName;
 bool? pushNotify = false;
 String tempToken = "";
 bool isBroadcaster = true;
+String cloudMessagingServerToken = 'key=AAAALn1lelI:APA91bG0BH1-fwORR9mWgt53XA_DlnsOQmX80BwR7XAzVU0KRBNVoXGM1ruuq7u-K-nUsgGarqb9BasoyfNaHpbr4ec2oOzzGlAFh0RwE5s1VKNxr0fARMp418B2aZHZmdux3gSbF516';
 
 // Agora
 /*const appId = 'dda00641d5894ee0b40aec14845f364b';

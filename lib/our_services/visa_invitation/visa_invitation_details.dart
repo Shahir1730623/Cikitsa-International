@@ -6,78 +6,53 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-
-import '../assistants/assistant_methods.dart';
-import '../global/global.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../widgets/progress_dialog.dart';
 
-class DoctorVisaInvitationDetails extends StatefulWidget {
-  const DoctorVisaInvitationDetails({Key? key}) : super(key: key);
+
+
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';import '../../global/global.dart';
+import '../../widgets/progress_dialog.dart';class VisaInvitationDetails extends StatefulWidget {
+  const VisaInvitationDetails({Key? key}) : super(key: key);
 
   @override
-  State<DoctorVisaInvitationDetails> createState() => _DoctorVisaInvitationDetailsState();
+  State<VisaInvitationDetails> createState() => _VisaInvitationDetailsState();
 }
 
-class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetails> {
+class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
   String imageUrl = "";
   bool flag = false;
   late Future<ListResult> futureFiles;
-  List<File> imageList = [];
 
-
-  Future pickImages() async {
+  Future<void> checkPrescriptionStatus() async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/Invitation_Letter.png" );
     try{
-      final pickedImages = await ImagePicker().pickMultiImage();
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return ProgressDialog(message: "");
-          }
-      );
-      //var file = await ImageCropper().cropImage(sourcePath: pickedImage.path,aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1));
-      pickedImages.forEach((image) {
-        imageList.add(File(image.path));
+      imageUrl = await reference.getDownloadURL();
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    if(imageUrl.isNotEmpty){
+      setState(() {
+        flag = true;
       });
-      setState(() {});
-      Navigator.pop(context);
-    }
 
-    catch(e){
-      print(e);
+    }
+    else{
+      setState(() {
+        flag = false;
+      });
     }
   }
 
-  Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ selectedVisaInvitationInfo!.id! + "/medical_documents/Invitation_Letter.png" );
-
-    // Upload the image to firebase storage
-    try{
-      await reference.putFile(File(file.path));
-      //imageUrl = await reference.getDownloadURL();
-    }
-
-    catch(e){
-      print(e);
-    }
-
-    //String url = await reference.getDownloadURL();
-    //return url;
-
-    setStatusToCompleted();
-
-  }
-
-  Future downloadFile(Reference reference) async {
+  Future downloadFiles(Reference reference) async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -94,7 +69,6 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
     await Dio().download(url, path); // Download file
 
     //await reference.writeToFile(path); // Save downloaded file locally
-
     try{
       await GallerySaver.saveImage(path,toDcim: true);
     }
@@ -109,43 +83,14 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
 
   }
 
-
-  void setStatusToCompleted(){
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(currentFirebaseUser!.uid)
-        .child('visaInvitation')
-        .child(selectedVisaInvitationInfo!.id!)
-        .child('status').set("Accepted");
-
-  }
-
-  void sendNotificationToUser(){
-    FirebaseDatabase.instance.ref()
-        .child("Users")
-        .child(selectedVisaInvitationInfo!.patientId!)
-        .child("tokens").once().then((snapData){
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        String deviceRegistrationToken = snapshot.value.toString();
-        // send notification now
-        AssistantMethods.sendInvitationPushNotificationToPatientNow(deviceRegistrationToken, selectedVisaInvitationInfo!.id!, context);
-        Fluttertoast.showToast(msg: "Notification sent successfully");
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "Error sending notifications");
-      }
-    });
-
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureFiles = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ selectedVisaInvitationInfo!.id! + "/medical_documents").listAll();
+    checkPrescriptionStatus();
+    futureFiles = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents").listAll();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +144,7 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
                   )
               ),
               child: Image.network(
-                currentDoctorInfo!.doctorImageUrl!,
+                selectedVisaInvitationInfo!.doctorImageUrl!,
                 fit: BoxFit.cover,
               ),
             ),
@@ -207,8 +152,7 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
             SizedBox(height: height * 0.02),
 
             Text(
-              "Dr. ${currentDoctorInfo!.doctorFirstName!} ${currentDoctorInfo!
-                  .doctorLastName!}",
+              "Dr. " + selectedVisaInvitationInfo!.doctorName!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -513,176 +457,42 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
               ),
             ),
 
-            const Divider(
-              height: 50,
-              thickness: 1,
-              color: Colors.blue,
-            ),
-
-            Text(
-              "Download Reports and Prescriptions",
-              style: GoogleFonts.montserrat(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black
+            const Padding(
+              padding: EdgeInsets.only(left: 15,right: 15),
+              child: Divider(
+                height: 50,
+                thickness: 1,
+                color: Colors.blue,
               ),
             ),
-            SizedBox(height: height * 0.020,),
-            FutureBuilder<ListResult>(
-              future: futureFiles,
-              builder: (context, snapshot) {
-                final List<Reference> files;
-                if(snapshot.hasData){
-                  files = snapshot.data!.items;
-                }
-                else if(snapshot.hasError){
-                  return const Center(child: Text('Error Occurred'));
-                }
-
-                else{
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                return ListView.builder(
-                  itemCount: files.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  physics: ScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    final file = files[index];
-
-                    return ListTile(
-                      title: Text(file.name),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.download,
-                          color: Colors.black,
-                        ),
-
-                        onPressed: () {
-                          downloadFile(file);
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-
-            const Divider(
-              height: 30,
-              thickness: 1,
-              color: Colors.blue,
-            ),
-
-            // Uploaded Image Container
-            GestureDetector(
-              onTap: () async {
-                await pickImages();
-                var snackBar = const SnackBar(content: Text("Uploaded successfully"));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
-              child: Container(
-                margin: const EdgeInsets.all(15),
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 0.5,
-                    style: BorderStyle.solid,
-                  ),
-                ) ,
-                child: Row(
-                    children: [
-                      Image.asset("assets/add-image.png",width: 40,),
-
-                      const SizedBox(width: 10,),
-
-                      Expanded(
-                        child: Text(
-                            "Upload report and previous prescriptions",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            )
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-            ),
-
-            // Display Image Container
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Container(
-                width: Get.width,
-                height: 150,
-                child: imageList.isEmpty
-                    ? const Center(
-                  child: Text("No Images found"),
-                )
-                    : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (ctx, i) {
-                    return Container(
-                        width: 100,
-                        margin: EdgeInsets.only(right: 10),
-                        height: 100,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(2)),
-                        child: Image.file(
-                          imageList[i],
-                          fit: BoxFit.cover,
-                        ));
-                  },
-
-                  itemCount: imageList.length,
-                ),
-              ),
-            ),
-
-            SizedBox(height: height * 0.02,),
 
             Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.only(left: 15,right: 15,top: 5, bottom: 0),
               child: SizedBox(
                 width: double.infinity,
                 height: 45,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: ()  async {
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context){
-                          return ProgressDialog(message: "Please wait...");
-                        }
-                    );
-
-                    for (int i = 0; i < imageList.length; i++) {
-                      await uploadFile(imageList[i]);
-                      //downloadUrls.add(url);
+                    if(flag == true){
+                      firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/Invitation_Letter.png" );
+                      downloadFiles(reference);
                     }
 
-                    Timer(const Duration(seconds: 5),()  {
-                      Navigator.pop(context);
-                      var snackBar = const SnackBar(content: Text("Invitation sent successfully"));
+                    else{
+                      var snackBar = const SnackBar(content: Text("Prescription still not uploaded..."));
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    });
+                    }
 
                   },
 
                   style: ElevatedButton.styleFrom(
-                      primary: (Colors.blue),
+                      backgroundColor: (flag) ? Colors.blue : Colors.grey[300],
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
 
-                  child: Text(
-                    "Upload Invitation",
+                  icon: const Icon(Icons.contact_page),
+                  label: Text(
+                    "Download Invitation Letter",
                     style: GoogleFonts.montserrat(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -698,5 +508,5 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
         ),
       ),
     );
- }
+  }
 }

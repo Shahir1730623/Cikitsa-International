@@ -265,7 +265,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             "Lorem ipsum dolor sit amet, incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet incididunt ut labore et dolore exercitation ullamco laboris Lorem ipsum dolor sit amet, incididunt ut labore et dolore"
                           ),
 
-                          SizedBox(height: height * 0.1),
+                          SizedBox(height: height * 0.08),
 
                           // Button
                           SizedBox(
@@ -324,6 +324,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               ),
                             ],
                           ),
+
+                          SizedBox(height: height * 0.03),
 
                         ],
                       ),

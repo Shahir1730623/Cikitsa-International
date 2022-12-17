@@ -448,7 +448,7 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
                   },
 
                   style: ElevatedButton.styleFrom(
-                      primary: (flag) ? Colors.blue : Colors.grey[300],
+                      backgroundColor: (flag) ? Colors.blue : Colors.grey[300],
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
                   icon: const Icon(Icons.contact_page),

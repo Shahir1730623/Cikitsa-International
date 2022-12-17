@@ -4,6 +4,9 @@ class VisaInvitationModel{
   String? id;
   String? doctorId;
   String? doctorName;
+  String? doctorImageUrl;
+  String? workplace;
+  String? specialization;
   String? date;
   String? time;
   String? patientId;
@@ -26,6 +29,9 @@ class VisaInvitationModel{
     id = snapshot.key;
     doctorId = (snapshot.value as dynamic)["doctorId"];
     doctorName = (snapshot.value as dynamic)["doctorName"];
+    doctorImageUrl = (snapshot.value as dynamic)["doctorImageUrl"];
+    workplace = (snapshot.value as dynamic)["workplace"];
+    specialization = (snapshot.value as dynamic)["specialization"];
     date = (snapshot.value as dynamic)["date"];
     time = (snapshot.value as dynamic)["time"];
     patientId = (snapshot.value as dynamic)["patientId"];
