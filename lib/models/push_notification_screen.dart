@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../global/global.dart';
-import '../widgets/push_notification_dialog.dart';
+import '../widgets/push_notification_dialog_select_schedule.dart';
 import 'consultation_payload_model.dart';
 
 class PushNotificationScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return PushNotificationDialog();
+          return PushNotificationDialogSelectSchedule();
         }
     );
   }

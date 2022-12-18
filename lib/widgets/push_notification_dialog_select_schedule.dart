@@ -1,31 +1,33 @@
+import 'package:app/common_screens/payment_screen.dart';
 import 'package:app/common_screens/reschedule_date.dart';
 import 'package:app/global/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../assistants/assistant_methods.dart';
 import '../common_screens/coundown_screen.dart';
 
-class PushNotificationDialog extends StatefulWidget {
+class PushNotificationDialogSelectSchedule extends StatefulWidget {
 
   String? consultationId;
   String? patientName;
 
-  PushNotificationDialog({this.consultationId,this.patientName});
+  PushNotificationDialogSelectSchedule({this.consultationId,this.patientName});
 
   @override
-  State<PushNotificationDialog> createState() => _PushNotificationDialogState();
+  State<PushNotificationDialogSelectSchedule> createState() => _PushNotificationDialogSelectScheduleState();
 }
 
-class _PushNotificationDialogState extends State<PushNotificationDialog> {
+class _PushNotificationDialogSelectScheduleState extends State<PushNotificationDialogSelectSchedule> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20,vertical: 200),
-        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 0),
+        margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 0),
         width: double.infinity,
         decoration: BoxDecoration(
             color: Colors.white,
@@ -63,8 +65,11 @@ class _PushNotificationDialogState extends State<PushNotificationDialog> {
               width: double.infinity,
               height: 45,
               child: ElevatedButton.icon(
-                onPressed: ()  {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CountDownScreen()));
+                onPressed: ()  async {
+                  if(selectedService == "Doctor Live Consultation"){
+                    await AssistantMethods.sendNotificationToDoctor(context);
+                  }
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
                 },
 
                 style: ElevatedButton.styleFrom(

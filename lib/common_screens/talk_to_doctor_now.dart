@@ -28,6 +28,18 @@ class TalkToDoctorNowInformation extends StatefulWidget {
 
 class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation> {
   List<File> imageList = [];
+  String? selectedReasonOfVisit;
+  final Storage storage = Storage();
+  String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());// 28/03/2020
+  String formattedTime = DateFormat.jm().format(DateTime.now());
+  //late final path;
+  //late final fileName;
+
+
+  String idGenerator() {
+    final now = DateTime.now();
+    return now.microsecondsSinceEpoch.toString();
+  }
 
 
   Future pickImages() async {
@@ -56,11 +68,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     }
   }
 
-  String idGenerator() {
-    final now = DateTime.now();
-    return now.microsecondsSinceEpoch.toString();
-  }
-
   Future<void> uploadFile(File file) async {
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
 
@@ -79,12 +86,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
   }
 
 
-
-
-  final Storage storage = Storage();
-  //late final path;
-  //late final fileName;
-
   final _formKey = GlobalKey<FormState>();
   TextEditingController relationTextEditingController = TextEditingController();
   TextEditingController problemTextEditingController = TextEditingController();
@@ -95,12 +96,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
     "Liver problem",
     "Broken bones"
   ];
-  String? selectedReasonOfVisit;
-
-  String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());// 28/03/2020
-  String formattedTime = DateFormat.jm().format(DateTime.now());
-
-
 
   @override
   void initState() {

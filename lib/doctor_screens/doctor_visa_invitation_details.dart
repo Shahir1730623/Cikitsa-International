@@ -57,26 +57,6 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
     }
   }
 
-  Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ selectedVisaInvitationInfo!.id! + "/medical_documents/Invitation_Letter.png" );
-
-    // Upload the image to firebase storage
-    try{
-      await reference.putFile(File(file.path));
-      //imageUrl = await reference.getDownloadURL();
-    }
-
-    catch(e){
-      print(e);
-    }
-
-    //String url = await reference.getDownloadURL();
-    //return url;
-
-    setStatusToCompleted();
-
-  }
-
   Future downloadFile(Reference reference) async {
     showDialog(
         context: context,
@@ -109,6 +89,26 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
 
   }
 
+  Future<void> uploadFile(File file) async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ selectedVisaInvitationInfo!.id! + "/medical_documents/Invitation_Letter.png" );
+
+    // Upload the image to firebase storage
+    try{
+      await reference.putFile(File(file.path));
+      //imageUrl = await reference.getDownloadURL();
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    //String url = await reference.getDownloadURL();
+    //return url;
+
+    setStatusToCompleted();
+
+  }
+
 
   void setStatusToCompleted(){
     FirebaseDatabase.instance.ref()
@@ -118,18 +118,29 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
         .child(selectedVisaInvitationInfo!.id!)
         .child('status').set("Accepted");
 
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(selectedVisaInvitationInfo!.userId!)
+        .child('patientList')
+        .child(selectedVisaInvitationInfo!.patientId!)
+        .child('visaInvitation')
+        .child(selectedVisaInvitationInfo!.id!)
+        .child('status').set("Accepted");
+
+    sendNotificationToUser();
+
   }
 
   void sendNotificationToUser(){
     FirebaseDatabase.instance.ref()
         .child("Users")
-        .child(selectedVisaInvitationInfo!.patientId!)
+        .child(selectedVisaInvitationInfo!.userId!)
         .child("tokens").once().then((snapData){
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
         String deviceRegistrationToken = snapshot.value.toString();
         // send notification now
-        AssistantMethods.sendInvitationPushNotificationToPatientNow(deviceRegistrationToken, selectedVisaInvitationInfo!.id!, context);
+        AssistantMethods.sendInvitationPushNotificationToPatientNow(deviceRegistrationToken, selectedVisaInvitationInfo!.id!,selectedVisaInvitationInfo!.patientId!, context);
         Fluttertoast.showToast(msg: "Notification sent successfully");
       }
 

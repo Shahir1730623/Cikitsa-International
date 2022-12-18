@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
+
 
 import 'package:app/assistants/assistant_methods.dart';
 import 'package:app/common_screens/confirmation_page.dart';
@@ -10,11 +10,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-
 import '../global/global.dart';
-import '../main_screen.dart';
+import '../models/consultation_payload_model.dart';
+import '../models/doctor_model.dart';
+import '../models/push_notification_screen.dart';
+import '../service_file/local_notification_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   String? formattedDate;
@@ -29,6 +30,8 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
+  late final LocalNotificationService service;
+
   String idGenerator() {
     final now = DateTime.now();
     return now.microsecondsSinceEpoch.toString();
@@ -69,7 +72,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
       "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : "Now",
+      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Upcoming",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid",
@@ -118,7 +121,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child(consultationId!);
 
     reference.set(doctorLiveConsultationForDoctor);
-    sendNotificationToDoctor();
+
+    if(selectedDoctorInfo!.status == "Online"){
+    }
+
+    else{
+      generateLocalNotification();
+    }
+
   }
 
   void saveVisaInvitationInfoForPatient() async {
@@ -193,27 +203,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .child(invitationId!);
 
     reference.set(visaInvitationInfoMap);
+    
   }
 
-  sendNotificationToDoctor(){
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(selectedDoctorInfo!.doctorId!)
-        .child("tokens").once().then((snapData){
-          DataSnapshot snapshot = snapData.snapshot;
-          if(snapshot!=null){
-            String deviceRegistrationToken = snapshot.value.toString();
-            // send notification now
-            AssistantMethods.sendPushNotificationToDoctorNow(deviceRegistrationToken,context);
-            Fluttertoast.showToast(msg: "Notification sent successfully");
-          }
-
-          else{
-            Fluttertoast.showToast(msg: "Error sending notifications");
-          }
-    });
-
+  Future<void> generateLocalNotification() async {
+    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+    String dateTime = '${widget.formattedDate!} ${widget.formattedTime!}';
+    Fluttertoast.showToast(msg: dateTime);
+    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
+    String payloadJsonString = consultationPayloadModel.toJsonString();
+    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
   }
+
+  void listenToNotification(){
+    service.onNotificationClick.stream.listen(onNotificationListener);
+  }
+
+  void onNotificationListener(String? payload){
+    if(payload!=null && payload.isNotEmpty){
+      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
+      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+
+    }
+    else{
+      Fluttertoast.showToast(msg: 'payload empty');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    service = LocalNotificationService();
+    service.intialize();
+    listenToNotification();
+  }
+
 
 
 

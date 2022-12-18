@@ -15,9 +15,11 @@ class DoctorModel{
   String? totalVisits;
   String? fee;
   String? status;
+  String? patientQueueLength;
+
 
   DoctorModel(this.doctorId, this.doctorFirstName, this.doctorLastName, this.specialization, this.degrees,
-      this.experience, this.workplace, this.rating, this.totalVisits, this.fee, this.status
+      this.experience, this.workplace, this.rating, this.totalVisits, this.fee, this.status,this.doctorImageUrl,this.doctorPhone,this.doctorEmail,this.patientQueueLength
   );
 
   DoctorModel.fromSnapshot(DataSnapshot snapshot){
@@ -35,6 +37,7 @@ class DoctorModel{
     totalVisits = (snapshot.value as dynamic)["totalVisits"];
     fee = (snapshot.value as dynamic)["fee"];
     status = (snapshot.value as dynamic)["status"];
+    patientQueueLength = (snapshot.value as dynamic)["patientQueueLength"];
   }
 
 

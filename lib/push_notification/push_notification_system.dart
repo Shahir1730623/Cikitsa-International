@@ -1,5 +1,6 @@
+import 'package:app/doctor_screens/doctor_visa_invitation_details.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
-import 'package:app/widgets/push_notification_dialog_telemedicine.dart';
+import 'package:app/widgets/push_notification_dialog_instant_video_call.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +9,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../global/global.dart';
 import '../models/consultation_model.dart';
-import '../widgets/push_notification_dialog.dart';
+import '../models/visa_invitation_model.dart';
+import '../widgets/push_notification_dialog_select_schedule.dart';
+import '../widgets/push_notification_dialog_invitation_letter.dart';
 
 class PushNotificationSystem{
   FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
@@ -23,9 +26,11 @@ class PushNotificationSystem{
         }
 
         else{
-          consultationId = remoteMessage.data["consultation_id"];
-          patientId = remoteMessage.data["patient_id"];
+          //consultationId = remoteMessage.data["consultation_id"];
+          //patientId = remoteMessage.data["patient_id"];
           //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
+          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+
         }
 
       }
@@ -39,9 +44,10 @@ class PushNotificationSystem{
           retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
         }
         else{
-          consultationId = remoteMessage.data["consultation_id"];
-          patientId = remoteMessage.data["patient_id"];
+          //consultationId = remoteMessage.data["consultation_id"];
+          //patientId = remoteMessage.data["patient_id"];
           //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
+          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
         }
       }
     });
@@ -54,9 +60,10 @@ class PushNotificationSystem{
         }
 
         else{
-          consultationId = remoteMessage.data["consultation_id"];
-          patientId = remoteMessage.data["patient_id"];
+          //consultationId = remoteMessage.data["consultation_id"];
+          //patientId = remoteMessage.data["patient_id"];
           //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
+          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
         }
 
       }
@@ -121,6 +128,35 @@ class PushNotificationSystem{
     });
   }
 
+  void retrieveVisaInvitationDataFromDatabase(String visaInvitationId, String patientId, BuildContext context) {
+    Fluttertoast.showToast(msg: "ID:" + visaInvitationId + "Patient ID:" + patientId);
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId)
+        .child("visaInvitation")
+        .child(invitationId!)
+        .once()
+        .then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedVisaInvitationInfo = VisaInvitationModel.fromSnapshot(snapshot);
+        if(visaInvitationId != null && patientId != null){
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder:(BuildContext context) => PushNotificationDialogInvitationLetter()
+          );
+        }
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No Visa Invitation record exist");
+      }
+    });
+  }
+
   /*void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
     Fluttertoast.showToast(msg: "ID:" + consultationId + "User ID:" + userId! + "Patient ID:" + patientId);
     FirebaseDatabase.instance.ref().child("Users")
@@ -139,6 +175,8 @@ class PushNotificationSystem{
       }
     });
   }*/
+
+
 
 }
 

@@ -16,7 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../models/consultation_payload_model.dart';
 import '../widgets/progress_dialog.dart';
-import '../widgets/push_notification_dialog.dart';
+import '../widgets/push_notification_dialog_select_schedule.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({Key? key}) : super(key: key);
@@ -37,7 +37,7 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return PushNotificationDialog();
+          return PushNotificationDialogSelectSchedule();
         }
     );
   }

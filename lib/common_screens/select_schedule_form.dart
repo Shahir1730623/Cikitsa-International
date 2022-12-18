@@ -33,23 +33,16 @@ class SelectSchedule extends StatefulWidget {
 class _SelectScheduleState extends State<SelectSchedule> {
   final _formKey = GlobalKey<FormState>();
 
-  late final LocalNotificationService service;
-
-  void listenToNotification(){
-    service.onNotificationClick.stream.listen(onNotificationListener);
-  }
-
-  void onNotificationListener(String? payload){
-    if(payload!=null && payload.isNotEmpty){
-      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
-      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
-
-    }
-    else{
-      Fluttertoast.showToast(msg: 'payload empty');
-    }
-  }
+  TextEditingController relationTextEditingController = TextEditingController();
+  TextEditingController problemTextEditingController = TextEditingController();
+  List<String> reasonOfVisitTypesList = [
+    "Cancer",
+    "Heart Problem",
+    "Skin problem",
+    "Liver problem",
+    "Broken bones"
+  ];
+  String? selectedReasonOfVisit;
 
   // Image Storage
   List<File> imageList = [];
@@ -63,6 +56,10 @@ class _SelectScheduleState extends State<SelectSchedule> {
   bool flag = false;
   String selectedTime = " ";
 
+  String idGenerator() {
+    final now = DateTime.now();
+    return now.microsecondsSinceEpoch.toString();
+  }
 
   Future pickImages() async {
     try{
@@ -88,6 +85,23 @@ class _SelectScheduleState extends State<SelectSchedule> {
     catch(e){
       print(e);
     }
+  }
+
+  Future<void> uploadFile(File file) async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+
+    // Upload the image to firebase storage
+    try{
+      await reference.putFile(File(file.path));
+      //imageUrl = await reference.getDownloadURL();
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    //String url = await reference.getDownloadURL();
+    //return url;
   }
 
   pickDate() async {
@@ -130,25 +144,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     }
   }*/
 
-
-  TextEditingController relationTextEditingController = TextEditingController();
-  TextEditingController problemTextEditingController = TextEditingController();
-  List<String> reasonOfVisitTypesList = [
-    "Cancer",
-    "Heart Problem",
-    "Skin problem",
-    "Liver problem",
-    "Broken bones"
-  ];
-  String? selectedReasonOfVisit;
-
-  String idGenerator() {
-    final now = DateTime.now();
-    return now.microsecondsSinceEpoch.toString();
-  }
-
-
-  saveConsultationInfo() async {
+  /*saveConsultationInfo() async {
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
@@ -192,16 +188,8 @@ class _SelectScheduleState extends State<SelectSchedule> {
       reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(consultationInfoMap);
     }
 
-    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
-    var df = DateFormat.jm().parse(formattedTime!);
-    formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    formattedTime = DateFormat('HH:mm').format(df);
-    String dateTime = formattedDate! + ' ' + selectedTime;
+  }*/
 
-    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
-    String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
-  }
 
   @override
   void initState() {
@@ -209,9 +197,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
     super.initState();
     problemTextEditingController.addListener(() => setState(() {}));
     relationTextEditingController.addListener(() => setState(() {}));
-    service = LocalNotificationService();
-    service.intialize();
-    listenToNotification();
     consultationId = idGenerator();
   }
 
@@ -380,11 +365,11 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 GestureDetector(
                                   onTap: (){
                                     setState(() {
-                                      selectedTime = "8:00 PM";
+                                      selectedTime = "2:20 PM";
                                     });
                                   },
 
-                                  child: (selectedTime == "8:00 PM") ?
+                                  child: (selectedTime == "2:20 PM") ?
                                   Container(
                                     padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
                                     decoration: BoxDecoration(
@@ -410,7 +395,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   ) : Padding(
                                     padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
                                     child: Text(
-                                      "8:00 PM",
+                                      "2:20 PM",
                                       style: GoogleFonts.montserrat(
                                           color: Colors.black,
                                           fontSize: 17,
@@ -874,7 +859,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton(
-                              onPressed: ()  {
+                              onPressed: ()  async {
                                 showDialog(
                                     context: context,
                                     barrierDismissible: false,
@@ -883,11 +868,16 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                     }
                                 );
 
-                                // Saving consultation info
-                                saveConsultationInfo();
+                                for (int i = 0; i < imageList.length; i++) {
+                                  await uploadFile(imageList[i]);
+                                  //downloadUrls.add(url);
+                                }
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
+                                  var df = DateFormat.jm().parse(selectedTime);
+                                  formattedDate = DateFormat('yyyy-MM-dd').format(date);
+                                  formattedTime = DateFormat('HH:mm').format(df);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                                 });
 

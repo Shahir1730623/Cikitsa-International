@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 
 import '../global/global.dart';
@@ -35,6 +36,29 @@ class AssistantMethods{
 
   }
 
+  // Retrieving device registration token
+  static sendNotificationToDoctor(BuildContext context){
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("tokens").once().then((snapData){
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        AssistantMethods.sendPushNotificationToDoctorNow(deviceRegistrationToken,context);
+        Fluttertoast.showToast(msg: "Notification sent successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
+
+  }
+
+
+  // Generates Push Notification and sends it
   static sendPushNotificationToDoctorNow(String deviceRegistrationToken,BuildContext context){
     Map<String,String> headerNotification = {
       'Content-Type' : 'application/json',
@@ -100,7 +124,7 @@ class AssistantMethods{
     );
   }
 
-  static sendInvitationPushNotificationToPatientNow(String deviceRegistrationToken, String invitationId,BuildContext context){
+  static sendInvitationPushNotificationToPatientNow(String deviceRegistrationToken, String invitationId, String patientId,BuildContext context){
     Map<String,String> headerNotification = {
       'Content-Type' : 'application/json',
       'Authorization' : cloudMessagingServerToken,
@@ -118,7 +142,8 @@ class AssistantMethods{
         "click_action": "FLUTTER_NOTIFICATION_CLICK",
         "id" : "1",
         "status" : "done",
-        "visa_invitation" : invitationId,
+        "visa_invitation_id" : invitationId,
+        "patient_Id" : patientId,
       },
 
       "to" : deviceRegistrationToken

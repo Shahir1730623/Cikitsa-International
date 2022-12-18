@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
+import '../models/doctor_model.dart';
 import '../our_services/doctor_live_consultation/doctor_profile.dart';
 import '../widgets/progress_dialog.dart';
 
@@ -22,7 +23,21 @@ class ChooseUser extends StatefulWidget {
 
 class _ChooseUserState extends State<ChooseUser> {
 
+  List countList = [];
   DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users").child(currentFirebaseUser!.uid);
+
+  void countNumberOfChild(){
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        final map = snapshot.value as Map<dynamic, dynamic>;
+        map.forEach((key, value) {
+          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        });
+      }
+    });
+
+  }
 
   void loadScreen(){
     showDialog(
@@ -45,6 +60,7 @@ class _ChooseUserState extends State<ChooseUser> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadScreen();
+      countNumberOfChild();
     });
   }
 
@@ -156,12 +172,12 @@ class _ChooseUserState extends State<ChooseUser> {
 
                        const SizedBox(height: 5,),
 
-                       const CircleAvatar(
+                      CircleAvatar(
                          radius: 20,
                          backgroundColor: Colors.blue,
                          child: Text(
-                           "0",
-                           style: TextStyle(
+                           selectedDoctorInfo!.patientQueueLength!,
+                           style: const TextStyle(
                                fontWeight: FontWeight.bold,color: Colors.white
                            ),
                          ),

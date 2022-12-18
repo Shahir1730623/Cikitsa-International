@@ -1,8 +1,11 @@
+import 'package:app/common_screens/waiting_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../../common_screens/coundown_screen.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
+import '../../models/doctor_model.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   const BookingDetailsScreen({Key? key}) : super(key: key);
@@ -12,6 +15,33 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+
+  void countNumberOfChild(){
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        final map = snapshot.value as Map<dynamic, dynamic>;
+        map.forEach((key, value) {
+          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        });
+      }
+    });
+
+    Map info = {
+      "patientId" : patientId!
+    };
+
+    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(count).set(info);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,13 +199,23 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                               ElevatedButton(
                                 onPressed: () {
+                                  countNumberOfChild();
+
                                   if(selectedDoctorInfo == null){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                     //pushNotify = true;
                                   }
 
                                   else if(selectedDoctorInfo!.status == "Online"){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                                    if(int.parse(selectedDoctorInfo!.patientQueueLength!) == 0){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+
+                                    }
+
+                                    else{
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+                                    }
+
                                   }
 
                                   else{

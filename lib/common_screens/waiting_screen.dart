@@ -3,29 +3,21 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../models/ci_consultation_model.dart';
 import '../models/consultation_model.dart';
-import '../our_services/doctor_live_consultation/uploading_prescription.dart';
-import '../our_services/visa_invitation/video_call.dart';
 import '../widgets/progress_dialog.dart';
-import '../widgets/timer.dart';
 
-class CountDownScreen extends StatefulWidget {
-  const CountDownScreen({Key? key}) : super(key: key);
+class WaitingScreen extends StatefulWidget {
+  const WaitingScreen({Key? key}) : super(key: key);
 
   @override
-  State<CountDownScreen> createState() => _CountDownScreenState();
+  State<WaitingScreen> createState() => _WaitingScreenState();
 }
 
-class _CountDownScreenState extends State<CountDownScreen> {
+class _WaitingScreenState extends State<WaitingScreen> {
   retrieveConsultationDataFromDatabase() {
     DatabaseReference reference = FirebaseDatabase.instance.ref()
         .child("Users")
@@ -111,55 +103,6 @@ class _CountDownScreenState extends State<CountDownScreen> {
     )??false; //if showDialog had returned null, then return false
   }
 
-  late Timer _timer;
-  int _start = 30;
-  void startTimer() {
-    const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSec, (Timer timer) {
-        if (_start == 0) {
-          setState(() {
-            timer.cancel();
-          });
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context){
-                return ProgressDialog(message: "Redirecting to video call...");
-              }
-          );
-
-          Timer(const Duration(seconds: 5),()  {
-            Navigator.pop(context);
-            channelName = consultationId;
-            Fluttertoast.showToast(msg: channelName!);
-            tokenRole = 2;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-          });
-        }
-
-        else {
-          setState(() {
-            _start--;
-          });
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    startTimer();
-  }
-
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -179,7 +122,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
             ),
             SizedBox(height: height * 0.03,),
             Text(
-              "You will automatically be redirected\nto video call",
+              "You will automatically be redirected\nto video call when it is your\nturn",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.bold,
@@ -189,7 +132,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
             ),
             SizedBox(height: height * 0.03,),
             Text(
-              "Please wait",
+              "Please wait!",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.bold,
@@ -200,11 +143,11 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
             SizedBox(height: height * 0.05),
             Text(
-              "Redirecting...",
+              "Waiting in Queue...",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.bold,
-                  fontSize: 30,
+                  fontSize: 25,
                   color: Colors.red
               ),
             ),
@@ -212,29 +155,26 @@ class _CountDownScreenState extends State<CountDownScreen> {
             SizedBox(height: height * 0.05),
 
             Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
                 color:  Color(0xFF53E5FF).withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
 
               child: Container(
-                padding: EdgeInsets.all(40),
-                decoration: const BoxDecoration(
-                  color:  Color(0xFF53E5FF),
-                  shape: BoxShape.circle,
-                ),
-
-                child: Center(
-                  child: Text(
-                    "$_start",
-                    style: const TextStyle(
-                        fontSize: 30, color: Colors.white
-                    ),
+                  padding: const EdgeInsets.all(40),
+                  decoration: const BoxDecoration(
+                    color:  Color(0xFF53E5FF),
+                    shape: BoxShape.circle,
                   ),
-                )
-                ),
+
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                  )
               ),
+            ),
 
             SizedBox(height: height * 0.05),
 
@@ -245,8 +185,3 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
   }
 }
-
-
-
-
-

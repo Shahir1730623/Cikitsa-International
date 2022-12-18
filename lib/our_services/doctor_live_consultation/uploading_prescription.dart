@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../models/doctor_model.dart';
+
 class UploadingPrescription extends StatefulWidget {
   const UploadingPrescription({Key? key}) : super(key: key);
 
@@ -25,6 +27,24 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
         .child(selectedDoctorInfo!.doctorId!)
         .child("consultations")
         .child(consultationId!).child("consultationType").set("Completed");
+
+    removePatientFromQueue();
+  }
+
+  removePatientFromQueue(){
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        final map = snapshot.value as Map<dynamic, dynamic>;
+        map.forEach((key, value) {
+          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        });
+      }
+    });
+
+    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) - 1).toString();
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(count).remove();
   }
 
   void loadScreen() {

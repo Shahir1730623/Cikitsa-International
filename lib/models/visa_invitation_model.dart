@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class VisaInvitationModel{
   String? id;
+  String? userId;
   String? doctorId;
   String? doctorName;
   String? doctorImageUrl;
@@ -27,6 +28,7 @@ class VisaInvitationModel{
 
   VisaInvitationModel.fromSnapshot(DataSnapshot snapshot){
     id = snapshot.key;
+    userId = (snapshot.value as dynamic)["userId"];
     doctorId = (snapshot.value as dynamic)["doctorId"];
     doctorName = (snapshot.value as dynamic)["doctorName"];
     doctorImageUrl = (snapshot.value as dynamic)["doctorImageUrl"];
