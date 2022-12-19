@@ -87,7 +87,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> UserProfileScreen()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const UserProfileScreen()));
                           },
                           child: Row(
                             children: [
@@ -427,6 +427,7 @@ class _UserDashboardState extends State<UserDashboard> {
                          padding: const EdgeInsets.only(left: 5,right: 5),
                          child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                            shrinkWrap: true,
+                           scrollDirection: Axis.vertical,
                            physics: const ScrollPhysics(),
                            children: [
                              GestureDetector(

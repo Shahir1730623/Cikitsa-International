@@ -188,7 +188,7 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                       if(searchTextEditingController.text.isEmpty){
                         return GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
                           },
                           child: Container(
                             height: 130,
@@ -262,7 +262,7 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                       else if ((specialization.toLowerCase().contains(searchTextEditingController.text.toLowerCase()))){
                         return GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => LiveDoctors()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
                           },
                           child: Container(
                             height: 130,

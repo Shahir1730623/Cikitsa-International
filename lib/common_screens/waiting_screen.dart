@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../models/ci_consultation_model.dart';
 import '../models/consultation_model.dart';
+import '../our_services/visa_invitation/video_call.dart';
 import '../widgets/progress_dialog.dart';
 
 class WaitingScreen extends StatefulWidget {
@@ -18,6 +19,9 @@ class WaitingScreen extends StatefulWidget {
 }
 
 class _WaitingScreenState extends State<WaitingScreen> {
+  Timer? timer;
+  String? consultationStatus;
+
   retrieveConsultationDataFromDatabase() {
     DatabaseReference reference = FirebaseDatabase.instance.ref()
         .child("Users")
@@ -25,56 +29,56 @@ class _WaitingScreenState extends State<WaitingScreen> {
         .child("patientList")
         .child(patientId!);
 
-    if(selectedService == "CI Consultation"){
+    if (selectedService == "CI Consultation") {
       reference.child("CIConsultations")
           .child(consultationId!)
           .once()
-          .then((dataSnap){
+          .then((dataSnap) {
         DataSnapshot snapshot = dataSnap.snapshot;
         if (snapshot.exists) {
-          selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+          selectedCIConsultationInfo =
+              CIConsultationModel.fromSnapshot(snapshot);
         }
 
-        else{
-          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        else {
+          Fluttertoast.showToast(
+              msg: "No consultation record exist with this credentials");
         }
-
       });
     }
 
-    if(selectedService == "Doctor Live Consultation"){
+    if (selectedService == "Doctor Live Consultation") {
       reference.child("consultations")
           .child(consultationId!)
           .once()
-          .then((dataSnap){
+          .then((dataSnap) {
         DataSnapshot snapshot = dataSnap.snapshot;
         if (snapshot.exists) {
           selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
         }
 
-        else{
-          Fluttertoast.showToast(msg: "No consultation record exist with this credentials");
+        else {
+          Fluttertoast.showToast(
+              msg: "No consultation record exist with this credentials");
         }
-
       });
     }
   }
 
-  void loadScreen(){
+  void loadScreen() {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return ProgressDialog(message: "Please wait...");
         }
     );
 
     retrieveConsultationDataFromDatabase();
 
-    Timer(const Duration(seconds: 3),()  {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pop(context);
     });
-
   }
 
   Future<bool> showExitPopup() async {
@@ -82,30 +86,90 @@ class _WaitingScreenState extends State<WaitingScreen> {
       //show confirm dialogue
       //the return value will be from "Yes" or "No" options
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Exit App'),
-        content: Text('Do you want to exit an App?'),
-        actions:[
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            //return false when click on "NO"
-            child:Text('No'),
-          ),
+      builder: (context) =>
+          AlertDialog(
+            title: Text('Exit App'),
+            content: Text('Do you want to exit an App?'),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                //return false when click on "NO"
+                child: Text('No'),
+              ),
 
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            //return true when click on "Yes"
-            child:Text('Yes'),
-          ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                //return true when click on "Yes"
+                child: Text('Yes'),
+              ),
 
-        ],
-      ),
-    )??false; //if showDialog had returned null, then return false
+            ],
+          ),
+    ) ?? false; //if showDialog had returned null, then return false
+  }
+
+  void checkWaitingStatus() {
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
+      FirebaseDatabase.instance
+          .ref()
+          .child("Doctors")
+          .child(doctorId!)
+          .child("consultations")
+          .child(consultationId!)
+          .onValue
+          .listen((dataSnap) {
+        DataSnapshot snapshot = dataSnap.snapshot;
+        consultationStatus = (snapshot.value as Map)["consultationType"].toString();
+        Fluttertoast.showToast(msg: 'Consultation Status: $consultationStatus');
+
+        if (consultationStatus == "Accepted") {
+          setState(() {
+            timer.cancel();
+          });
+
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return ProgressDialog(message: "Redirecting to video call...");
+              }
+          );
+
+          Timer(const Duration(seconds: 5), () {
+            Navigator.pop(context);
+            channelName = consultationId;
+            Fluttertoast.showToast(msg: channelName!);
+            tokenRole = 2;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
+          });
+        }
+      });
+
+    });
+
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkWaitingStatus();
+
+  }
+
+  @override
+  void dispose() {
+    timer!.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
+    var height = MediaQuery
+        .of(context)
+        .size
+        .height;
     return WillPopScope(
       onWillPop: showExitPopup,
       child: Scaffold(
@@ -157,21 +221,21 @@ class _WaitingScreenState extends State<WaitingScreen> {
             Container(
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color:  Color(0xFF53E5FF).withOpacity(0.5),
+                color: Color(0xFF53E5FF).withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
 
               child: Container(
                   padding: const EdgeInsets.all(40),
                   decoration: const BoxDecoration(
-                    color:  Color(0xFF53E5FF),
+                    color: Color(0xFF53E5FF),
                     shape: BoxShape.circle,
                   ),
 
                   child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    )
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      )
                   )
               ),
             ),
@@ -182,6 +246,6 @@ class _WaitingScreenState extends State<WaitingScreen> {
         ),
       ),
     );
-
   }
+
 }

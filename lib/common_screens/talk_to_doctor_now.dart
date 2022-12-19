@@ -54,9 +54,10 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
             }
         );
 
-        pickedImages.forEach((image) {
+        for (var image in pickedImages) {
           imageList.add(File(image.path));
-        });
+        }
+
         setState(() {});
         Navigator.pop(context);
 
@@ -431,8 +432,6 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                                 });
-
-
 
                               },
 

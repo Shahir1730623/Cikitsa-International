@@ -3,6 +3,7 @@ import 'package:app/widgets/prescription_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/doctor_model.dart';
@@ -15,6 +16,8 @@ class UploadingPrescription extends StatefulWidget {
 }
 
 class _UploadingPrescriptionState extends State<UploadingPrescription> {
+  //String patientLength = "0";
+
   setConsultationInfoToCompleted(){
     FirebaseDatabase.instance.ref()
         .child("Users")
@@ -35,16 +38,15 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
-        final map = snapshot.value as Map<dynamic, dynamic>;
-        map.forEach((key, value) {
-          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        });
+        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
       }
+
     });
 
-    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) - 1).toString();
+    String count = (int.parse(selectedDoctorInfo!.patientQueueLength!) - 1).toString();
+    Fluttertoast.showToast(msg: count);
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(count).remove();
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).remove();
   }
 
   void loadScreen() {
@@ -62,8 +64,9 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadScreen();
-      setConsultationInfoToCompleted();
     });
+
+    setConsultationInfoToCompleted();
   }
 
   @override

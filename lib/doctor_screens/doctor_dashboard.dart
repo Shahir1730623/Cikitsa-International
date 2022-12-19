@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:app/doctor_screens/doctor_live_consultations.dart';
 import 'package:app/doctor_screens/doctor_visa_invitation.dart';
-import 'package:app/our_services/doctor_live_consultation/doctor_profile.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
+import '../models/doctor_model.dart';
 import '../our_services/visa_invitation/video_call.dart';
 import '../push_notification/push_notification_system.dart';
 import '../splash_screen/splash_screen.dart';
@@ -25,6 +24,35 @@ class DoctorDashboard extends StatefulWidget {
 }
 
 class _DoctorDashboardState extends State<DoctorDashboard> {
+  String patientLength = "0";
+
+  void countNumberOfChild(){
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        setState((){
+          patientLength = currentDoctorInfo!.patientQueueLength!;
+        });
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+      }
+
+    });
+  }
+
+
+  setConsultationInfoToAccepted(String consultationId){
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(currentFirebaseUser!.uid)
+        .child("consultations")
+        .child(consultationId).child("consultationType").set("Accepted");
+
+  }
+
 
   @override
   void initState() {
@@ -33,13 +61,15 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateRegistrationTokenForDoctor();
+    countNumberOfChild();
   }
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.grey.shade100,
+        backgroundColor: Colors.white,
         body: ListView(
           children: [
             Stack(
@@ -77,19 +107,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         ),
                       ),
                     )
-                  ),
-                ),
-
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.notifications,color: Colors.black,size: 30),
                   ),
                 ),
 
@@ -132,47 +149,82 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                           ),
                         ),
 
-                        const SizedBox(height: 20,),
+                        const SizedBox(height: 10,),
 
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              onPrimary: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32.0)),
-                              minimumSize: const Size(100, 40),
-                            ),
-                            onPressed: () {
-                              currentDoctorInfo = null;
-                              loggedInUser = "";
-                              firebaseAuth.signOut();
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
-                            },
-                            child: Row(
-                              children: const [
-                                Icon(Icons.doorbell),
 
-                                SizedBox(width: 10,),
-
-                                Text(
-                                  'Urgent Care',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            )
-                        ),
                       ],
                     )
                 ),
+
+                Positioned(
+                  top: 280,
+                  left: 20,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                        onPrimary: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0)),
+                        minimumSize: const Size(100, 40),
+                      ),
+                      onPressed: () {
+                        currentDoctorInfo = null;
+                        loggedInUser = "";
+                        firebaseAuth.signOut();
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.logout),
+
+                          SizedBox(width: 10,),
+
+                          Text(
+                            'Log out',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      )
+                  ),
+                ),
+
+                Positioned(
+                  top: 260,
+                  right: 20,
+                  child: Column(
+                    children: [
+                      Text(
+                          "Patient in Queue",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,fontSize: 12,color: Colors.blue
+                          )
+                      ),
+
+                      const SizedBox(height: 5,),
+
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          patientLength,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               ],
             ),
 
             SingleChildScrollView(
               child: Container(
-                height: 455,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
@@ -327,169 +379,182 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                               final consultationType = (snapshot.value as Map)["consultationType"].toString();
 
                               if(consultationType == "Now"){
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 5,
-                                        blurRadius: 7,
-                                        offset: const Offset(0, 0), // changes position of shadow
+                                return Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 5,
+                                            blurRadius: 7,
+                                            offset: const Offset(0, 0), // changes position of shadow
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
 
-                                  child: IntrinsicHeight(
-                                    child: Row(
-                                      children: [
-                                        const VerticalDivider(color: Colors.blueAccent, thickness: 3,),
-
-                                        const SizedBox(width: 10,),
-
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                      child: IntrinsicHeight(
+                                        child: Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            const VerticalDivider(color: Colors.blueAccent, thickness: 3,),
+
+                                            const SizedBox(width: 10,),
+
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Text(
-                                                      'Appointment Date',
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.grey.shade700
-                                                      ),),
-
-                                                    const SizedBox(height: 10,),
-
-                                                    Row(
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Icon(Icons.access_time),
+                                                        Text(
+                                                          'Appointment Date',
+                                                          style: TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Colors.grey.shade700
+                                                          ),),
 
-                                                        SizedBox(width: 10,),
+                                                        const SizedBox(height: 10,),
 
-                                                        Text((snapshot.value as Map)["date"].toString() +' '+ (snapshot.value as Map)["time"].toString(),style: TextStyle(color: Colors.grey),),
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.access_time),
+
+                                                            SizedBox(width: 10,),
+
+                                                            Text((snapshot.value as Map)["date"].toString() +' '+ (snapshot.value as Map)["time"].toString(),style: TextStyle(color: Colors.grey),),
+                                                          ],
+                                                        ),
                                                       ],
                                                     ),
+
+                                                    SizedBox(width: MediaQuery.of(context).size.width-310,),
+
                                                   ],
                                                 ),
 
-                                                SizedBox(width: MediaQuery.of(context).size.width-310,),
+                                                const SizedBox(height: 10,),
 
-                                              ],
-                                            ),
+                                                Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
 
-                                            const SizedBox(height: 10,),
+                                                const SizedBox(height: 10,),
 
-                                            Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
-
-                                            const SizedBox(height: 10,),
-
-                                            Row(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 30,
-                                                  backgroundColor: Colors.blue,
-                                                  child: Text(
-                                                    (snapshot.value as Map)["patientName"][0],
-                                                    style: GoogleFonts.montserrat(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.white,
-                                                      fontSize: 30
-                                                    ),
-                                                  ),
-                                                ),
-
-                                                const SizedBox(width: 20,),
-
-                                                Column(
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text((snapshot.value as Map)["patientName"],style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 16)),
-
-                                                    const SizedBox(height: 15,),
-
-                                                    Row(
-                                                      children: [
-                                                        Text((snapshot.value as Map)["gender"].toString(),
-                                                            style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-
-                                                        const Text(" - "),
-                                                        Text("${(snapshot.value as Map)["weight"]} kg",
-                                                            style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-                                                        const Text(" - "),
-
-                                                        Text("${(snapshot.value as Map)["height"]} feet",
-                                                            style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
-                                                      ],
+                                                    CircleAvatar(
+                                                      radius: 30,
+                                                      backgroundColor: Colors.blue,
+                                                      child: Text(
+                                                        (snapshot.value as Map)["patientName"][0],
+                                                        style: GoogleFonts.montserrat(
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.white,
+                                                          fontSize: 30
+                                                        ),
+                                                      ),
                                                     ),
 
-                                                    const SizedBox(height: 10,),
+                                                    const SizedBox(width: 20,),
 
-                                                    // Button
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                    Column(
                                                       children: [
-                                                        SizedBox(
-                                                          child: ElevatedButton(
-                                                            onPressed: ()  {
-                                                              showDialog(
-                                                                  context: context,
-                                                                  barrierDismissible: false,
-                                                                  builder: (BuildContext context){
-                                                                    return ProgressDialog(message: "Please wait...");
-                                                                  }
-                                                              );
+                                                        Text((snapshot.value as Map)["patientName"],style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 16)),
 
-                                                              Timer(const Duration(seconds: 5),()  {
-                                                                Navigator.pop(context);
-                                                                consultationId = (snapshot.value as Map)["id"];
-                                                                channelName = (snapshot.value as Map)["id"];
-                                                                Fluttertoast.showToast(msg: channelName!);
-                                                                tokenRole = 1;
-                                                                Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-                                                              });
+                                                        const SizedBox(height: 15,),
+
+                                                        Row(
+                                                          children: [
+                                                            Text((snapshot.value as Map)["gender"].toString(),
+                                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+
+                                                            const Text(" - "),
+                                                            Text("${(snapshot.value as Map)["weight"]} kg",
+                                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+                                                            const Text(" - "),
+
+                                                            Text("${(snapshot.value as Map)["height"]} feet",
+                                                                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 14)),
+                                                          ],
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        // Button
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            SizedBox(
+                                                              child: ElevatedButton.icon(
+                                                                onPressed: ()  {
+                                                                  showDialog(
+                                                                      context: context,
+                                                                      barrierDismissible: false,
+                                                                      builder: (BuildContext context){
+                                                                        return ProgressDialog(message: "Please wait...");
+                                                                      }
+                                                                  );
+
+                                                                  consultationId = (snapshot.value as Map)["id"];
+                                                                  setConsultationInfoToAccepted(consultationId!);
+
+                                                                  Timer(const Duration(seconds: 5),()  {
+                                                                    Navigator.pop(context);
+                                                                    channelName = consultationId;
+                                                                    Fluttertoast.showToast(msg: channelName!);
+                                                                    tokenRole = 1;
+                                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
+                                                                  });
 
 
-                                                            },
+                                                                },
 
-                                                            style: ElevatedButton.styleFrom(
-                                                                primary: (Colors.blue),
-                                                                shape: RoundedRectangleBorder(
-                                                                    borderRadius: BorderRadius.circular(20))),
+                                                                style: ElevatedButton.styleFrom(
+                                                                    primary: (Colors.blue),
+                                                                    shape: RoundedRectangleBorder(
+                                                                        borderRadius: BorderRadius.circular(20))),
 
-                                                            child: Text(
-                                                              "Join Now" ,
-                                                              style: GoogleFonts.montserrat(
-                                                                  fontSize: 15,
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: Colors.white
+                                                                label: Text(
+                                                                  "Join Now" ,
+                                                                  style: GoogleFonts.montserrat(
+                                                                      fontSize: 15,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      color: Colors.white
+                                                                  ),
+                                                                ),
+
+                                                                icon: const Icon(
+                                                                  Icons.video_call_rounded
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                        ),
+                                                          ],
+                                                        )
+
                                                       ],
                                                     )
 
                                                   ],
-                                                )
-
+                                                ),
                                               ],
                                             ),
+
                                           ],
                                         ),
 
-                                      ],
+                                      ),
+
                                     ),
 
-                                  ),
-
+                                    SizedBox(height: height * 0.025,)
+                                  ],
                                 );
+
                               }
 
                               else{

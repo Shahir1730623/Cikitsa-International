@@ -1,6 +1,7 @@
 import 'package:app/common_screens/waiting_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../common_screens/coundown_screen.dart';
 import '../../global/global.dart';
@@ -15,15 +16,18 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  String patientLength = "0";
 
   void countNumberOfChild(){
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
-        final map = snapshot.value as Map<dynamic, dynamic>;
-        map.forEach((key, value) {
-          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        });
+        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        patientLength = selectedDoctorInfo!.patientQueueLength!;
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
       }
     });
 
@@ -33,7 +37,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(count).set(info);
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
   }
 
   @override
@@ -200,7 +204,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               ElevatedButton(
                                 onPressed: () {
                                   countNumberOfChild();
-
                                   if(selectedDoctorInfo == null){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                     //pushNotify = true;

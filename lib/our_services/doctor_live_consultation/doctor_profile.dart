@@ -286,7 +286,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
                                 Timer(const Duration(seconds: 1),()  {
                                   Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChooseUser()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
                                 });
 
 

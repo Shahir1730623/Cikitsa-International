@@ -25,18 +25,23 @@ class _ChooseUserState extends State<ChooseUser> {
 
   List countList = [];
   DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users").child(currentFirebaseUser!.uid);
+  String patientLength = "0";
 
   void countNumberOfChild(){
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
-        final map = snapshot.value as Map<dynamic, dynamic>;
-        map.forEach((key, value) {
-          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        setState((){
+          patientLength = selectedDoctorInfo!.patientQueueLength!;
         });
       }
-    });
 
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+      }
+
+    });
   }
 
   void loadScreen(){
@@ -160,7 +165,7 @@ class _ChooseUserState extends State<ChooseUser> {
                    child: Column(
                      crossAxisAlignment: CrossAxisAlignment.center,
                      children: [
-                       SizedBox(height: 5,),
+                       const SizedBox(height: 5,),
 
                        Text(
                            "Patient in Queue",
@@ -176,7 +181,7 @@ class _ChooseUserState extends State<ChooseUser> {
                          radius: 20,
                          backgroundColor: Colors.blue,
                          child: Text(
-                           selectedDoctorInfo!.patientQueueLength!,
+                           patientLength,
                            style: const TextStyle(
                                fontWeight: FontWeight.bold,color: Colors.white
                            ),

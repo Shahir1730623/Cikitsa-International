@@ -79,7 +79,7 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
 
         Timer(const Duration(seconds: 3),()  {
           Navigator.pop(context);
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VisaInvitationConfirmationScreen() ), (route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const VisaInvitationConfirmationScreen() ), (route) => false);
         });
       }
 

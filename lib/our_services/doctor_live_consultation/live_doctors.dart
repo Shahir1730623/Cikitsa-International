@@ -209,7 +209,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
 
                             Timer(const Duration(seconds: 3),()  {
                               Navigator.pop(context);
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorProfile()));
                             });
 
                             //saveSelectedDoctor(index);
