@@ -66,9 +66,6 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
               height: 45,
               child: ElevatedButton.icon(
                 onPressed: ()  async {
-                  if(selectedService == "Doctor Live Consultation"){
-                    await AssistantMethods.sendNotificationToDoctor(context);
-                  }
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
                 },
 
@@ -77,7 +74,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20))),
 
-                icon: Icon(Icons.video_call),
+                icon: const Icon(Icons.video_call),
                 label: Text(
                   selectedService == ("CI Consultation") ? ("Talk to Consultant Now") : ("Talk to Doctor Now"),
                   style: GoogleFonts.montserrat(
@@ -91,7 +88,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
 
             SizedBox(height: height * 0.02,),
 
-            SizedBox(
+            /*SizedBox(
               width: double.infinity,
               height: 45,
               child: ElevatedButton.icon(
@@ -114,7 +111,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
                   ),
                 ),
               ),
-            ),
+            ),*/
 
 
           ],

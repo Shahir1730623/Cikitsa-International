@@ -83,7 +83,7 @@ class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
                       }
                   );
 
-                  sendPrescriptionUploadNotificationToUser(){
+                  /*sendPrescriptionUploadNotificationToUser(){
                     FirebaseDatabase.instance.ref()
                         .child("Users")
                         .child(userId!)
@@ -101,7 +101,7 @@ class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
                       }
                     });
 
-                  }
+                  }*/
 
                   consultationId = null;
                   patientId = null;

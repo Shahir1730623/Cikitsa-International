@@ -5,6 +5,8 @@ import 'package:app/models/consultation_model.dart';
 import 'package:app/models/doctor_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/consultant_model.dart';
+import '../models/consultation_model2.dart';
 import '../models/patient_model.dart';
 import '../models/visa_invitation_model.dart';
 
@@ -26,9 +28,12 @@ String? loggedInUser;
 
 UserModel? currentUserInfo;
 DoctorModel? currentDoctorInfo;
+ConsultantModel? currentConsultantInfo;
+
 DoctorModel? selectedDoctorInfo;
 PatientModel? selectedPatientInfo;
 ConsultationModel? selectedConsultationInfo;
+ConsultationModel2? selectedConsultationInfoForDocAndConsultant;
 CIConsultationModel? selectedCIConsultationInfo;
 VisaInvitationModel? selectedVisaInvitationInfo;
 
@@ -39,6 +44,7 @@ String? selectedServiceDatabaseParentName;
 bool? pushNotify = false;
 String tempToken = "";
 bool isBroadcaster = true;
+bool? localNotify = false;
 String cloudMessagingServerToken = 'key=AAAALn1lelI:APA91bG0BH1-fwORR9mWgt53XA_DlnsOQmX80BwR7XAzVU0KRBNVoXGM1ruuq7u-K-nUsgGarqb9BasoyfNaHpbr4ec2oOzzGlAFh0RwE5s1VKNxr0fARMp418B2aZHZmdux3gSbF516';
 
 // Agora
@@ -56,5 +62,7 @@ String? patientIDNo;
 String? attendantName;
 String? attendantDateOfBirth;
 String? attendantIDNo;
+
+String? dateTime;
 
 

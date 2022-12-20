@@ -66,7 +66,7 @@ class _CreateProfileState extends State<CreateProfile> {
     workplaceTextEditingController.addListener(() => setState(() {}));
   }
 
-  void saveNameToDatabase() async {
+  void saveInformationToDatabase() async {
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorImages/dummy-image.png');
     var imageUrl = await reference.getDownloadURL();
 
@@ -82,6 +82,20 @@ class _CreateProfileState extends State<CreateProfile> {
 
       reference.child(currentFirebaseUser!.uid).set(userModel);
       Fluttertoast.showToast(msg: "User Profile Created");
+    }
+
+    else if(userType == "Consultant"){
+      DatabaseReference reference = FirebaseDatabase.instance.ref().child(userType!);
+      Map consultantModel = {
+        "id": widget.id,
+        "name": nameTextEditingController.text,
+        "email": emailTextEditingController.text,
+        "phone": widget.phone,
+        "imageUrl": imageUrl
+      };
+
+      reference.child(currentFirebaseUser!.uid).set(consultantModel);
+      Fluttertoast.showToast(msg: "Consultant Profile Created");
     }
 
     else {
@@ -168,7 +182,7 @@ class _CreateProfileState extends State<CreateProfile> {
                         ),
                       ),
 
-                      (userType == "Users") ?
+                      (userType == "Users" || userType == "Consultant") ?
                       Column(
                         children: [
                           const SizedBox(height: 50,),
@@ -356,7 +370,7 @@ class _CreateProfileState extends State<CreateProfile> {
                                       }
                                   );
 
-                                  saveNameToDatabase();
+                                  saveInformationToDatabase();
 
                                   Timer(const Duration(seconds: 3), () {
                                     Navigator.pop(context);
@@ -930,7 +944,7 @@ class _CreateProfileState extends State<CreateProfile> {
                                       }
                                   );
 
-                                  saveNameToDatabase();
+                                  saveInformationToDatabase();
 
                                   Timer(const Duration(seconds: 3), () {
                                     Navigator.pop(context);

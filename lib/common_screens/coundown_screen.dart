@@ -26,7 +26,7 @@ class CountDownScreen extends StatefulWidget {
 }
 
 class _CountDownScreenState extends State<CountDownScreen> {
-  retrieveConsultationDataFromDatabase() {
+  /*retrieveConsultationDataFromDatabase() {
     DatabaseReference reference = FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
@@ -66,7 +66,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
       });
     }
-  }
+  }*/
 
   void loadScreen(){
     showDialog(
@@ -77,9 +77,9 @@ class _CountDownScreenState extends State<CountDownScreen> {
         }
     );
 
-    retrieveConsultationDataFromDatabase();
+    //retrieveConsultationDataFromDatabase();
 
-    Timer(const Duration(seconds: 3),()  {
+    Timer(const Duration(seconds: 2),()  {
       Navigator.pop(context);
     });
 

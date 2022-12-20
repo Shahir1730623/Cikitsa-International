@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/models/consultant_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +8,7 @@ import 'package:http/http.dart';
 
 import '../global/global.dart';
 import '../models/doctor_model.dart';
+import '../models/push_notification_screen.dart';
 import '../models/user_model.dart';
 
 class AssistantMethods{
@@ -31,6 +33,17 @@ class AssistantMethods{
       if (snapshot.exists) {
         currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
         loggedInUser = "Doctor";
+      }
+    });
+
+    DatabaseReference reference3 = FirebaseDatabase.instance.ref()
+        .child("Consultant").child(currentFirebaseUser!.uid);
+
+    reference3.once().then((snap) {
+      final snapshot = snap.snapshot;
+      if (snapshot.exists) {
+        currentConsultantInfo = ConsultantModel.fromSnapshot(snapshot);
+        loggedInUser = "Consultant";
       }
     });
 
@@ -91,7 +104,7 @@ class AssistantMethods{
     );
   }
 
-  static sendPushNotificationToPatientNow(String deviceRegistrationToken,BuildContext context){
+  static sendPushNotificationToPatientNow(String deviceRegistrationToken,String consultationId, String patientId, String dateTime, String selectedService,BuildContext context){
     Map<String,String> headerNotification = {
       'Content-Type' : 'application/json',
       'Authorization' : cloudMessagingServerToken,
@@ -99,8 +112,8 @@ class AssistantMethods{
 
     Map bodyNotification = {
       "notification":{
-        "body": "Your prescription is uploaded by doctor. Click here to see",
-        "title" : "Prescription reminder"
+        "body": "You have appointment now. Click here to join",
+        "title" : "Appointment reminder"
       },
 
       "priority": "high",
@@ -110,7 +123,9 @@ class AssistantMethods{
         "id" : "1",
         "status" : "done",
         "consultation_id" : consultationId,
-        "patient_id" : patientId
+        "selected_service" : selectedService,
+        "patient_id" : patientId,
+        "dateTime" : dateTime
       },
 
       "to" : deviceRegistrationToken
@@ -133,7 +148,7 @@ class AssistantMethods{
     Map bodyNotification = {
       "notification":{
         "body": "Your visa invitation letter is uploaded by doctor. Click here to see",
-        "title" : "Visa Invitation Letter uploaded"
+        "title" : "Visa Invitation Letter Uploaded"
       },
 
       "priority": "high",
@@ -156,5 +171,7 @@ class AssistantMethods{
       body: jsonEncode(bodyNotification),
     );
   }
+
+
 
 }

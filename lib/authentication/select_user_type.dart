@@ -107,6 +107,44 @@ class _SelectUserTypeState extends State<SelectUserType> {
 
                    const SizedBox(height: 20,),
 
+                   SizedBox(
+                     height: 45,
+                     width: double.infinity,
+                     child: ElevatedButton(
+                       onPressed: ()  {
+                         showDialog(
+                             context: context,
+                             barrierDismissible: false,
+                             builder: (BuildContext context){
+                               return ProgressDialog(message: "");
+                             }
+                         );
+
+                         Timer(const Duration(seconds: 1),()  {
+                           Navigator.pop(context);
+                           userType = "Consultant";
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+
+                         });
+                       },
+                       style: ElevatedButton.styleFrom(
+                           primary: (Colors.lightBlue),
+                           shape: RoundedRectangleBorder(
+                               borderRadius: BorderRadius.circular(20))),
+
+                       child: Text(
+                         "Login as a consultant",
+                         style: GoogleFonts.montserrat(
+                             fontSize: 15,
+                             fontWeight: FontWeight.bold,
+                             color: Colors.white
+                         ),
+                       ),
+                     ),
+                   ),
+
+                   const SizedBox(height: 10,),
+
                    const Text(
                      'Or',
                      style: TextStyle(
@@ -116,7 +154,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
                      ),
                    ),
 
-                   const SizedBox(height: 20,),
+                   const SizedBox(height: 10,),
 
                    SizedBox(
                      height: 45,

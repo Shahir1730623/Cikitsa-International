@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/authentication/initialization_screen.dart';
 import 'package:app/authentication/login_screen.dart';
+import 'package:app/consultant_screens/consultant_dashboard.dart';
 import 'package:app/doctor_screens/doctor_dashboard.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
@@ -38,7 +39,13 @@ class _SplashScreenState extends State<SplashScreen> {
         else if(loggedInUser == "Doctor"){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DoctorDashboard()));
         }
+
+        // Send Consultant to Doctor Dashboard
+        else if(loggedInUser == "Consultant"){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ConsultantDashboard()));
+        }
       }
+
       else{
         // send User to login screen
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => const WelcomeScreen()));

@@ -1,93 +1,21 @@
-import 'dart:async';
-import 'package:app/doctor_screens/doctor_live_consultations.dart';
-import 'package:app/doctor_screens/doctor_visa_invitation.dart';
+import 'package:app/consultant_screens/telemedicine_consultations.dart';
+import 'package:app/global/global.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../global/global.dart';
-import '../models/doctor_model.dart';
-import '../our_services/visa_invitation/video_call.dart';
-import '../push_notification/push_notification_system.dart';
+
 import '../splash_screen/splash_screen.dart';
-import '../widgets/progress_dialog.dart';
-import 'doctor_profile_edit.dart';
 
-
-class DoctorDashboard extends StatefulWidget {
-  const DoctorDashboard({Key? key}) : super(key: key);
+class ConsultantDashboard extends StatefulWidget {
+  const ConsultantDashboard({Key? key}) : super(key: key);
 
   @override
-  State<DoctorDashboard> createState() => _DoctorDashboardState();
+  State<ConsultantDashboard> createState() => _ConsultantDashboardState();
 }
 
-class _DoctorDashboardState extends State<DoctorDashboard> {
-  String patientLength = "0";
-  Timer? timer;
-
-  /*void countNumberOfChild(){
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        setState((){
-          patientLength = currentDoctorInfo!.patientQueueLength!;
-        });
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
-      }
-
-    });
-  }*/
-
-
-  setConsultationInfoToAccepted(String consultationId){
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(currentFirebaseUser!.uid)
-        .child("consultations")
-        .child(consultationId).child("consultationType").set("Accepted");
-  }
-
-  checkPatientsInQueue(){
-    timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
-      FirebaseDatabase.instance.ref()
-          .child("Doctors")
-          .child(currentFirebaseUser!.uid)
-          .onValue
-          .listen((dataSnap) {
-        DataSnapshot snapshot = dataSnap.snapshot;
-        setState((){
-          patientLength = (snapshot.value as Map)["patientQueueLength"].toString();
-        });
-
-
-    });
-  });
-}
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
-    pushNotificationSystem.initializeCloudMessaging(context);
-    pushNotificationSystem.generateRegistrationTokenForDoctor();
-    checkPatientsInQueue();
-  }
-
-  @override
-  void dispose() {
-    timer!.cancel();
-    super.dispose();
-  }
-
-
+class _ConsultantDashboardState extends State<ConsultantDashboard> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -113,24 +41,24 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                   top: 20,
                   left: 20,
                   child: GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorProfileEdit()));
-                    },
-                    child: (currentDoctorInfo!.doctorImageUrl != null) ?
-                    CircleAvatar(
-                      radius: 25,
-                      foregroundImage: NetworkImage(currentDoctorInfo!.doctorImageUrl!),
-                    ) : CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      radius: 30,
-                      child: Text(
-                        currentDoctorInfo!.doctorFirstName![0],
-                        style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
+                      onTap: (){
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorProfileEdit()));
+                      },
+                      child: (currentConsultantInfo!.imageUrl != null) ?
+                      CircleAvatar(
+                        radius: 25,
+                        foregroundImage: NetworkImage(currentConsultantInfo!.imageUrl!),
+                      ) : CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        radius: 30,
+                        child: Text(
+                          currentConsultantInfo!.name![0],
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                          ),
                         ),
-                      ),
-                    )
+                      )
                   ),
                 ),
 
@@ -151,7 +79,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         ),
 
                         Text(
-                          "Dr." + currentDoctorInfo!.doctorLastName!,
+                          "Back",
                           style: GoogleFonts.montserrat(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -193,10 +121,10 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         minimumSize: const Size(100, 40),
                       ),
                       onPressed: () {
-                        currentDoctorInfo = null;
+                        currentConsultantInfo = null;
                         loggedInUser = "";
                         firebaseAuth.signOut();
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SplashScreen()));
                       },
                       child: Row(
                         children: const [
@@ -214,36 +142,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                       )
                   ),
                 ),
-
-                Positioned(
-                  top: 260,
-                  right: 20,
-                  child: Column(
-                    children: [
-                      Text(
-                          "Patient in Queue",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.bold,fontSize: 12,color: Colors.blue
-                          )
-                      ),
-
-                      const SizedBox(height: 5,),
-
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Colors.blue,
-                        child: Text(
-                          patientLength,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
               ],
             ),
 
@@ -275,7 +173,41 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             children: [
                               GestureDetector(
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultation()));
+                                  //Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultation()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(width: 1,color: Colors.grey.shade400),
+                                  ),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: Image.asset(
+                                        "assets/leader.png"
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 10,),
+
+                              Text(
+                                'CI Consultation',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade600
+                                ),
+                              )
+
+                            ],
+                          ),
+
+                          Column(
+                            children: [
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const TelemedicineConsultations()));
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
@@ -335,40 +267,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             ],
                           ),
 
-                          GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorVisaInvitation()));
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(width: 1,color: Colors.grey.shade400),
-                                  ),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    child: Image.asset(
-                                        "assets/visaInvitationImages/passport.png"
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 10,),
-
-                                Text(
-                                  'Visa\nInvitation',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey.shade600
-                                  ),
-                                )
-
-                              ],
-                            ),
-                          ),
                         ],
                       ),
 
@@ -378,7 +276,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'My Appointment',
+                            'CI Consultations',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700
@@ -391,7 +289,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
                       const SizedBox(height: 20,),
 
-                      Column(
+                      /*Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           FirebaseAnimatedList(
@@ -477,9 +375,9 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                                                       child: Text(
                                                         (snapshot.value as Map)["patientName"][0],
                                                         style: GoogleFonts.montserrat(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.white,
-                                                          fontSize: 30
+                                                            fontWeight: FontWeight.bold,
+                                                            color: Colors.white,
+                                                            fontSize: 30
                                                         ),
                                                       ),
                                                     ),
@@ -553,7 +451,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                                                                 ),
 
                                                                 icon: const Icon(
-                                                                  Icons.video_call_rounded
+                                                                    Icons.video_call_rounded
                                                                 ),
                                                               ),
                                                             ),
@@ -590,7 +488,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
 
                         ],
-                      ),
+                      ),*/
 
 
                     ],

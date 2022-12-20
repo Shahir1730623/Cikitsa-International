@@ -365,11 +365,11 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                 GestureDetector(
                                   onTap: (){
                                     setState(() {
-                                      selectedTime = "2:20 PM";
+                                      selectedTime = "6:39 PM";
                                     });
                                   },
 
-                                  child: (selectedTime == "2:20 PM") ?
+                                  child: (selectedTime == "6:39 PM") ?
                                   Container(
                                     padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
                                     decoration: BoxDecoration(
@@ -395,7 +395,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   ) : Padding(
                                     padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
                                     child: Text(
-                                      "2:20 PM",
+                                      "6:39 PM",
                                       style: GoogleFonts.montserrat(
                                           color: Colors.black,
                                           fontSize: 17,
@@ -880,8 +880,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   formattedTime = DateFormat('HH:mm').format(df);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                                 });
-
-
                               },
 
                               style: ElevatedButton.styleFrom(

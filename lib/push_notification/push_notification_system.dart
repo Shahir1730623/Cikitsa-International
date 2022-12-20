@@ -1,6 +1,7 @@
 import 'package:app/doctor_screens/doctor_visa_invitation_details.dart';
+import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
-import 'package:app/widgets/push_notification_dialog_instant_video_call.dart';
+import 'package:app/widgets/push_notification_dialog_doctor.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,8 +29,12 @@ class PushNotificationSystem{
         else{
           //consultationId = remoteMessage.data["consultation_id"];
           //patientId = remoteMessage.data["patient_id"];
-          //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
-          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+          else{
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          }
 
         }
 
@@ -46,8 +51,14 @@ class PushNotificationSystem{
         else{
           //consultationId = remoteMessage.data["consultation_id"];
           //patientId = remoteMessage.data["patient_id"];
-          //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
-          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+          else{
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          }
+
+
         }
       }
     });
@@ -62,8 +73,12 @@ class PushNotificationSystem{
         else{
           //consultationId = remoteMessage.data["consultation_id"];
           //patientId = remoteMessage.data["patient_id"];
-          //retrieveConsultationDataFromDatabase(consultationId!,patientId!,context);
-          retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+          else{
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+          }
         }
 
       }
@@ -146,7 +161,7 @@ class PushNotificationSystem{
           showDialog(
               context: context,
               barrierDismissible: false,
-              builder:(BuildContext context) => PushNotificationDialogInvitationLetter()
+              builder:(BuildContext context) => const PushNotificationDialogInvitationLetter()
           );
         }
       }
@@ -157,24 +172,26 @@ class PushNotificationSystem{
     });
   }
 
-  /*void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
-    Fluttertoast.showToast(msg: "ID:" + consultationId + "User ID:" + userId! + "Patient ID:" + patientId);
+  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
+    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
     FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId)
         .child("consultations").child(consultationId).once().then((dataSnap) {
-      DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreenDetails()));
-      }
+          DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            consultationId = (snapshot.value as Map)["id"].toString();
+            patientId = (snapshot.value as Map)["patientId"].toString();
+            selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+            localNotify = true;
+          }
 
-      else {
-        Fluttertoast.showToast(msg: "No consultation record exist");
-      }
+          else {
+            Fluttertoast.showToast(msg: "No consultation record exist");
+          }
     });
-  }*/
+  }
 
 
 

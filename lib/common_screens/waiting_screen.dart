@@ -155,7 +155,6 @@ class _WaitingScreenState extends State<WaitingScreen> {
     // TODO: implement initState
     super.initState();
     checkWaitingStatus();
-
   }
 
   @override

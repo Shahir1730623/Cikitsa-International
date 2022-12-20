@@ -15,6 +15,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../models/consultation_payload_model.dart';
+import '../models/push_notification_screen.dart';
+import '../service_file/local_notification_service.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/push_notification_dialog_select_schedule.dart';
 
@@ -26,6 +28,8 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
+  late final LocalNotificationService service;
+
   List firstListImages = ["covid-19","diarrhea","dengue"];
   List firstListNames = ["Covid-19 Treatment","Diarrhea Treatment","Dengue/Malaria Treatment"];
   List secondListImages = ["sugar-blood-level","bone-1","brainstorm"];
@@ -42,6 +46,34 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
+  Future<void> generateLocalNotification() async {
+    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+    dateTime = selectedConsultationInfo!.date! + " "+ selectedConsultationInfo!.time!;
+    Fluttertoast.showToast(msg: dateTime!);
+    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
+    String payloadJsonString = consultationPayloadModel.toJsonString();
+    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+    localNotify = false;
+    Fluttertoast.showToast(msg: "Bhitore dhuksi generateLocalNotification()");
+  }
+
+  void listenToNotification(){
+    service.onNotificationClick.stream.listen(onNotificationListener);
+  }
+
+  void onNotificationListener(String? payload){
+    if(payload!=null && payload.isNotEmpty){
+      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
+      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+
+    }
+    else{
+      Fluttertoast.showToast(msg: 'payload empty');
+    }
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -49,6 +81,12 @@ class _UserDashboardState extends State<UserDashboard> {
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateRegistrationTokenForPatient();
+    service = LocalNotificationService();
+    service.intialize();
+    listenToNotification();
+    if(localNotify == true){
+      generateLocalNotification();
+    }
   }
 
   @override

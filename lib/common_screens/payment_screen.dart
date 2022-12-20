@@ -1,7 +1,5 @@
 import 'dart:async';
 
-
-import 'package:app/assistants/assistant_methods.dart';
 import 'package:app/common_screens/confirmation_page.dart';
 import 'package:app/models/patient_model.dart';
 import 'package:app/widgets/progress_dialog.dart';
@@ -12,9 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../global/global.dart';
-import '../models/consultation_payload_model.dart';
-import '../models/doctor_model.dart';
-import '../models/push_notification_screen.dart';
 import '../service_file/local_notification_service.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -30,7 +25,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  late final LocalNotificationService service;
+
 
   String idGenerator() {
     final now = DateTime.now();
@@ -47,14 +42,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (snapshot.exists) {
         selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
         if(selectedService == "Doctor Live Consultation"){
-          saveConsultationInfoForPatient(); // Saving consultation info for patient and doctor
+          saveConsultationInfoForPatient();
         }
+
 
         else if (selectedService == "Visa Consultation"){
           saveVisaInvitationInfoForPatient();
         }
 
       }
+
       else{
         Fluttertoast.showToast(msg: "Unsuccessful to retrieve patient info");
       }
@@ -64,15 +61,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void saveConsultationInfoForPatient() async {
     Map consultationInfoMap = {
       "id" : consultationId,
-      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
-      "time" : DateFormat.jm().format(DateTime.now()),
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
       "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Upcoming",
+      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Waiting",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid",
@@ -88,16 +85,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
     reference.set(consultationInfoMap);
 
     // Calling next method
-    saveConsultationInfoForDoctor();
+    if(selectedDoctorInfo!.status == "Online"){
+      saveConsultationInfoForDoctor();// Saving consultation info for patient and doctor
+    }
+    else{
+      saveConsultationInfoForConsultant(); // Saving consultation info for consultant
+    }
 
   }
 
-  void saveConsultationInfoForDoctor(){
-    Map doctorLiveConsultationForDoctor = {
+  void saveConsultationInfoForConsultant() async {
+    Map consultantConsultationInfoMap = {
       "id" : consultationId,
       "userId" : currentFirebaseUser!.uid,
-      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
-      "time" : DateFormat.jm().format(DateTime.now()),
+      "imageUrl" : selectedDoctorInfo!.doctorImageUrl!,
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
       "consultantFee" : "500",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
@@ -108,7 +111,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "specialization" : selectedDoctorInfo!.specialization,
-      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Upcoming",
+      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Waiting",
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid"
+    };
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("offlineTelemedicineRequests").child(consultationId!);
+    reference.set(consultantConsultationInfoMap);
+
+    // Calling next method
+    //saveConsultationInfoForDoctor();
+
+  }
+
+
+  void saveConsultationInfoForDoctor(){
+    Map doctorLiveConsultationForDoctor = {
+      "id" : consultationId,
+      "userId" : currentFirebaseUser!.uid,
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
+      "consultantFee" : "500",
+      "patientId" : selectedPatientInfo!.id!,
+      "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
+      "patientAge" : selectedPatientInfo!.age!,
+      "gender": selectedPatientInfo!.gender!,
+      "height" : selectedPatientInfo!.height!,
+      "weight" : selectedPatientInfo!.weight!,
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Waiting",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid"
@@ -122,12 +156,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     reference.set(doctorLiveConsultationForDoctor);
 
-    if(selectedDoctorInfo!.status == "Online"){
+    /*if(selectedDoctorInfo!.status == "Online"){
     }
 
     else{
       generateLocalNotification();
-    }
+    }*/
 
   }
 
@@ -206,42 +240,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     
   }
 
-  Future<void> generateLocalNotification() async {
-    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
-    String dateTime = '${widget.formattedDate!} ${widget.formattedTime!}';
-    Fluttertoast.showToast(msg: dateTime);
-    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: selectedService, consultationId: consultationId!);
-    String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime);
-  }
-
-  void listenToNotification(){
-    service.onNotificationClick.stream.listen(onNotificationListener);
-  }
-
-  void onNotificationListener(String? payload){
-    if(payload!=null && payload.isNotEmpty){
-      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
-      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
-
-    }
-    else{
-      Fluttertoast.showToast(msg: 'payload empty');
-    }
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    service = LocalNotificationService();
-    service.intialize();
-    listenToNotification();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
