@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../global/global.dart';
 import '../models/consultation_payload_model.dart';
@@ -29,6 +30,9 @@ class UserDashboard extends StatefulWidget {
 
 class _UserDashboardState extends State<UserDashboard> {
   late final LocalNotificationService service;
+  String? formattedDate;
+  String? formattedTime;
+  Timer? timer;
 
   List firstListImages = ["covid-19","diarrhea","dengue"];
   List firstListNames = ["Covid-19 Treatment","Diarrhea Treatment","Dengue/Malaria Treatment"];
@@ -47,15 +51,30 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Future<void> generateLocalNotification() async {
-    // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
-    dateTime = selectedConsultationInfo!.date! + " "+ selectedConsultationInfo!.time!;
-    Fluttertoast.showToast(msg: dateTime!);
-    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
-    String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
-    localNotify = false;
-    Fluttertoast.showToast(msg: "Bhitore dhuksi generateLocalNotification()");
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) async {
+      if(localNotify == true){
+        // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+        var df = DateFormat.jm().parse(selectedConsultationInfo!.time!);
+        DateTime date = DateFormat("dd-MM-yyyy").parse(selectedConsultationInfo!.date!);
+        formattedDate = DateFormat('yyyy-MM-dd').format(date);
+        formattedTime = DateFormat('HH:mm').format(df);
+        dateTime =  formattedDate! + " " + formattedTime!;
+        Fluttertoast.showToast(msg: dateTime!);
+
+        ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
+        String payloadJsonString = consultationPayloadModel.toJsonString();
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment at : ${formattedDate!} Time: ${formattedTime!}", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        setState(() {
+          localNotify = false;
+          timer.cancel();
+        });
+      }
+
+    });
+
+
   }
+
 
   void listenToNotification(){
     service.onNotificationClick.stream.listen(onNotificationListener);
@@ -81,13 +100,18 @@ class _UserDashboardState extends State<UserDashboard> {
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateRegistrationTokenForPatient();
+    generateLocalNotification();
     service = LocalNotificationService();
     service.intialize();
     listenToNotification();
-    if(localNotify == true){
-      generateLocalNotification();
-    }
   }
+
+  @override
+  void dispose() {
+    timer!.cancel();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {

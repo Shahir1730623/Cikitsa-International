@@ -218,7 +218,7 @@ class _ChooseUserState extends State<ChooseUser> {
                               }
                           );
 
-                          Timer(const Duration(seconds: 2),()  {
+                          Timer(const Duration(seconds: 1),()  {
                             Navigator.pop(context);
                             patientId = (snapshot.value as Map)["id"];
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const OldUserForm()));

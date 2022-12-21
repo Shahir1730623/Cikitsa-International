@@ -7,12 +7,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../global/global.dart';
+import '../models/consultation_payload_model.dart';
 import '../models/doctor_model.dart';
+import '../models/push_notification_screen.dart';
 import '../our_services/visa_invitation/video_call.dart';
 import '../push_notification/push_notification_system.dart';
+import '../service_file/local_notification_service.dart';
 import '../splash_screen/splash_screen.dart';
 import '../widgets/progress_dialog.dart';
+import '../widgets/push_notification_dialog_doctor.dart';
 import 'doctor_profile_edit.dart';
 
 
@@ -26,24 +31,9 @@ class DoctorDashboard extends StatefulWidget {
 class _DoctorDashboardState extends State<DoctorDashboard> {
   String patientLength = "0";
   Timer? timer;
-
-  /*void countNumberOfChild(){
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        setState((){
-          patientLength = currentDoctorInfo!.patientQueueLength!;
-        });
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
-      }
-
-    });
-  }*/
-
+  String? formattedDate;
+  String? formattedTime;
+  late final LocalNotificationService service;
 
   setConsultationInfoToAccepted(String consultationId){
     FirebaseDatabase.instance.ref()
@@ -52,6 +42,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
         .child("consultations")
         .child(consultationId).child("consultationType").set("Accepted");
   }
+
 
   checkPatientsInQueue(){
     timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
@@ -65,20 +56,68 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
           patientLength = (snapshot.value as Map)["patientQueueLength"].toString();
         });
 
-
     });
   });
 }
+
+  Future<void> generateLocalNotification() async {
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) async {
+      if(localNotify == true){
+        // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
+        var df = DateFormat.jm().parse(selectedConsultationInfoForDocAndConsultant!.time!);
+        DateTime date = DateFormat("dd-MM-yyyy").parse(selectedConsultationInfoForDocAndConsultant!.date!);
+        formattedDate = DateFormat('yyyy-MM-dd').format(date);
+        formattedTime = DateFormat('HH:mm').format(df);
+        dateTime =  formattedDate! + " " + formattedTime!;
+        Fluttertoast.showToast(msg: dateTime!);
+
+        ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: selectedConsultationInfoForDocAndConsultant!.patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
+        String payloadJsonString = consultationPayloadModel.toJsonString();
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have an appointment at " + formattedDate! + " " + formattedTime!, seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        if (mounted){
+          setState(() {
+            localNotify = false;
+            timer.cancel();
+          });
+        }
+
+      }
+
+    });
+
+
+  }
+
+  void listenToNotification(){
+    service.onNotificationClick.stream.listen(onNotificationListener);
+  }
+
+  void onNotificationListener(String? payload){
+    if(payload!=null && payload.isNotEmpty){
+      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
+      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+
+    }
+    else{
+      Fluttertoast.showToast(msg: 'payload empty');
+    }
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkPatientsInQueue();
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateRegistrationTokenForDoctor();
-    checkPatientsInQueue();
+    generateLocalNotification();
+    service = LocalNotificationService();
+    service.intialize();
+    listenToNotification();
+
   }
 
   @override

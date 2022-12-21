@@ -18,7 +18,7 @@ class TelemedicineConsultationDetails extends StatefulWidget {
 }
 
 class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultationDetails> {
-  setConsultationInfoToAccepted(){
+  setConsultationInfoToUpcoming() async {
     Map doctorLiveConsultationForDoctor = {
       "id" : consultationId,
       "userId" : selectedConsultationInfoForDocAndConsultant!.userId,
@@ -32,7 +32,7 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
       "height" : selectedConsultationInfoForDocAndConsultant!.height!,
       "weight" : selectedConsultationInfoForDocAndConsultant!.weight!,
       "doctorId" : selectedConsultationInfoForDocAndConsultant!.doctorId,
-      "doctorName" : "Dr. " + selectedConsultationInfoForDocAndConsultant!.doctorName!,
+      "doctorName" : selectedConsultationInfoForDocAndConsultant!.doctorName!,
       "specialization" : selectedConsultationInfoForDocAndConsultant!.specialization,
       "consultationType" : "Upcoming",
       "visitationReason": selectedConsultationInfoForDocAndConsultant!.visitationReason,
@@ -44,7 +44,7 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
         .child("Doctors")
         .child(selectedConsultationInfoForDocAndConsultant!.doctorId!)
         .child("consultations")
-        .child(consultationId!).set("Upcoming");
+        .child(consultationId!).set(doctorLiveConsultationForDoctor);
 
     FirebaseDatabase.instance.ref()
         .child("Users")
@@ -54,21 +54,46 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
         .child("consultations")
         .child(consultationId!).child("consultationType").set("Upcoming");
 
-    pushNotification();
+    FirebaseDatabase.instance.ref()
+        .child("offlineTelemedicineRequests")
+        .child(consultationId!)
+        .remove();
+
+    getRegistrationTokenForUserAndNotify();
   }
 
-  pushNotification(){
+  void getRegistrationTokenForUserAndNotify(){
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(selectedConsultationInfoForDocAndConsultant!.userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedConsultationInfoForDocAndConsultant!.patientId!, selectedService, context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
+
+    getRegistrationTokenForDoctorAndNotify();
+  }
+
+  void getRegistrationTokenForDoctorAndNotify(){
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(selectedConsultationInfoForDocAndConsultant!.doctorId!)
         .child("tokens").once().then((snapData){
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
         String deviceRegistrationToken = snapshot.value.toString();
         // send notification now
-        String dateTime = selectedConsultationInfoForDocAndConsultant!.date.toString() +" "+  selectedConsultationInfoForDocAndConsultant!.time.toString();
-        AssistantMethods.sendPushNotificationToPatientNow(deviceRegistrationToken,selectedConsultationInfoForDocAndConsultant!.id!, selectedConsultationInfoForDocAndConsultant!.patientId!, dateTime, selectedService,context);
-        Fluttertoast.showToast(msg: "Notification sent successfully");
+        AssistantMethods.sendConsultationPushNotificationToDoctorNow(deviceRegistrationToken,context);
+        Fluttertoast.showToast(msg: "Notification sent to Doctor successfully");
       }
 
       else{
@@ -383,46 +408,88 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
               color: Colors.blue,
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton(
-                  onPressed: ()  async {
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context){
-                          return ProgressDialog(message: "Please wait...");
-                        }
-                    );
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      onPressed: ()  async {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context){
+                              return ProgressDialog(message: "Please wait...");
+                            }
+                        );
 
-                    setConsultationInfoToAccepted();
+                        setConsultationInfoToUpcoming();
 
-                    Timer(const Duration(seconds: 5),()  {
-                      Navigator.pop(context);
-                      var snackBar = const SnackBar(content: Text("Invitation sent successfully"));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    });
+                        Timer(const Duration(seconds: 5),()  {
+                          Navigator.pop(context);
+                          var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        });
 
-                  },
+                      },
 
-                  style: ElevatedButton.styleFrom(
-                      primary: (Colors.blue),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
+                      style: ElevatedButton.styleFrom(
+                          primary: (Colors.blue),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
 
-                  child: Text(
-                    "Confirm",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white
+                      child: Text(
+                        "Confirm",
+                        style: GoogleFonts.montserrat(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      onPressed: ()  async {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context){
+                              return ProgressDialog(message: "Please wait...");
+                            }
+                        );
+
+                        //setConsultationInfoToUpcoming();
+
+                        Timer(const Duration(seconds: 5),()  {
+                          Navigator.pop(context);
+                          var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        });
+
+                      },
+
+                      style: ElevatedButton.styleFrom(
+                          primary: (Colors.blue),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+
+                      child: Text(
+                        "Reschedule",
+                        style: GoogleFonts.montserrat(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 20,),

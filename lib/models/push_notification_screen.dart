@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../global/global.dart';
+import '../widgets/push_notification_dialog_doctor.dart';
 import '../widgets/push_notification_dialog_select_schedule.dart';
 import 'consultation_payload_model.dart';
 
@@ -20,7 +21,7 @@ class PushNotificationScreen extends StatefulWidget {
 class _PushNotificationScreenState extends State<PushNotificationScreen> {
   late ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(widget.payload);
 
-  void loadScreen(){
+  void loadScreenForPatient(){
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -30,15 +31,33 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
     );
   }
 
+  void loadScreenForDoctor(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return PushNotificationDialogTalkToPatientNow();
+        }
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Future.delayed(Duration.zero,(){
-      patientId = p!.patientId;
-      selectedService = p!.selectedServiceName;
-      consultationId = p!.consultationId;
-      loadScreen();
+      if(loggedInUser == "Patient"){
+        patientId = p!.patientId;
+        selectedService = p!.selectedServiceName;
+        consultationId = p!.consultationId;
+        loadScreenForPatient();
+      }
+
+      else if(loggedInUser == "Doctor"){
+        consultationId = p!.consultationId;
+        loadScreenForDoctor();
+      }
+
     });
   }
 

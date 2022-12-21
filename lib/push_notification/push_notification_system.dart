@@ -7,15 +7,20 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 import '../global/global.dart';
 import '../models/consultation_model.dart';
+import '../models/consultation_model2.dart';
+import '../models/consultation_payload_model.dart';
 import '../models/visa_invitation_model.dart';
+import '../service_file/local_notification_service.dart';
 import '../widgets/push_notification_dialog_select_schedule.dart';
 import '../widgets/push_notification_dialog_invitation_letter.dart';
 
 class PushNotificationSystem{
   FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
 
   Future initializeCloudMessaging(BuildContext context) async{
 
@@ -125,21 +130,44 @@ class PushNotificationSystem{
             consultationId = (snapshot.value as Map)["id"].toString();
             patientId = (snapshot.value as Map)["patientId"].toString();
             userId = (snapshot.value as Map)["userId"].toString();
-            Fluttertoast.showToast(msg: "ID:" + consultationId! + "User ID:" + userId! + "Patient ID:" + patientId!);
+            selectedConsultationInfoForDocAndConsultant = ConsultationModel2.fromSnapshot(snapshot);
+            Fluttertoast.showToast(msg: "ID:" + consultationId! + "User ID:" + userId! + "Patient ID:" + patientId! + "Date:" + selectedConsultationInfoForDocAndConsultant!.date!);
+            localNotify = true;
 
-            if(consultationId != null && userId != null && patientId != null){
+            /*if(consultationId != null && userId != null && patientId != null){
               showDialog(
                   context: context,
                   barrierDismissible: false,
                   builder:(BuildContext context) => PushNotificationDialogTalkToDoctorNow()
               );
-            }
+            }*/
 
           }
 
           else{
             Fluttertoast.showToast(msg: "Failed retrieving Consultation Information For Doctor");
           }
+    });
+  }
+
+  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
+    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId)
+        .child("consultations").child(consultationId).once().then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        consultationId = (snapshot.value as Map)["id"].toString();
+        patientId = (snapshot.value as Map)["patientId"].toString();
+        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+        localNotify = true;
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No consultation record exist");
+      }
     });
   }
 
@@ -172,26 +200,9 @@ class PushNotificationSystem{
     });
   }
 
-  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
-    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
-    FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId)
-        .child("consultations").child(consultationId).once().then((dataSnap) {
-          DataSnapshot snapshot = dataSnap.snapshot;
-          if (snapshot.exists) {
-            consultationId = (snapshot.value as Map)["id"].toString();
-            patientId = (snapshot.value as Map)["patientId"].toString();
-            selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-            localNotify = true;
-          }
 
-          else {
-            Fluttertoast.showToast(msg: "No consultation record exist");
-          }
-    });
-  }
+
+
 
 
 

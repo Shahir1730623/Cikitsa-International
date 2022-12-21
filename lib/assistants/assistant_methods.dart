@@ -49,62 +49,7 @@ class AssistantMethods{
 
   }
 
-  // Retrieving device registration token
-  static sendNotificationToDoctor(BuildContext context){
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(selectedDoctorInfo!.doctorId!)
-        .child("tokens").once().then((snapData){
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        String deviceRegistrationToken = snapshot.value.toString();
-        // send notification now
-        AssistantMethods.sendPushNotificationToDoctorNow(deviceRegistrationToken,context);
-        Fluttertoast.showToast(msg: "Notification sent successfully");
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "Error sending notifications");
-      }
-    });
-
-  }
-
-
-  // Generates Push Notification and sends it
-  static sendPushNotificationToDoctorNow(String deviceRegistrationToken,BuildContext context){
-    Map<String,String> headerNotification = {
-      'Content-Type' : 'application/json',
-      'Authorization' : cloudMessagingServerToken,
-    };
-
-    Map bodyNotification = {
-      "notification":{
-        "body": "You have appointment now. Click here to join",
-        "title" : "Appointment reminder"
-      },
-
-      "priority": "high",
-
-      "data" : {
-        "click_action": "FLUTTER_NOTIFICATION_CLICK",
-        "id" : "1",
-        "status" : "done",
-        "consultation_id" : consultationId,
-      },
-
-      "to" : deviceRegistrationToken
-    };
-
-    // Work of postman to send notification
-    var responseNotification = post(
-      Uri.parse("https://fcm.googleapis.com/fcm/send"),
-      headers: headerNotification,
-      body: jsonEncode(bodyNotification),
-    );
-  }
-
-  static sendPushNotificationToPatientNow(String deviceRegistrationToken,String consultationId, String patientId, String dateTime, String selectedService,BuildContext context){
+  static sendConsultationPushNotificationToPatientNow(String deviceRegistrationToken, String patientId, String selectedService,BuildContext context){
     Map<String,String> headerNotification = {
       'Content-Type' : 'application/json',
       'Authorization' : cloudMessagingServerToken,
@@ -138,6 +83,40 @@ class AssistantMethods{
       body: jsonEncode(bodyNotification),
     );
   }
+
+  // Generates Push Notification and sends it
+  static sendConsultationPushNotificationToDoctorNow(String deviceRegistrationToken,BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "You have appointment now. Click here to join",
+        "title" : "Appointment reminder"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "consultation_id" : consultationId,
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
 
   static sendInvitationPushNotificationToPatientNow(String deviceRegistrationToken, String invitationId, String patientId,BuildContext context){
     Map<String,String> headerNotification = {

@@ -45,7 +45,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           saveConsultationInfoForPatient();
         }
 
-
         else if (selectedService == "Visa Consultation"){
           saveVisaInvitationInfoForPatient();
         }
@@ -396,7 +395,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       );
 
                       fetchPatientData();
-
                       Timer(const Duration(seconds: 3),()  {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfirmationPageScreen()));

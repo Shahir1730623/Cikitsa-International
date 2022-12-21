@@ -35,18 +35,18 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
   }
 
   removePatientFromQueue(){
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Doctors').child(doctorId!);
+    reference.once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
-        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count - 1).toString());
       }
 
     });
 
-    String count = (int.parse(selectedDoctorInfo!.patientQueueLength!) - 1).toString();
-    Fluttertoast.showToast(msg: count);
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).remove();
+
   }
 
   void loadScreen() {

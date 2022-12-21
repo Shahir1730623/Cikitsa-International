@@ -22,11 +22,28 @@ class DoctorProfile extends StatefulWidget {
 
 class _DoctorProfileState extends State<DoctorProfile> {
 
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
+
+    Timer(const Duration(seconds: 1),()  {
+      Navigator.pop(context);
+    });
+  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
   }
 
   @override

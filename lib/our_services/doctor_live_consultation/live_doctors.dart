@@ -207,7 +207,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                             doctorId = (snapshot.value as Map)["id"];
                             retrieveDoctorDataFromDatabase(doctorId!);
 
-                            Timer(const Duration(seconds: 3),()  {
+                            Timer(const Duration(seconds: 1),()  {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorProfile()));
                             });
@@ -414,7 +414,7 @@ class _LiveDoctorsState extends State<LiveDoctors> {
                             doctorId = (snapshot.value as Map)["id"];
                             retrieveDoctorDataFromDatabase(doctorId!);
 
-                            Timer(const Duration(seconds: 3),()  {
+                            Timer(const Duration(seconds: 1),()  {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorProfile()));
                             });

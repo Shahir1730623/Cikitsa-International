@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/global/global.dart';
 import 'package:app/widgets/progress_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,16 +11,16 @@ import 'package:google_fonts/google_fonts.dart';
 import '../common_screens/coundown_screen.dart';
 import '../our_services/visa_invitation/video_call.dart';
 
-class PushNotificationDialogTalkToDoctorNow extends StatefulWidget {
+class PushNotificationDialogTalkToPatientNow extends StatefulWidget {
 
   //String? consultationId;
   //PushNotificationDialogTalkToDoctorNow({this.consultationId});
 
   @override
-  State<PushNotificationDialogTalkToDoctorNow> createState() => _PushNotificationDialogTalkToDoctorNowState();
+  State<PushNotificationDialogTalkToPatientNow> createState() => _PushNotificationDialogTalkToPatientNowState();
 }
 
-class _PushNotificationDialogTalkToDoctorNowState extends State<PushNotificationDialogTalkToDoctorNow> {
+class _PushNotificationDialogTalkToPatientNowState extends State<PushNotificationDialogTalkToPatientNow> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -74,6 +75,13 @@ class _PushNotificationDialogTalkToDoctorNowState extends State<PushNotification
                       }
                   );
 
+                  FirebaseDatabase.instance.ref()
+                      .child("Doctors")
+                      .child(currentDoctorInfo!.doctorId!)
+                      .child('consultations')
+                      .child(consultationId!)
+                      .child('consultationType').set("Accepted");
+                  
                   Timer(const Duration(seconds: 5),()  {
                     Navigator.pop(context);
                     channelName = consultationId;

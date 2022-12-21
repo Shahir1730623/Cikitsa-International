@@ -64,7 +64,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
           },
-          icon: const Icon(Icons.arrow_back_ios,color: Colors.black,),
+          icon: (selectedDoctorInfo == null || selectedDoctorInfo!.status == "Offline") ? const Icon(Icons.arrow_back_ios,color: Colors.black,) : Container()
         ),
       ),
       body: ListView(
@@ -203,16 +203,15 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                               ElevatedButton(
                                 onPressed: () {
-                                  countNumberOfChild();
                                   if(selectedDoctorInfo == null){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                     //pushNotify = true;
                                   }
 
                                   else if(selectedDoctorInfo!.status == "Online"){
+                                    countNumberOfChild();
                                     if(int.parse(selectedDoctorInfo!.patientQueueLength!) == 0){
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
-
                                     }
 
                                     else{

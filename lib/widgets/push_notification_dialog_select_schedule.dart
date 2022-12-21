@@ -1,12 +1,16 @@
 import 'package:app/common_screens/payment_screen.dart';
 import 'package:app/common_screens/reschedule_date.dart';
 import 'package:app/global/global.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../common_screens/coundown_screen.dart';
+import '../common_screens/waiting_screen.dart';
+import '../models/doctor_model.dart';
 
 class PushNotificationDialogSelectSchedule extends StatefulWidget {
 
@@ -20,13 +24,37 @@ class PushNotificationDialogSelectSchedule extends StatefulWidget {
 }
 
 class _PushNotificationDialogSelectScheduleState extends State<PushNotificationDialogSelectSchedule> {
+  String patientLength = "0";
+
+  void countNumberOfChild(){
+    FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!).once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+        patientLength = selectedDoctorInfo!.patientQueueLength!;
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+      }
+    });
+
+    Map info = {
+      "patientId" : patientId!
+    };
+
+    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 200),
+        margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 240),
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 0),
         width: double.infinity,
         decoration: BoxDecoration(
@@ -35,7 +63,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
         ),
         child: Column(
           children: [
-            SizedBox(height: height * 0.07,),
+            SizedBox(height: height * 0.05,),
 
             Text(
               selectedService == ("CI Consultation") ? ("You have meeting with\nconsultant now") : ("You have meeting with\ndoctor now"),
@@ -50,7 +78,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
             SizedBox(height: height * 0.025,),
 
             Text(
-              'Please press "Talk Now" or\n"Reschedule Later"',
+              'Please press the button "Talk Now" to start the video call',
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -59,14 +87,21 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
               ),
             ),
 
-            SizedBox(height: height * 0.05,),
+            SizedBox(height: height * 0.08,),
 
             SizedBox(
               width: double.infinity,
               height: 45,
               child: ElevatedButton.icon(
-                onPressed: ()  async {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                onPressed: () async {
+                  countNumberOfChild();
+                  if(int.parse(selectedDoctorInfo!.patientQueueLength!) == 0){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                  }
+
+                  else{
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+                  }
                 },
 
                 style: ElevatedButton.styleFrom(

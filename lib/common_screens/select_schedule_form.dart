@@ -116,7 +116,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
       setState(() {
         date = pickedDate;
         formattedDate = DateFormat('dd-MM-yyyy').format(date);
-        Fluttertoast.showToast(msg: formattedDate.toString());
         dateCounter++;
         flag = true;
       });
@@ -128,7 +127,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
   }
 
-  /*pickTime() async {
+  pickTime() async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(DateTime.now()), //get today's date
@@ -138,11 +137,10 @@ class _SelectScheduleState extends State<SelectSchedule> {
       setState(() {
         time = pickedTime;
         formattedTime = time.format(context);
-        Fluttertoast.showToast(msg: formattedTime.toString());
         timeCounter++;
       });
     }
-  }*/
+  }
 
   /*saveConsultationInfo() async {
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
@@ -168,25 +166,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
       reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(CIConsultationInfoMap);
     }
 
-    else{
-      Map consultationInfoMap = {
-        "id" : consultationId,
-        "date" : formattedDate,
-        "time" : selectedTime,
-        "doctorId" : selectedDoctorInfo!.doctorId,
-        "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
-        "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
-        "specialization" : selectedDoctorInfo!.specialization,
-        "doctorFee" : selectedDoctorInfo!.fee,
-        "workplace" : selectedDoctorInfo!.workplace,
-        "consultationType" : "Scheduled",
-        "visitationReason": selectedReasonOfVisit,
-        "problem": problemTextEditingController.text.trim(),
-        "payment" : "Pending"
-      };
 
-      reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(consultationInfoMap);
-    }
 
   }*/
 
@@ -324,9 +304,63 @@ class _SelectScheduleState extends State<SelectSchedule> {
                               )
                             ],
                           ),
-
                           SizedBox(height: height * 0.03,),
 
+                          // Test Time
+                          Text(
+                            "Time",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.montserrat(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01,),
+                          // Time Picker
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.grey.shade200,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Image.asset(
+                                    "assets/medical.png",
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 40,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      pickTime();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: (Colors.white70),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    ),
+                                    child: Text(
+                                      (timeCounter != 0) ? '$formattedTime' :  "Select time",
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          SizedBox(height: height * 0.03,),
                           Row(
                             children: const [
                               Icon(
@@ -346,7 +380,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
                               ),
                             ],
                           ),
-
                           SizedBox(height: height * 0.01,),
 
                           (flag == true) ?
@@ -875,9 +908,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
                                 Timer(const Duration(seconds: 2),()  {
                                   Navigator.pop(context);
-                                  var df = DateFormat.jm().parse(selectedTime);
-                                  formattedDate = DateFormat('yyyy-MM-dd').format(date);
-                                  formattedTime = DateFormat('HH:mm').format(df);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                                 });
                               },
