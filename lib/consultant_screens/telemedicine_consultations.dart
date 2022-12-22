@@ -128,7 +128,7 @@ class _TelemedicineConsultationsState extends State<TelemedicineConsultations> {
                             retrieveConsultationDataFromDatabase(consultationId!);
 
 
-                            Timer(const Duration(seconds: 1), () {
+                            Timer(const Duration(seconds: 5), () {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TelemedicineConsultationDetails()));
                             });

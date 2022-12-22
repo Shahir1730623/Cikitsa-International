@@ -1,3 +1,4 @@
+import 'package:app/consultant_screens/ci_consultations.dart';
 import 'package:app/consultant_screens/telemedicine_consultations.dart';
 import 'package:app/global/global.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../splash_screen/splash_screen.dart';
+import '../widgets/progress_dialog.dart';
 
 class ConsultantDashboard extends StatefulWidget {
   const ConsultantDashboard({Key? key}) : super(key: key);
@@ -173,7 +175,7 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
                             children: [
                               GestureDetector(
                                 onTap: (){
-                                  //Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultation()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultations()));
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
@@ -276,31 +278,30 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'CI Consultations',
+                            'Upcoming CI Consultations',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700
                             ),
                           ),
 
-                          const Text('See All', style: TextStyle(color: Colors.blue,),)
+                          const Text('See waiting history', style: TextStyle(color: Colors.blue,),)
                         ],
                       ),
 
                       const SizedBox(height: 20,),
 
-                      /*Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           FirebaseAnimatedList(
-                            query:  FirebaseDatabase.instance.ref().child("Doctors").child(currentFirebaseUser!.uid).child("consultations"),
+                            query:  FirebaseDatabase.instance.ref().child("Consultant").child(currentFirebaseUser!.uid).child("CIConsultations"),
                             scrollDirection: Axis.vertical,
                             physics: const ScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                              final consultationType = (snapshot.value as Map)["consultationType"].toString();
-
-                              if(consultationType == "Now"){
+                              final consultationStatus = (snapshot.value as Map)["consultationStatus"].toString();
+                              if(consultationStatus == "Upcoming"){
                                 return Column(
                                   children: [
                                     Container(
@@ -386,7 +387,7 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
 
                                                     Column(
                                                       children: [
-                                                        Text((snapshot.value as Map)["patientName"],style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 16)),
+                                                        Text((snapshot.value as Map)["patientName"], style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 16)),
 
                                                         const SizedBox(height: 15,),
 
@@ -406,58 +407,6 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
                                                         ),
 
                                                         const SizedBox(height: 10,),
-
-                                                        // Button
-                                                        Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: [
-                                                            SizedBox(
-                                                              child: ElevatedButton.icon(
-                                                                onPressed: ()  {
-                                                                  showDialog(
-                                                                      context: context,
-                                                                      barrierDismissible: false,
-                                                                      builder: (BuildContext context){
-                                                                        return ProgressDialog(message: "Please wait...");
-                                                                      }
-                                                                  );
-
-                                                                  consultationId = (snapshot.value as Map)["id"];
-                                                                  setConsultationInfoToAccepted(consultationId!);
-
-                                                                  Timer(const Duration(seconds: 5),()  {
-                                                                    Navigator.pop(context);
-                                                                    channelName = consultationId;
-                                                                    Fluttertoast.showToast(msg: channelName!);
-                                                                    tokenRole = 1;
-                                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-                                                                  });
-
-
-                                                                },
-
-                                                                style: ElevatedButton.styleFrom(
-                                                                    primary: (Colors.blue),
-                                                                    shape: RoundedRectangleBorder(
-                                                                        borderRadius: BorderRadius.circular(20))),
-
-                                                                label: Text(
-                                                                  "Join Now" ,
-                                                                  style: GoogleFonts.montserrat(
-                                                                      fontSize: 15,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      color: Colors.white
-                                                                  ),
-                                                                ),
-
-                                                                icon: const Icon(
-                                                                    Icons.video_call_rounded
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        )
-
                                                       ],
                                                     )
 
@@ -478,9 +427,17 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
                                 );
 
                               }
-
                               else{
-                                return Container();
+                                return Center(
+                                  child: Text(
+                                    "You have no upcoming CI Consultations",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                );
                               }
 
                             },
@@ -488,9 +445,7 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
 
 
                         ],
-                      ),*/
-
-
+                      ),
                     ],
                   ),
                 ),

@@ -41,6 +41,16 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
     );
   }
 
+  void loadScreenForConsultant(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return PushNotificationDialogTalkToPatientNow();
+        }
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -56,6 +66,11 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
       else if(loggedInUser == "Doctor"){
         consultationId = p!.consultationId;
         loadScreenForDoctor();
+      }
+
+      else if(loggedInUser == "Consultant"){
+        consultationId = p!.consultationId;
+        loadScreenForConsultant();
       }
 
     });

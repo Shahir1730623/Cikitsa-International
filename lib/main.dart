@@ -1,19 +1,9 @@
-import 'package:app/authentication/initialization_screen.dart';
-import 'package:app/common_screens/confirmation_page.dart';
-import 'package:app/common_screens/coundown_screen.dart';
-import 'package:app/common_screens/reschedule_date.dart';
-import 'package:app/doctor_screens/doctor_dashboard.dart';
-import 'package:app/doctor_screens/doctor_upload_prescription.dart';
-import 'package:app/main_screen.dart';
-import 'package:app/our_services/doctor_live_consultation/appointment_summary.dart';
-import 'package:app/our_services/doctor_live_consultation/booking_detail.dart';
-import 'package:app/our_services/doctor_live_consultation/chat_screen.dart';
-import 'package:app/our_services/doctor_live_consultation/uploading_prescription.dart';
-import 'package:app/our_services/doctor_live_consultation/video_consultation_dashboard.dart';
 import 'package:app/splash_screen/splash_screen.dart';
 import 'package:app/widgets/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'consultant_screens/ci_consultation_details_consultant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

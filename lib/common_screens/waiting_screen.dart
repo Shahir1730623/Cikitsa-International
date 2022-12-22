@@ -110,42 +110,83 @@ class _WaitingScreenState extends State<WaitingScreen> {
 
   void checkWaitingStatus() {
     timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
-      FirebaseDatabase.instance
-          .ref()
-          .child("Doctors")
-          .child(doctorId!)
-          .child("consultations")
-          .child(consultationId!)
-          .onValue
-          .listen((dataSnap) {
-        DataSnapshot snapshot = dataSnap.snapshot;
-        consultationStatus = (snapshot.value as Map)["consultationType"].toString();
-        Fluttertoast.showToast(msg: 'Consultation Status: $consultationStatus');
+      if(selectedService == "Doctor Live Consultation"){
+        FirebaseDatabase.instance
+            .ref()
+            .child("Doctors")
+            .child(doctorId!)
+            .child("consultations")
+            .child(consultationId!)
+            .onValue
+            .listen((dataSnap) {
+          DataSnapshot snapshot = dataSnap.snapshot;
+          consultationStatus = (snapshot.value as Map)["consultationType"].toString();
+          Fluttertoast.showToast(msg: 'Consultation Status: $consultationStatus');
 
-        if (consultationStatus == "Accepted") {
-          setState(() {
-            timer.cancel();
-          });
+          if (consultationStatus == "Accepted") {
+            setState(() {
+              timer.cancel();
+            });
 
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return ProgressDialog(message: "Redirecting to video call...");
-              }
-          );
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return ProgressDialog(message: "Redirecting to video call...");
+                }
+            );
 
-          Timer(const Duration(seconds: 5), () {
-            Navigator.pop(context);
-            channelName = consultationId;
-            Fluttertoast.showToast(msg: channelName!);
-            tokenRole = 2;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-          });
-        }
-      });
+            Timer(const Duration(seconds: 5), () {
+              Navigator.pop(context);
+              channelName = consultationId;
+              Fluttertoast.showToast(msg: channelName!);
+              tokenRole = 2;
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
+            });
+          }
+        });
+      }
+
+      else{
+        FirebaseDatabase.instance
+            .ref()
+            .child("Consultant")
+            .child(selectedCIConsultationInfo!.consultantId!)
+            .child("CIConsultations")
+            .child(consultationId!)
+            .onValue
+            .listen((dataSnap) {
+              DataSnapshot snapshot = dataSnap.snapshot;
+              consultationStatus = (snapshot.value as Map)["consultationStatus"].toString();
+              Fluttertoast.showToast(msg: 'Consultation Status: $consultationStatus');
+
+              if (consultationStatus == "Accepted") {
+                setState(() {
+                  timer.cancel();
+                });
+
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return ProgressDialog(message: "Redirecting to video call...");
+                    }
+                );
+
+                Timer(const Duration(seconds: 5), () {
+                  Navigator.pop(context);
+                  channelName = consultationId;
+                  Fluttertoast.showToast(msg: channelName!);
+                  tokenRole = 2;
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
+                });
+          }
+        });
+      }
 
     });
+
+
 
 
   }

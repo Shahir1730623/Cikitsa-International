@@ -117,6 +117,40 @@ class AssistantMethods{
     );
   }
 
+  static sendCIConsultationPushNotificationToPatientNow(String deviceRegistrationToken, String patientId, String selectedService,BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "You have appointment Later. Please go to CI Consultation history to check your appointment time",
+        "title" : "Appointment reminder"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "consultation_id" : consultationId,
+        "patient_id" : patientId,
+        "selected_service" : selectedService,
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
 
   static sendInvitationPushNotificationToPatientNow(String deviceRegistrationToken, String invitationId, String patientId,BuildContext context){
     Map<String,String> headerNotification = {

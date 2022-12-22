@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:app/doctor_screens/doctor_upload_prescription.dart';
+import 'package:app/main_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/uploading_prescription.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -248,8 +249,21 @@ class _AgoraScreenState extends State<AgoraScreen> {
                     //leave();
                     Timer(const Duration(seconds: 1),()  {
                       if(loggedInUser == "Patient"){
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
+                        if(selectedService == "Doctor Live Consultation"){
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
+                        }
+
+                        else if(selectedService == "CI Consultation"){
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                        }
+
+                        else{
+                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
+                        }
+
                       }
+
+
                       else {
                         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorUploadPrescription()), (Route<dynamic> route) => false);
                       }

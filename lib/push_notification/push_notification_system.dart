@@ -1,5 +1,6 @@
 import 'package:app/doctor_screens/doctor_visa_invitation_details.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:app/widgets/push_notification_dialog_doctor.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -37,6 +38,11 @@ class PushNotificationSystem{
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
             retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
           }
+
+          else if(remoteMessage.data["selected_service"] == "CI Consultation"){
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+
           else{
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
           }
@@ -59,6 +65,11 @@ class PushNotificationSystem{
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
             retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
           }
+
+          else if(remoteMessage.data["selected_service"] == "CI Consultation"){
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+
           else{
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
           }
@@ -81,6 +92,11 @@ class PushNotificationSystem{
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
             retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
           }
+
+          else if(remoteMessage.data["selected_service"] == "CI Consultation"){
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+          }
+
           else{
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
           }
@@ -152,7 +168,8 @@ class PushNotificationSystem{
 
   void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
     Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
-    FirebaseDatabase.instance.ref().child("Users")
+    FirebaseDatabase.instance.ref()
+        .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId)
@@ -169,6 +186,29 @@ class PushNotificationSystem{
         Fluttertoast.showToast(msg: "No consultation record exist");
       }
     });
+  }
+
+  retrieveCIConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context){
+    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId)
+        .child("CIConsultations").child(consultationId).once().then((dataSnap) {
+          DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            consultationId = (snapshot.value as Map)["id"].toString();
+            patientId = (snapshot.value as Map)["patientId"].toString();
+            selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+            localNotifyForCI = true;
+          }
+          else {
+            Fluttertoast.showToast(msg: "No consultation record exist");
+          }
+    });
+
+
   }
 
   void retrieveVisaInvitationDataFromDatabase(String visaInvitationId, String patientId, BuildContext context) {

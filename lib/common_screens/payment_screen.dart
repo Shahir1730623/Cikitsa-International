@@ -49,6 +49,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
           saveVisaInvitationInfoForPatient();
         }
 
+        else if(selectedService == "CI Consultation"){
+          saveCIConsultationInfoForPatient();
+        }
+
       }
 
       else{
@@ -68,7 +72,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
       "workplace" : selectedDoctorInfo!.workplace,
-      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Waiting",
+      "consultationType" : (selectedDoctorInfo!.status == "Online") ? "Now" : "Waiting",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid",
@@ -84,13 +88,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     reference.set(consultationInfoMap);
 
     // Calling next method
-    if(selectedDoctorInfo!.status == "Online"){
-      saveConsultationInfoForDoctor();// Saving consultation info for patient and doctor
-    }
-    else{
-      saveConsultationInfoForConsultant(); // Saving consultation info for consultant
+    if (selectedDoctorInfo!.status == "Online"){
+      saveConsultationInfoForDoctor(); // Saving consultation info for patient and doctor
     }
 
+    else{
+      saveConsultationInfoForConsultant();
+    }
   }
 
   void saveConsultationInfoForConsultant() async {
@@ -110,20 +114,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "specialization" : selectedDoctorInfo!.specialization,
-      "consultationType" : selectedDoctorInfo!.status == "Online" ? "Now" : "Waiting",
+      "consultationType" : (selectedDoctorInfo!.status == "Online") ? "Now" : "Waiting",
       "visitationReason": widget.visitationReason,
       "problem": widget.problem,
       "payment" : "Paid"
     };
 
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("offlineTelemedicineRequests").child(consultationId!);
-    reference.set(consultantConsultationInfoMap);
+    FirebaseDatabase.instance.ref()
+        .child("offlineTelemedicineRequests")
+        .child(consultationId!)
+        .set(consultantConsultationInfoMap);
 
-    // Calling next method
-    //saveConsultationInfoForDoctor();
 
   }
-
 
   void saveConsultationInfoForDoctor(){
     Map doctorLiveConsultationForDoctor = {
@@ -155,14 +158,70 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     reference.set(doctorLiveConsultationForDoctor);
 
-    /*if(selectedDoctorInfo!.status == "Online"){
-    }
-
-    else{
-      generateLocalNotification();
-    }*/
-
   }
+
+  void saveCIConsultationInfoForPatient() async {
+    Map CIConsultationInfoMap = {
+      "id" : consultationId,
+      "userId" : currentFirebaseUser!.uid,
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
+      "patientId" : selectedPatientInfo!.id!,
+      "patientName" : selectedPatientInfo!.firstName! + " " +  selectedPatientInfo!.lastName!,
+      "patientAge" : selectedPatientInfo!.age!,
+      "gender" : selectedPatientInfo!.gender!,
+      "height" : selectedPatientInfo!.height!,
+      "weight" : selectedPatientInfo!.weight!,
+      "country" : selectedCountry,
+      "consultantId" : "TBA",
+      "consultantName" : "TBA",
+      "consultantFee" : "500",
+      "consultationStatus" : "Waiting",
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid",
+    };
+
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("CIConsultations")
+        .child(consultationId!);
+
+    reference.set(CIConsultationInfoMap);
+    // Method call
+    saveCIConsultationInfoForConsultant();
+  }
+
+  saveCIConsultationInfoForConsultant(){
+    Map consultantCIConsultationInfoMap = {
+      "id" : consultationId,
+      "userId" : currentFirebaseUser!.uid,
+      "date" : widget.formattedDate,
+      "time" : widget.formattedTime,
+      "patientId" : selectedPatientInfo!.id!,
+      "patientName" : selectedPatientInfo!.firstName! + " " +  selectedPatientInfo!.lastName!,
+      "patientAge" : selectedPatientInfo!.age!,
+      "gender" : selectedPatientInfo!.gender!,
+      "height" : selectedPatientInfo!.height!,
+      "weight" : selectedPatientInfo!.weight!,
+      "country" : selectedCountry,
+      "consultantId" : "TBA",
+      "consultantName" : "TBA",
+      "consultantFee" : "500",
+      "consultationStatus" : "Waiting",
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid",
+    };
+
+    FirebaseDatabase.instance.ref()
+        .child("CIConsultationRequests")
+        .child(consultationId!)
+        .set(consultantCIConsultationInfoMap);
+  }
+
 
   void saveVisaInvitationInfoForPatient() async {
     Map visaInvitationInfoMap = {

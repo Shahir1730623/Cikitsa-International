@@ -23,13 +23,19 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId!).child(selectedServiceDatabaseParentName!).child(consultationId!).child("consultationType").set("Completed");
+        .child(patientId!)
+        .child("consultations")
+        .child(consultationId!)
+        .child("consultationType")
+        .set("Completed");
 
     FirebaseDatabase.instance.ref()
         .child("Doctors")
         .child(selectedDoctorInfo!.doctorId!)
         .child("consultations")
-        .child(consultationId!).child("consultationType").set("Completed");
+        .child(consultationId!)
+        .child("consultationType")
+        .set("Completed");
 
     removePatientFromQueue();
   }
@@ -49,6 +55,28 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
 
   }
 
+  setCIConsultationInfoToCompleted(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("CIConsultations")
+        .child(consultationId!)
+        .child("consultationType")
+        .set("Completed");
+
+    FirebaseDatabase.instance.ref()
+        .child("Consultant")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("consultations")
+        .child(consultationId!)
+        .child("consultationType")
+        .set("Completed");
+
+    removePatientFromQueue();
+  }
+
   void loadScreen() {
     showDialog(
         context: context,
@@ -65,8 +93,14 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
     Future.delayed(Duration.zero, () {
       loadScreen();
     });
+    if(selectedService == "Doctor Live Consultation"){
+      setConsultationInfoToCompleted();
+    }
 
-    setConsultationInfoToCompleted();
+    else{
+
+    }
+
   }
 
   @override

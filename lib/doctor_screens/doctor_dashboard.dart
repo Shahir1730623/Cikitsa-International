@@ -52,9 +52,12 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
           .onValue
           .listen((dataSnap) {
         DataSnapshot snapshot = dataSnap.snapshot;
-        setState((){
-          patientLength = (snapshot.value as Map)["patientQueueLength"].toString();
-        });
+        if (mounted){
+          setState((){
+            patientLength = (snapshot.value as Map)["patientQueueLength"].toString();
+          });
+        }
+
 
     });
   });

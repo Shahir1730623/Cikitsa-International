@@ -65,7 +65,10 @@ class _ChooseUserState extends State<ChooseUser> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadScreen();
-      countNumberOfChild();
+      if(selectedService == "Doctor Live Consultation"){
+        countNumberOfChild();
+      }
+
     });
   }
 

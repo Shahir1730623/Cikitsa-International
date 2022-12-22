@@ -30,8 +30,8 @@ class UserDashboard extends StatefulWidget {
 
 class _UserDashboardState extends State<UserDashboard> {
   late final LocalNotificationService service;
-  String? formattedDate;
-  String? formattedTime;
+  //String? formattedDate;
+  //String? formattedTime;
   Timer? timer;
 
   List firstListImages = ["covid-19","diarrhea","dengue"];
@@ -56,19 +56,37 @@ class _UserDashboardState extends State<UserDashboard> {
         // Converting time and date to yyyy-MM-dd 24 hour format for sending the time as param to showScheduledNotification()
         var df = DateFormat.jm().parse(selectedConsultationInfo!.time!);
         DateTime date = DateFormat("dd-MM-yyyy").parse(selectedConsultationInfo!.date!);
-        formattedDate = DateFormat('yyyy-MM-dd').format(date);
-        formattedTime = DateFormat('HH:mm').format(df);
-        dateTime =  formattedDate! + " " + formattedTime!;
+        String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+        String formattedTime = DateFormat('HH:mm').format(df);
+        dateTime =  formattedDate + " " + formattedTime;
         Fluttertoast.showToast(msg: dateTime!);
 
         ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
         String payloadJsonString = consultationPayloadModel.toJsonString();
-        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment at : ${formattedDate!} Time: ${formattedTime!}", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have appointment at : ${formattedDate} Time: ${formattedTime}", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
         setState(() {
           localNotify = false;
           timer.cancel();
         });
       }
+
+      else if(localNotifyForCI == true){
+        var df = DateFormat.jm().parse(selectedCIConsultationInfo!.time!);
+        DateTime date = DateFormat("dd-MM-yyyy").parse(selectedCIConsultationInfo!.date!);
+        String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+        String formattedTime = DateFormat('HH:mm').format(df);
+        dateTime =  formattedDate + " " + formattedTime;
+        Fluttertoast.showToast(msg: dateTime!);
+
+        ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "CI Consultation", consultationId: consultationId!);
+        String payloadJsonString = consultationPayloadModel.toJsonString();
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have doctor appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        //await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have CI appointment at : ${formattedDate} Time: ${formattedTime}", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        setState(() {
+          localNotifyForCI = false;
+          timer.cancel();
+        });
+    }
 
     });
 

@@ -71,7 +71,7 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
       if(snapshot.value != null){
         String deviceRegistrationToken = snapshot.value.toString();
         // send notification now
-        await AssistantMethods.sendConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedConsultationInfoForDocAndConsultant!.patientId!, selectedService, context);
+        await AssistantMethods.sendConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedConsultationInfoForDocAndConsultant!.patientId!, selectedService,context);
         Fluttertoast.showToast(msg: "Notification sent to patient successfully");
       }
 

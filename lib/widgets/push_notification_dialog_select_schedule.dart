@@ -1,6 +1,8 @@
 import 'package:app/common_screens/payment_screen.dart';
 import 'package:app/common_screens/reschedule_date.dart';
 import 'package:app/global/global.dart';
+import 'package:app/models/ci_consultation_model.dart';
+import 'package:app/models/consultant_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,26 +28,51 @@ class PushNotificationDialogSelectSchedule extends StatefulWidget {
 class _PushNotificationDialogSelectScheduleState extends State<PushNotificationDialogSelectSchedule> {
   String patientLength = "0";
 
-  void countNumberOfChild(){
-    FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!).once().then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        patientLength = selectedDoctorInfo!.patientQueueLength!;
-      }
+  void countNumberOfChild(String selectedService){
+    if(selectedService == "Doctor Live Consultation"){
+      FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!).once().then((snapData) {
+        DataSnapshot snapshot = snapData.snapshot;
+        if(snapshot.value != null){
+          selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+          patientLength = selectedDoctorInfo!.patientQueueLength!;
+        }
 
-      else{
-        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
-      }
-    });
+        else{
+          Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+        }
+      });
 
-    Map info = {
-      "patientId" : patientId!
-    };
+      Map info = {
+        "patientId" : patientId!
+      };
 
-    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
+      String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
+      FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
+      FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
+    }
+
+    else{
+      FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!).once().then((snapData) {
+        DataSnapshot snapshot = snapData.snapshot;
+        if(snapshot.value != null){
+          patientLength = (snapshot.value as Map)['patientQueueLength'];
+
+          Map info = {
+            "patientId" : patientId!
+          };
+
+          String count = (int.parse(patientLength) + 1).toString();
+          FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!).child('patientQueueLength').set(count);
+          FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!).child('patientQueue').child(consultationId!).set(info);
+        }
+
+        else{
+          Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+        }
+      });
+
+    }
+
   }
 
   @override
@@ -94,13 +121,25 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
               height: 45,
               child: ElevatedButton.icon(
                 onPressed: () async {
-                  countNumberOfChild();
-                  if(int.parse(selectedDoctorInfo!.patientQueueLength!) == 0){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                  countNumberOfChild(selectedService);
+                  if(selectedService == "Doctor Live Consultation"){
+                    if(int.parse(selectedDoctorInfo!.patientQueueLength!) == 0){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                    }
+
+                    else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+                    }
                   }
 
                   else{
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+                    if(int.parse(patientLength) == 0){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+                    }
+
+                    else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+                    }
                   }
                 },
 

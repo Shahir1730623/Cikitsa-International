@@ -88,7 +88,14 @@ class _SelectScheduleState extends State<SelectSchedule> {
   }
 
   Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+    late firebase_storage.Reference reference;
+
+    if(selectedService == "Doctor Live Consultation"){
+      reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+    }
+    else {
+      reference = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+    }
 
     // Upload the image to firebase storage
     try{

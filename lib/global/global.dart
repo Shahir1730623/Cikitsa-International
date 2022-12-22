@@ -45,6 +45,7 @@ bool? pushNotify = false;
 String tempToken = "";
 bool isBroadcaster = true;
 bool? localNotify = false;
+bool? localNotifyForCI = false;
 String cloudMessagingServerToken = 'key=AAAALn1lelI:APA91bG0BH1-fwORR9mWgt53XA_DlnsOQmX80BwR7XAzVU0KRBNVoXGM1ruuq7u-K-nUsgGarqb9BasoyfNaHpbr4ec2oOzzGlAFh0RwE5s1VKNxr0fARMp418B2aZHZmdux3gSbF516';
 
 // Agora

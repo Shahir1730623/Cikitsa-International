@@ -75,12 +75,24 @@ class _PushNotificationDialogTalkToPatientNowState extends State<PushNotificatio
                       }
                   );
 
-                  FirebaseDatabase.instance.ref()
-                      .child("Doctors")
-                      .child(currentDoctorInfo!.doctorId!)
-                      .child('consultations')
-                      .child(consultationId!)
-                      .child('consultationType').set("Accepted");
+                  if(loggedInUser == "Doctor"){
+                    FirebaseDatabase.instance.ref()
+                        .child("Doctors")
+                        .child(currentDoctorInfo!.doctorId!)
+                        .child('consultations')
+                        .child(consultationId!)
+                        .child('consultationType').set("Accepted");
+                  }
+
+                  else{
+                    FirebaseDatabase.instance.ref()
+                        .child("Consultant")
+                        .child(currentConsultantInfo!.id!)
+                        .child('CIConsultations')
+                        .child(consultationId!)
+                        .child('consultationStatus').set("Accepted");
+                  }
+
                   
                   Timer(const Duration(seconds: 5),()  {
                     Navigator.pop(context);

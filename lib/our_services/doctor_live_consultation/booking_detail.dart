@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/common_screens/waiting_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import '../../common_screens/coundown_screen.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
 import '../../models/doctor_model.dart';
+import '../../widgets/progress_dialog.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   const BookingDetailsScreen({Key? key}) : super(key: key);
@@ -40,10 +43,27 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
   }
 
+  void loadScreen(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Fetching data...");
+        }
+    );
+
+    Timer(const Duration(seconds: 2),()  {
+      Navigator.pop(context);
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    Future.delayed(Duration.zero, () {
+      loadScreen();
+    });
   }
 
   @override
@@ -185,7 +205,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               color: Colors.green,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.video_camera_front_rounded,color: Colors.white,),
+                            child: const Icon(Icons.video_camera_front_rounded,color: Colors.white,),
                           ),
 
                           const SizedBox(width: 10,),
@@ -269,7 +289,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     ) : CircleAvatar(
                       radius: 25,
                       backgroundColor: Colors.grey[100],
-                      foregroundImage: AssetImage('assets/doctor_new.png'),
+                      foregroundImage: const AssetImage('assets/leader.png'),
                     ),
 
                     const SizedBox(width: 10,),

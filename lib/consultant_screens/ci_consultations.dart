@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
+import 'ci_consultation_details_consultant.dart';
 
-class DoctorLiveConsultation extends StatefulWidget {
-  const DoctorLiveConsultation({Key? key}) : super(key: key);
+class CIConsultations extends StatefulWidget {
+  const CIConsultations({Key? key}) : super(key: key);
 
   @override
-  State<DoctorLiveConsultation> createState() => _DoctorLiveConsultationState();
+  State<CIConsultations> createState() => _CIConsultationsState();
 }
 
-class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
-  String consultationStatus = "Upcoming";
+class _CIConsultationsState extends State<CIConsultations> {
+  String consultationStatus = "Waiting";
 
   void loadScreen(){
     showDialog(
@@ -41,24 +42,9 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
     Future.delayed(Duration.zero, () {
       loadScreen();
     });
+
+    selectedService = "CI Consultation";
   }
-
-  /*void retrieveConsultationDataFromDatabase(String consultationId) {
-    FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!)
-        .child("consultations").child(consultationId).once().then((dataSnap) {
-      DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-      }
-
-      else {
-        Fluttertoast.showToast(msg: "No consultation record exist");
-      }
-    });
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +75,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
         ),
 
         title: Text(
-          "Telemedicine",
+          "CI Consultations",
           style: GoogleFonts.montserrat(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -102,7 +88,6 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
         child: Column(
           children: [
             SizedBox(height: height * 0.1,),
-
             Row(
               children: [
                 Expanded(
@@ -117,7 +102,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                       );
 
                       setState(() {
-                        consultationStatus = "Upcoming";
+                        consultationStatus = "Waiting";
                       });
 
 
@@ -126,8 +111,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (consultationStatus == "Upcoming") ? Colors
-                            .white : Colors.grey.shade200,
+                        primary: (consultationStatus == "Waiting") ? Colors.white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -136,7 +120,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                         )),
 
                     child: Text(
-                      "Upcoming",
+                      "Waiting",
                       style: GoogleFonts.montserrat(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -166,8 +150,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: (consultationStatus == "Completed") ? Colors
-                            .white : Colors.grey.shade200,
+                        primary: (consultationStatus == "Completed") ? Colors.white : Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: const BorderSide(
@@ -192,18 +175,17 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
 
             Flexible(
               child: FirebaseAnimatedList(
-                  query: FirebaseDatabase.instance.ref().child("Doctors")
-                      .child(currentFirebaseUser!.uid)
-                      .child("consultations"),
+                  query: FirebaseDatabase.instance.ref()
+                      .child("CIConsultationRequests"),
 
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                    final consultationType = (snapshot.value as Map)["consultationType"].toString();
+                    final consultationType = (snapshot.value as Map)["consultationStatus"].toString();
 
                     if (consultationStatus == consultationType) {
                       return GestureDetector(
-                        /*onTap: () {
+                        onTap: () {
                           showDialog(
                               context: context,
                               barrierDismissible: false,
@@ -213,14 +195,12 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                           );
 
                           consultationId = (snapshot.value as Map)["id"];
-                          retrieveConsultationDataFromDatabase(consultationId!);
-
+                          userId = (snapshot.value as Map)["userId"];
                           Timer(const Duration(seconds: 1), () {
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => HistoryScreenDetails()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDetailsConsultant()));
                           });
-                        },*/
+                        },
 
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -303,9 +283,9 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                                         child: Text(
                                           (snapshot.value as Map)["patientName"][0],
                                           style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 30
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: 30
                                           ),
                                         ),
                                       ),
@@ -336,7 +316,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              "Age: " + (snapshot.value as Map)["patientAge"].toString(),
+                                              "Age: ${(snapshot.value as Map)["patientAge"]}",
                                               style: GoogleFonts.montserrat(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
@@ -348,7 +328,8 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius
                                                       .circular(50),
-                                                  color: (consultationStatus == "Scheduled")
+                                                  color: (consultationStatus ==
+                                                      "Waiting")
                                                       ? Colors.blue
                                                       : Colors.grey.shade200
                                               ),
@@ -361,7 +342,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                                                 child: Icon(
                                                   Icons.arrow_back_ios_new,
                                                   color: (consultationStatus ==
-                                                      "Scheduled") ? Colors
+                                                      "Waiting") ? Colors
                                                       .white : Colors.black,
                                                   size: 20,
                                                 ),
@@ -393,7 +374,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
 
 
                                         Text(
-                                          "Status: ${(snapshot.value as Map)["consultationType"]}",
+                                          "Status: ${(snapshot.value as Map)["consultationStatus"]}",
                                           style: GoogleFonts.montserrat(
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold
@@ -414,7 +395,16 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                     }
 
                     else {
-                      return Container();
+                      return Center(
+                        child: Text(
+                          "You have no upcoming CI Consultations",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black
+                          ),
+                        ),
+                      );
                     }
                   }
               ),
