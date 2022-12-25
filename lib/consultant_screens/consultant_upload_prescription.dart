@@ -2,38 +2,36 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app/global/global.dart';
-import 'package:app/widgets/prescription_dialog.dart';
-import 'package:app/widgets/prescription_dialog_doctor.dart';
-import 'package:app/widgets/upload_image_dialog.dart';
+import 'package:app/widgets/prescription_dialog_consultant.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../widgets/prescription_dialog_doctor.dart';
+import '../widgets/progress_dialog.dart';
+import '../widgets/upload_image_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../widgets/prescription_dialog_consultant.dart';
-import '../widgets/progress_dialog.dart';
-
-class DoctorUploadPrescription extends StatefulWidget {
-  const DoctorUploadPrescription({Key? key}) : super(key: key);
+class ConsultantUploadPrescription extends StatefulWidget {
+  const ConsultantUploadPrescription({Key? key}) : super(key: key);
 
   @override
-  State<DoctorUploadPrescription> createState() => _DoctorUploadPrescriptionState();
+  State<ConsultantUploadPrescription> createState() => _ConsultantUploadPrescriptionState();
 }
 
-class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
-  //String imageUrl = "";
+class _ConsultantUploadPrescriptionState extends State<ConsultantUploadPrescription> {
+  @override
   XFile? imageFile;
 
-  setConsultationInfoToCompleted(){
+  setCIConsultationInfoToCompleted(){
     FirebaseDatabase.instance.ref()
-        .child("Doctors")
+        .child("Consultant")
         .child(currentFirebaseUser!.uid)
-        .child("consultations")
+        .child("CIConsultations")
         .child(consultationId!)
-        .child("consultationType")
+        .child("consultationStatus")
         .set("Completed");
   }
 
@@ -57,7 +55,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
             }
         );
         imageFile = pickedImage;
-        firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/doctorPrescription.png" );
+        firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/consultantPrescription.png" );
 
         // Upload the image to firebase storage
         try{
@@ -100,7 +98,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadScreen();
-      setConsultationInfoToCompleted();
+      setCIConsultationInfoToCompleted();
     });
 
   }
@@ -112,7 +110,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Exit App'),
-        content: Text('Please upload the prescription before exiting'),
+        content: const Text('Please upload the CI report before exiting'),
         actions:[
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -142,14 +140,14 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
                       radius: 60,
                       backgroundColor: Colors.grey[100],
                       foregroundImage: NetworkImage(
-                        currentDoctorInfo!.doctorImageUrl!,
+                        currentConsultantInfo!.imageUrl!,
                       ),
                     )
                 ),
 
                 SizedBox(height: height * 0.03),
                 Text(
-                  "Dr. " + currentDoctorInfo!.doctorFirstName! + " " + currentDoctorInfo!.doctorLastName!,
+                  currentConsultantInfo!.name!,
                   style: GoogleFonts.montserrat(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -159,19 +157,10 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
                 SizedBox(height: height * 0.01),
 
                 Text(
-                  currentDoctorInfo!.specialization!,
+                  "Consultant",
                   style: GoogleFonts.montserrat(
                       color: Colors.black,
-                      fontSize: 20),
-                ),
-
-                SizedBox(height: height * 0.01),
-
-                Text(
-                  currentDoctorInfo!.degrees!,
-                  style: GoogleFonts.montserrat(
-                      color: Colors.black,
-                      fontSize: 15
+                      fontSize: 20
                   ),
                 ),
 
@@ -182,7 +171,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
                 ),
 
                 Text(
-                  "Please upload the prescription",
+                  "Please upload the CI Consultation Report",
                   style: GoogleFonts.montserrat(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -194,13 +183,13 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
                 GestureDetector(
                   onTap: () async {
                     await pickAndSaveImage();
-                    var snackBar = const SnackBar(content: Text("Prescription uploaded successfully"));
+                    var snackBar = const SnackBar(content: Text("CI consultation report uploaded successfully"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (BuildContext context) {
-                          return const PrescriptionDialogDoctor();
+                          return const PrescriptionDialogConsultant();
                         }
                     );
                   },
@@ -224,7 +213,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
 
                           Expanded(
                             child: Text(
-                                "Upload prescription",
+                                "Upload consultation report",
                                 style: GoogleFonts.montserrat(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,

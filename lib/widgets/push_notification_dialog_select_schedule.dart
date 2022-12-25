@@ -55,10 +55,14 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
       FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!).once().then((snapData) {
         DataSnapshot snapshot = snapData.snapshot;
         if(snapshot.value != null){
-          patientLength = (snapshot.value as Map)['patientQueueLength'];
+          setState(() {
+            patientLength = (snapshot.value as Map)['patientQueueLength'];
+          });
+
+          Fluttertoast.showToast(msg: "patient length:" + patientLength);
 
           Map info = {
-            "patientId" : patientId!
+            "patientId" : selectedCIConsultationInfo!.patientId!
           };
 
           String count = (int.parse(patientLength) + 1).toString();
@@ -67,7 +71,7 @@ class _PushNotificationDialogSelectScheduleState extends State<PushNotificationD
         }
 
         else{
-          Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+          Fluttertoast.showToast(msg: "No consultant record exist with this credentials");
         }
       });
 

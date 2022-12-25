@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:app/models/ci_consultation_model.dart';
+import 'package:app/models/consultant_model.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -5,9 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../global/global.dart';
+import '../../widgets/progress_dialog.dart';
+import '../visa_invitation/video_call.dart';
 
 class ConsultationHistory extends StatefulWidget {
   const ConsultationHistory({Key? key}) : super(key: key);
@@ -17,8 +24,63 @@ class ConsultationHistory extends StatefulWidget {
 }
 
 class _ConsultationHistoryState extends State<ConsultationHistory> {
-  String consultationStatus = "Scheduled";
+  String consultationStatus = "Upcoming";
   int toggleIndex = 0;
+
+  setCIConsultationInfoToAccepted() async {
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child('patientList')
+        .child(patientId!)
+        .child("CIConsultations")
+        .child(consultationId!).child("consultationStatus").set("Accepted");
+
+    retrieveConsultationDataFromDatabase();
+  }
+
+  retrieveConsultationDataFromDatabase() {
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .child("CIConsultations")
+        .child(consultationId!).once().then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No consultation record exist");
+      }
+    });
+
+    selectedService = "CI Consultation";
+    countNumberOfChild();
+  }
+
+  countNumberOfChild(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!);
+    reference.once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count + 1).toString());
+
+        Map info = {
+          "patientId" : selectedCIConsultationInfo!.patientId!
+        };
+
+        reference.child('patientQueue').child(consultationId!).set(info);
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
+      }
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +124,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
               child: Column(
                 children: [
                   const Text(
-                    'Upcoming Appointment',
+                    'CI Appointments',
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -72,87 +134,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
 
                   const SizedBox(height: 20,),
 
-                  DottedBorder(
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(20),
-                    color: Colors.blue,
-                    dashPattern: [10,10],
-                    strokeWidth: 3,
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Maman Somberan',
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-
-                          const SizedBox(height: 15,),
-
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Consultant',
-                                    style: TextStyle(
-                                        color: Colors.grey
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 15,),
-
-                                  Text(
-                                      'February, 16 2022 at 01:00 PM'
-                                  ),
-
-                                  const SizedBox(height: 15,),
-
-                                  Container(
-                                    height: 40,
-                                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blueAccent,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: ElevatedButton.icon(
-                                      onPressed: () {},
-                                      icon: Icon(Icons.phone),
-                                      label: const Text(
-                                        'Contact me',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              //Image.asset('assets/doctor1.jpg',width: 100,),
-
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20,),
-
-                  const Divider(thickness: 2,height: 1,color: Colors.grey,),
+                  const Divider(thickness: 2,height: 1,color: Colors.blue,),
 
                   const SizedBox(height: 20,),
 
@@ -184,7 +166,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                         else{
                           setState(() {
                             toggleIndex = 0;
-                            consultationStatus = "Scheduled";
+                            consultationStatus = "Upcoming";
                           });
                         }
 
@@ -205,134 +187,326 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                       physics: const ScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context,DataSnapshot snapshot, Animation<double> animation,int index){
-                        final consultationType = (snapshot.value as Map)["consultationType"].toString();
+                        final consultationType = (snapshot.value as Map)["consultationStatus"].toString();
+                        final databaseTimeString = (snapshot.value as Map)["time"].toString();
+                        final databaseTime = TimeOfDay.fromDateTime(DateFormat.jm().parse(databaseTimeString));
+
                         if(consultationStatus == consultationType){
-                          return Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 0), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    IntrinsicHeight(
-                                      child: Row(
-                                        children: [
-                                          const VerticalDivider(color: Colors.blueAccent, thickness: 3,),
-
-                                          const SizedBox(width: 10,),
-
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      const Text('Appointment Date',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-
-                                                      const SizedBox(height: 10,),
-
-                                                      Row(
-                                                        children:  [
-                                                          Icon(Icons.access_time,size: 25,),
-
-                                                          SizedBox(width: 10,),
-
-                                                          Text((snapshot.value as Map)["date"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
-
-                                                          Text(' - '),
-
-                                                          Text((snapshot.value as Map)["time"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
-
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-
-                                                  SizedBox(width: MediaQuery.of(context).size.width-310,),
-
-                                                ],
-                                              ),
-
-                                              const SizedBox(height: 10,),
-
-                                              // Divider
-                                              Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
-
-                                              const SizedBox(height: 15,),
-
-                                              Row(
-                                                children: [
-                                                  CircleAvatar(
-                                                    radius: 30,
-                                                    backgroundColor: Colors.grey[200],
-                                                    foregroundImage: AssetImage("assets/doctor_new.png"),
-                                                  ),
-
-                                                  const SizedBox(width: 10,),
-
-                                                  Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        (snapshot.value as Map)["consultantName"].toString(),
-                                                        style: GoogleFonts.montserrat(
-                                                            fontSize: 20,
-                                                            fontWeight: FontWeight.bold,
-                                                            color: Colors.black),
-                                                      ),
-
-                                                      const SizedBox(height: 10,),
-
-                                                      Text(
-                                                        'Consultant',
-                                                        style: GoogleFonts.montserrat(
-                                                            color: Colors.grey,
-                                                            fontSize: 15
-                                                        ),
-                                                      ),
-
-                                                      const SizedBox(height: 10,),
-
-                                                      Text(
-                                                        "Status: " + (snapshot.value as Map)["consultationType"].toString(),
-                                                        style: GoogleFonts.montserrat(
-                                                            fontWeight: FontWeight.bold
-                                                        ),
-                                                      ),
-
-                                                    ],
-                                                  )
-
-                                                ],
-                                              ),
-
-                                            ],
-                                          ),
-                                        ],
+                          if(consultationType == "Upcoming"){
+                            return Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: const Offset(0, 0), // changes position of shadow
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      IntrinsicHeight(
+                                        child: Row(
+                                          children: [
+                                            const VerticalDivider(color: Colors.blueAccent, thickness: 3,),
 
-                                  ],
+                                            const SizedBox(width: 10,),
+
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text('Appointment Date',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold, color: Colors.black),),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Row(
+                                                          children: [
+                                                            const Icon(Icons.access_time,size: 25,),
+
+                                                            const SizedBox(width: 10,),
+
+                                                            Text((snapshot.value as Map)["date"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
+
+                                                            const Text(' - '),
+
+                                                            Text((snapshot.value as Map)["time"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
+
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    SizedBox(width: MediaQuery.of(context).size.width-310,),
+
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 10,),
+
+                                                // Divider
+                                                Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
+
+                                                const SizedBox(height: 15,),
+
+                                                Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundColor: Colors.grey[200],
+                                                        foregroundImage: const AssetImage(
+                                                            "assets/doctorImages/doctor-1.png"
+                                                        )
+                                                    ),
+
+                                                    const SizedBox(width: 10,),
+
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          (snapshot.value as Map)["consultantName"].toString(),
+                                                          style: GoogleFonts.montserrat(
+                                                              fontSize: 20,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Colors.black),
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Text(
+                                                          'Consultant',
+                                                          style: GoogleFonts.montserrat(
+                                                              color: Colors.grey.shade800,
+                                                              fontSize: 15
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Text(
+                                                          "Status: " + (snapshot.value as Map)["consultationStatus"].toString(),
+                                                          style: GoogleFonts.montserrat(
+                                                              fontWeight: FontWeight.bold
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        ((TimeOfDay.now().hour == databaseTime.hour) &&
+                                                            (TimeOfDay.now().minute >= databaseTime.minute && (TimeOfDay.now().minute <= (databaseTime.minute + 5))))  ?
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children: [
+                                                            SizedBox(
+                                                              child: ElevatedButton.icon(
+                                                                onPressed: ()  {
+                                                                  showDialog(
+                                                                      context: context,
+                                                                      barrierDismissible: false,
+                                                                      builder: (BuildContext context){
+                                                                        return ProgressDialog(message: "Please wait...");
+                                                                      }
+                                                                  );
+
+                                                                  consultationId = (snapshot.value as Map)["id"];
+                                                                  setCIConsultationInfoToAccepted();
+                                                                  Timer(const Duration(seconds: 5),()  {
+                                                                    Navigator.pop(context);
+                                                                    channelName = consultationId;
+                                                                    Fluttertoast.showToast(msg: channelName!);
+                                                                    tokenRole = 2;
+                                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
+                                                                  });
+
+
+                                                                },
+
+                                                                style: ElevatedButton.styleFrom(
+                                                                    primary: (Colors.blue),
+                                                                    shape: RoundedRectangleBorder(
+                                                                        borderRadius: BorderRadius.circular(20))),
+
+                                                                label: Text(
+                                                                  "Join video call" ,
+                                                                  style: GoogleFonts.montserrat(
+                                                                      fontSize: 15,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      color: Colors.white
+                                                                  ),
+                                                                ),
+
+                                                                icon: const Icon(
+                                                                    Icons.video_call_rounded
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ) : Container()
+
+                                                      ],
+                                                    )
+
+                                                  ],
+                                                ),
+
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 20,),
-                            ],
-                          );
+                                const SizedBox(height: 20,),
+                              ],
+                            );
+                          }
+
+                          else{
+                            return Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: const Offset(0, 0), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      IntrinsicHeight(
+                                        child: Row(
+                                          children: [
+                                            const VerticalDivider(color: Colors.blueAccent, thickness: 3,),
+
+                                            const SizedBox(width: 10,),
+
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text('Appointment Date',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold, color: Colors.black),),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Row(
+                                                          children: [
+                                                            const Icon(Icons.access_time,size: 25,),
+
+                                                            const SizedBox(width: 10,),
+
+                                                            Text((snapshot.value as Map)["date"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
+
+                                                            const Text(' - '),
+
+                                                            Text((snapshot.value as Map)["time"].toString(),style: const TextStyle(color: Colors.grey,fontSize: 15),),
+
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    SizedBox(width: MediaQuery.of(context).size.width-310,),
+
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 10,),
+
+                                                // Divider
+                                                Container(color: Colors.grey, height: 1, width: MediaQuery.of(context).size.width-80,),
+
+                                                const SizedBox(height: 15,),
+
+                                                Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundColor: Colors.grey[200],
+                                                        foregroundImage: const AssetImage(
+                                                            "assets/doctorImages/doctor-1.png"
+                                                        )
+                                                    ),
+
+                                                    const SizedBox(width: 10,),
+
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          (snapshot.value as Map)["consultantName"].toString(),
+                                                          style: GoogleFonts.montserrat(
+                                                              fontSize: 20,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Colors.black),
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Text(
+                                                          'Consultant',
+                                                          style: GoogleFonts.montserrat(
+                                                              color: Colors.grey.shade800,
+                                                              fontSize: 15
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 10,),
+
+                                                        Text(
+                                                          "Status: " + (snapshot.value as Map)["consultationStatus"].toString(),
+                                                          style: GoogleFonts.montserrat(
+                                                              fontWeight: FontWeight.bold
+                                                          ),
+                                                        ),
+
+                                                      ],
+                                                    )
+
+                                                  ],
+                                                ),
+
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20,),
+                              ],
+                            );
+                          }
+
                         }
 
                         else{

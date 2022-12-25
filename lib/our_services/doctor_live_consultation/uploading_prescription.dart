@@ -3,7 +3,7 @@ import 'package:app/widgets/prescription_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/doctor_model.dart';
@@ -29,19 +29,11 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
         .child("consultationType")
         .set("Completed");
 
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(selectedDoctorInfo!.doctorId!)
-        .child("consultations")
-        .child(consultationId!)
-        .child("consultationType")
-        .set("Completed");
-
     removePatientFromQueue();
   }
 
   removePatientFromQueue(){
-    DatabaseReference reference = FirebaseDatabase.instance.ref('Doctors').child(doctorId!);
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!);
     reference.once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
@@ -51,7 +43,7 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
 
     });
 
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).remove();
+    FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!).child('patientQueue').child(consultationId!).remove();
 
   }
 
@@ -63,18 +55,52 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
         .child(patientId!)
         .child("CIConsultations")
         .child(consultationId!)
-        .child("consultationType")
+        .child("consultationStatus")
         .set("Completed");
 
-    FirebaseDatabase.instance.ref()
-        .child("Consultant")
-        .child(selectedDoctorInfo!.doctorId!)
-        .child("consultations")
-        .child(consultationId!)
-        .child("consultationType")
-        .set("Completed");
+    removePatientFromQueueForConsultant();
+  }
 
-    removePatientFromQueue();
+  removePatientFromQueueForConsultant(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!);
+    reference.once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count - 1).toString());
+      }
+
+    });
+
+    FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!).child('patientQueue').child(consultationId!).remove();
+  }
+
+  Future<bool> showExitPopup() async {
+    return await showDialog(
+      //show confirm dialogue
+      //the return value will be from "Yes" or "No" options
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Exit App'),
+        content: Text('Do you want to exit the App?'),
+        actions:[
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            //return false when click on "NO"
+            child:Text('No'),
+          ),
+
+          ElevatedButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            //return true when click on "Yes"
+            child:Text('Yes'),
+          ),
+
+        ],
+      ),
+    )??false; //if showDialog had returned null, then return false
   }
 
   void loadScreen() {
@@ -93,12 +119,13 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
     Future.delayed(Duration.zero, () {
       loadScreen();
     });
+
     if(selectedService == "Doctor Live Consultation"){
       setConsultationInfoToCompleted();
     }
 
     else{
-
+      setCIConsultationInfoToCompleted();
     }
 
   }
@@ -106,50 +133,63 @@ class _UploadingPrescriptionState extends State<UploadingPrescription> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Center(
-                child: (selectedService == "CI Consultation") ?
-                CircleAvatar(
-                  //or 15.0
-                  radius: 60,
-                  backgroundColor: Colors.grey[100],
-                  foregroundImage: const AssetImage(
-                    "assets/doctor_new.png",
-                  ),
-                ) :
-                CircleAvatar(
-                  //or 15.0
-                  radius: 60,
-                  backgroundColor: Colors.grey[100],
-                  foregroundImage: NetworkImage(
-                    selectedConsultationInfo!.doctorImageUrl!,
-                  ),
-                )
-              ),
+    return WillPopScope(
+      onWillPop: showExitPopup,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Center(
+                  child: (selectedService == "CI Consultation") ?
+                  CircleAvatar(
+                    //or 15.0
+                    radius: 60,
+                    backgroundColor: Colors.grey[100],
+                    foregroundImage: const AssetImage(
+                      "assets/doctor_new.png",
+                    ),
+                  ) :
+                  CircleAvatar(
+                    //or 15.0
+                    radius: 60,
+                    backgroundColor: Colors.grey[100],
+                    foregroundImage: NetworkImage(
+                      selectedConsultationInfo!.doctorImageUrl!,
+                    ),
+                  )
+                ),
 
-              SizedBox(height: height * 0.05),
-              Text(
-                (selectedService == "CI Consultation") ? selectedCIConsultationInfo!.consultantName!: selectedConsultationInfo!.doctorName!,
-                style: GoogleFonts.montserrat(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25),
-              ),
-              SizedBox(height: height * 0.5),
-              Text(
-                "This may take several minutes",
-                style: GoogleFonts.montserrat(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17),
-              ),
-            ],
+                SizedBox(height: height * 0.03),
+                Text(
+                  (selectedService == "CI Consultation") ? selectedCIConsultationInfo!.consultantName!: selectedConsultationInfo!.doctorName!,
+                  style: GoogleFonts.montserrat(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25),
+                ),
+
+                SizedBox(height: height * 0.02),
+
+                Text(
+                  (selectedService == "CI Consultation") ? "Consultant": selectedConsultationInfo!.specialization!,
+                  style: GoogleFonts.montserrat(
+                      color: Colors.black,
+                      fontSize: 20),
+                ),
+
+                SizedBox(height: height * 0.5),
+                Text(
+                  "This may take several minutes",
+                  style: GoogleFonts.montserrat(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
+                ),
+              ],
+            ),
           ),
         ),
       ),

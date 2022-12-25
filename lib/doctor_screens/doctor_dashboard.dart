@@ -58,7 +58,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
           });
         }
 
-
     });
   });
 }
@@ -76,7 +75,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
         ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: selectedConsultationInfoForDocAndConsultant!.patientId!, selectedServiceName: "Doctor Live Consultation", consultationId: consultationId!);
         String payloadJsonString = consultationPayloadModel.toJsonString();
-        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have an appointment at " + formattedDate! + " " + formattedTime!, seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have a scheduled appointment now. Click here to see the appointment", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
         if (mounted){
           setState(() {
             localNotify = false;
@@ -420,14 +419,14 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'My Appointment',
+                            'Appointments Now',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700
                             ),
                           ),
 
-                          const Text('See All', style: TextStyle(color: Colors.blue,),)
+                          const Text('Upcoming\nAppointments',textAlign: TextAlign.center, style: TextStyle(color: Colors.blue,),)
                         ],
                       ),
 
@@ -443,7 +442,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
                               final consultationType = (snapshot.value as Map)["consultationType"].toString();
-
                               if(consultationType == "Now"){
                                 return Column(
                                   children: [
@@ -568,7 +566,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
                                                                   consultationId = (snapshot.value as Map)["id"];
                                                                   setConsultationInfoToAccepted(consultationId!);
-
                                                                   Timer(const Duration(seconds: 5),()  {
                                                                     Navigator.pop(context);
                                                                     channelName = consultationId;
@@ -626,8 +623,23 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                               else{
                                 return Container();
                               }
-
                             },
+                          ),
+
+                          SizedBox(height: height * 0.07,),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "You have no appointments now",
+                                style: GoogleFonts.montserrat(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade700
+                                ),
+                              ),
+                            ],
                           )
 
 

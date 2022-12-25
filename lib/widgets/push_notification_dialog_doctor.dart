@@ -87,7 +87,7 @@ class _PushNotificationDialogTalkToPatientNowState extends State<PushNotificatio
                   else{
                     FirebaseDatabase.instance.ref()
                         .child("Consultant")
-                        .child(currentConsultantInfo!.id!)
+                        .child(currentFirebaseUser!.uid)
                         .child('CIConsultations')
                         .child(consultationId!)
                         .child('consultationStatus').set("Accepted");

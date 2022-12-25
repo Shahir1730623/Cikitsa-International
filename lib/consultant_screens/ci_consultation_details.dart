@@ -12,17 +12,18 @@ import '../global/global.dart';
 import '../models/ci_consultation_model.dart';
 import '../models/consultation_payload_model.dart';
 import '../models/push_notification_screen.dart';
+import '../navigation_service.dart';
 import '../service_file/local_notification_service.dart';
 import '../widgets/progress_dialog.dart';
 
-class CIConsultationDetailsConsultant extends StatefulWidget {
-  const CIConsultationDetailsConsultant({Key? key}) : super(key: key);
+class CIConsultationDetails extends StatefulWidget {
+  const CIConsultationDetails({Key? key}) : super(key: key);
 
   @override
-  State<CIConsultationDetailsConsultant> createState() => _CIConsultationDetailsConsultantState();
+  State<CIConsultationDetails> createState() => _CIConsultationDetailsState();
 }
 
-class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsConsultant> {
+class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   late final LocalNotificationService service;
   TextEditingController patientIdTextEditingController = TextEditingController(text: "");
   TextEditingController patientNameTextEditingController = TextEditingController(text: "");
@@ -31,25 +32,11 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
   TextEditingController genderTextEditingController = TextEditingController(text: "");
 
   void retrievePatientDataFromDatabase() {
-    FirebaseDatabase.instance.ref()
-        .child("CIConsultationRequests")
-        .child(consultationId!)
-        .once()
-        .then((dataSnap){
-      final DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
-        patientIdTextEditingController.text = (snapshot.value as Map)["patientId"];
-        patientNameTextEditingController.text = (snapshot.value as Map)["patientName"];
-        patientAgeTextEditingController.text = (snapshot.value as Map)["patientAge"];
-        patientCountryTextEditingController.text = (snapshot.value as Map)["country"];
-        genderTextEditingController.text = (snapshot.value as Map)["gender"];
-      }
-
-      else {
-        Fluttertoast.showToast(msg: "No Patient record exist with this credentials");
-      }
-    });
+    patientIdTextEditingController.text = selectedCIConsultationInfo!.patientId!;
+    patientNameTextEditingController.text = selectedCIConsultationInfo!.patientName!;
+    patientAgeTextEditingController.text = selectedCIConsultationInfo!.patientAge!;
+    patientCountryTextEditingController.text = selectedCIConsultationInfo!.selectedCountry!;
+    genderTextEditingController.text = selectedCIConsultationInfo!.gender!;
   }
 
   setCIConsultationInfoToUpcoming() async {
@@ -65,7 +52,7 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
       "height" : selectedCIConsultationInfo!.height!,
       "weight" : selectedCIConsultationInfo!.weight!,
       "country" : selectedCIConsultationInfo!.selectedCountry,
-      "consultantId" : currentConsultantInfo!.id!,
+      "consultantId" : currentConsultantInfo!.id,
       "consultantName" : currentConsultantInfo!.name!,
       "consultantFee" : "500",
       "consultationStatus" : "Upcoming",
@@ -87,7 +74,8 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
         .child("patientList")
         .child(selectedCIConsultationInfo!.patientId!)
         .child("CIConsultations")
-        .child(consultationId!).child("consultationStatus").set("Upcoming");
+        .child(consultationId!)
+        .set(consultantCIConsultationInfoMap);
 
     FirebaseDatabase.instance.ref()
         .child("CIConsultationRequests")
@@ -106,7 +94,7 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
       if(snapshot.value != null){
         String deviceRegistrationToken = snapshot.value.toString();
         // send notification now
-        await AssistantMethods.sendCIConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedCIConsultationInfo!.patientId!, selectedService, context);
+        await AssistantMethods.sendCIConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedCIConsultationInfo!.patientId!, "CI Consultation", context);
         Fluttertoast.showToast(msg: "Notification sent to patient successfully");
         generateLocalNotification();
       }
@@ -136,15 +124,12 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
 
   void onNotificationListener(String? payload){
     if(payload!=null && payload.isNotEmpty){
-      //ConsultationPayloadModel? p = ConsultationPayloadModel.fromJsonString(payload);
-      //print(p.patientId + " " + p.selectedServiceName + " " + p.consultationId);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
+     Navigator.push(NavigationService.navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
     }
     else{
       Fluttertoast.showToast(msg: 'payload empty');
     }
   }
-
 
   void loadScreen(){
     showDialog(
@@ -638,6 +623,7 @@ class _CIConsultationDetailsConsultantState extends State<CIConsultationDetailsC
                                         Navigator.pop(context);
                                         var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
                                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                        Navigator.pop(context);
                                       });
 
                                     },

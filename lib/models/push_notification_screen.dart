@@ -1,3 +1,12 @@
+import 'dart:async';
+
+import 'package:app/consultant_screens/ci_consultations.dart';
+import 'package:app/consultant_screens/telemedicine_consultations.dart';
+import 'package:app/doctor_screens/doctor_live_consultations.dart';
+import 'package:app/our_services/ci_consultation/consultation_history.dart';
+import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
+import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
+import 'package:app/widgets/progress_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -26,9 +35,24 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return PushNotificationDialogSelectSchedule();
+          return ProgressDialog(message: "message");
         }
     );
+
+    if(selectedService == "Doctor Live Consultation"){
+      Timer(const Duration(seconds: 2),()  {
+        Navigator.pop(context);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const HistoryScreen()), (Route<dynamic> route) => false);
+      });
+    }
+
+    else{
+      Timer(const Duration(seconds: 2),()  {
+        Navigator.pop(context);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const ConsultationHistory()), (Route<dynamic> route) => false);
+      });
+    }
+
   }
 
   void loadScreenForDoctor(){
@@ -36,9 +60,14 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return PushNotificationDialogTalkToPatientNow();
+          return ProgressDialog(message: "message");
         }
     );
+
+    Timer(const Duration(seconds: 2),()  {
+      Navigator.pop(context);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const DoctorLiveConsultation()), (Route<dynamic> route) => false);
+    });
   }
 
   void loadScreenForConsultant(){
@@ -46,9 +75,11 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context){
-          return PushNotificationDialogTalkToPatientNow();
+          return ProgressDialog(message: "message");
         }
     );
+
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const CIConsultations()), (Route<dynamic> route) => false);
   }
 
   @override
@@ -65,11 +96,13 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
 
       else if(loggedInUser == "Doctor"){
         consultationId = p!.consultationId;
+        selectedService = p!.selectedServiceName;
         loadScreenForDoctor();
       }
 
       else if(loggedInUser == "Consultant"){
         consultationId = p!.consultationId;
+        selectedService = p!.selectedServiceName;
         loadScreenForConsultant();
       }
 

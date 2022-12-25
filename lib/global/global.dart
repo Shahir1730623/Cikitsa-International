@@ -32,6 +32,8 @@ ConsultantModel? currentConsultantInfo;
 
 DoctorModel? selectedDoctorInfo;
 PatientModel? selectedPatientInfo;
+ConsultantModel? selectedConsultantInfo;
+
 ConsultationModel? selectedConsultationInfo;
 ConsultationModel2? selectedConsultationInfoForDocAndConsultant;
 CIConsultationModel? selectedCIConsultationInfo;

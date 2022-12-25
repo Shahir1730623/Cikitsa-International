@@ -31,7 +31,7 @@ class _PrescriptionDialogState extends State<PrescriptionDialog> {
             SizedBox(height: height * 0.04,),
 
             Text(
-              (selectedService == "CI Consultation") ? "Your CI Form is\nbeing uploaded" : "Your prescription is\nbeing uploaded",
+              (selectedService == "CI Consultation") ? "Your consultation report is\nbeing uploaded" : "Your prescription is\nbeing uploaded",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,

@@ -149,6 +149,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       // Past Doctor Consultations
                       GestureDetector(
                         onTap: (){
+                          selectedService = "Doctor Live Consultation";
                           selectedServiceDatabaseParentName = "consultations";
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser2()));
 

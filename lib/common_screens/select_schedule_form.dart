@@ -49,12 +49,14 @@ class _SelectScheduleState extends State<SelectSchedule> {
   final Storage storage = Storage();
 
   DateTime date = DateTime.now();
+  DateTime date2 = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
-  String? formattedDate,formattedTime;
+  String? formattedDate,formattedDateTo,formattedTime;
   int dateCounter = 0;
+  int dateCounter2 = 0;
   int timeCounter = 0;
   bool flag = false;
-  String selectedTime = " ";
+  bool flag2 = false;
 
   String idGenerator() {
     final now = DateTime.now();
@@ -111,7 +113,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
     //return url;
   }
 
-  pickDate() async {
+  pickDateFrom() async {
     DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(), //get today's date
@@ -125,6 +127,29 @@ class _SelectScheduleState extends State<SelectSchedule> {
         formattedDate = DateFormat('dd-MM-yyyy').format(date);
         dateCounter++;
         flag = true;
+      });
+    }
+
+    else{
+      print("Date is not selected");
+    }
+
+  }
+
+  pickDateTo() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), //get today's date
+        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2030)
+    );
+
+    if(pickedDate != null ){
+      setState(() {
+        date2 = pickedDate;
+        formattedDateTo = DateFormat('dd-MM-yyyy').format(date2);
+        dateCounter2++;
+        flag2 = true;
       });
     }
 
@@ -258,9 +283,9 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
                           SizedBox(height: height * 0.03,),
 
-                          // Date
+                          // From - Date
                           Text(
-                            "Date",
+                            "From (Date)",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.montserrat(
                                 color: Colors.black,
@@ -292,7 +317,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      pickDate();
+                                      pickDateFrom();
                                     },
                                     style: ElevatedButton.styleFrom(
                                         primary: (Colors.white70),
@@ -300,6 +325,60 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                     ),
                                     child: Text(
                                       (dateCounter != 0) ? '$formattedDate' :  "Select date",
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: height * 0.03,),
+
+                          Text(
+                            "To (Date)",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.montserrat(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01,),
+                          // Date Picker
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.grey.shade200,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Image.asset(
+                                    "assets/medical.png",
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 40,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      pickDateTo();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: (Colors.white70),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    ),
+                                    child: Text(
+                                      (dateCounter2 != 0) ? '$formattedDateTo' :  "Select date",
                                       style: GoogleFonts.montserrat(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
@@ -367,299 +446,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             ],
                           ),
 
-                          SizedBox(height: height * 0.03,),
-                          Row(
-                            children: const [
-                              Icon(
-                                Icons.access_time_outlined,
-                                color: Colors.black,
-                                size: 25,
-                              ),
-                              SizedBox(width: 10,),
-
-                              Text(
-                                "Available Slots",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: height * 0.01,),
-
-                          (flag == true) ?
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5,right: 5,top: 5,bottom: 0),
-                            child: GridView(gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 100.0,
-                              mainAxisSpacing: 20.0,
-                              crossAxisSpacing: 20.0,
-                              childAspectRatio: 2.0,
-                            ),
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              children: [
-                                GestureDetector(
-                                  onTap: (){
-                                    setState(() {
-                                      selectedTime = "6:39 PM";
-                                    });
-                                  },
-
-                                  child: (selectedTime == "6:39 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) : Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "6:39 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                GestureDetector(
-                                  onTap: (){
-                                    setState(() {
-                                      selectedTime = "8:20 PM";
-                                    });
-                                  },
-                                  child: (selectedTime == "8:20 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) : Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "8:20 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                GestureDetector(
-                                  onTap: (){
-                                    setState(() {
-                                      selectedTime = "8:40 PM";
-                                    });
-                                  },
-
-                                  child: (selectedTime == "8:40 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) :  Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "8:40 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                GestureDetector(
-                                  onTap: (){
-                                    setState(() {
-                                      selectedTime = "9:00 PM";
-                                    });
-                                  },
-
-                                  child: (selectedTime == "9:00 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) : Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "9:00 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                GestureDetector(
-                                  onTap: (){
-                                    setState((){
-                                      selectedTime = "9:20 PM";
-                                    });
-                                  },
-
-                                  child: (selectedTime == "9:20 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) : Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "9:20 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                GestureDetector(
-                                  onTap: (){
-                                    setState((){
-                                      selectedTime = "9:40 PM";
-                                    });
-                                  },
-                                  child: (selectedTime == "9:40 PM") ?
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 0,left: 5,right: 5,bottom: 0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.blue,
-                                        width: 1.5,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        selectedTime,
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                    ),
-
-                                  ) :  Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 0),
-                                    child: Text(
-                                      "9:40 PM",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ) : Container(),
 
                           SizedBox(height: height * 0.05,),
 

@@ -80,7 +80,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
         ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: patientId!, selectedServiceName: "CI Consultation", consultationId: consultationId!);
         String payloadJsonString = consultationPayloadModel.toJsonString();
-        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have doctor appointment now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
+        await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have an doctor appointment now. Click here to see the appointment", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
         //await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have CI appointment at : ${formattedDate} Time: ${formattedTime}", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
         setState(() {
           localNotifyForCI = false;

@@ -430,6 +430,7 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
                           Navigator.pop(context);
                           var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context);
                         });
 
                       },

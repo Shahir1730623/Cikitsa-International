@@ -1,23 +1,18 @@
-import 'package:app/consultant_screens/consultant_dashboard.dart';
-import 'package:app/doctor_screens/doctor_dashboard.dart';
 import 'package:app/widgets/progress_dialog.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../assistants/assistant_methods.dart';
-import '../global/global.dart';
+import '../consultant_screens/consultant_dashboard.dart';
 
-class PrescriptionDialogDoctor extends StatefulWidget {
-  const PrescriptionDialogDoctor({Key? key}) : super(key: key);
+class PrescriptionDialogConsultant extends StatefulWidget {
+  const PrescriptionDialogConsultant({Key? key}) : super(key: key);
 
   @override
-  State<PrescriptionDialogDoctor> createState() => _PrescriptionDialogDoctorState();
+  State<PrescriptionDialogConsultant> createState() => _PrescriptionDialogConsultantState();
 }
 
-class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
+class _PrescriptionDialogConsultantState extends State<PrescriptionDialogConsultant> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -83,11 +78,7 @@ class _PrescriptionDialogDoctorState extends State<PrescriptionDialogDoctor> {
                         return ProgressDialog(message: "Please wait...");
                       }
                   );
-
-                  consultationId = null;
-                  patientId = null;
-                  userId = null;
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorDashboard()), (Route<dynamic> route) => false);
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const ConsultantDashboard()), (Route<dynamic> route) => false);
                 },
 
                 style: ElevatedButton.styleFrom(

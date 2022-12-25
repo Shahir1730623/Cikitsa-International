@@ -103,7 +103,11 @@ class _TelemedicineConsultationsState extends State<TelemedicineConsultations> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const SizedBox(height: 60,),
+              const Divider(
+                thickness: 3,
+                height: 120,
+                color: Colors.blue,
+              ),
 
               Flexible(
                 child: FirebaseAnimatedList(
@@ -126,7 +130,6 @@ class _TelemedicineConsultationsState extends State<TelemedicineConsultations> {
 
                             consultationId = (snapshot.value as Map)["id"];
                             retrieveConsultationDataFromDatabase(consultationId!);
-
 
                             Timer(const Duration(seconds: 5), () {
                               Navigator.pop(context);
@@ -326,6 +329,22 @@ class _TelemedicineConsultationsState extends State<TelemedicineConsultations> {
                       }
                     }
                 ),
+              ),
+
+              SizedBox(height: height * 0.3,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "You have no waiting Telemedicine consultations",
+                    style: GoogleFonts.montserrat(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade700
+                    ),
+                  ),
+                ],
               )
 
             ],

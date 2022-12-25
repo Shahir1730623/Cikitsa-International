@@ -3,7 +3,8 @@ import 'package:app/widgets/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'consultant_screens/ci_consultation_details_consultant.dart';
+import 'consultant_screens/ci_consultation_details.dart';
+import 'navigation_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ void main() async {
           home: const SplashScreen(),
           builder: (context,child) => unFocus(child: child!),
           debugShowCheckedModeBanner: false,
+          navigatorKey: NavigationService.navigatorKey,
         ),
   ));
 }

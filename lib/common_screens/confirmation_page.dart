@@ -93,7 +93,6 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
         );
 
         retrieveConsultationInfo();
-
         Timer(const Duration(seconds: 3),()  {
           Navigator.pop(context);
           Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetailsScreen()));

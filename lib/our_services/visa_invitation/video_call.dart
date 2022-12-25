@@ -7,11 +7,13 @@ import 'package:app/doctor_screens/doctor_upload_prescription.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/our_services/doctor_live_consultation/uploading_prescription.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
+import '../../consultant_screens/consultant_upload_prescription.dart';
 import '../../global/global.dart';
 
 const appId = "dda00641d5894ee0b40aec14845f364b";
@@ -192,6 +194,34 @@ class _AgoraScreenState extends State<AgoraScreen> {
     agoraEngine.leaveChannel();
   }*/
 
+  Future<bool> showExitPopup() async {
+    return await showDialog(
+      //show confirm dialogue
+      //the return value will be from "Yes" or "No" options
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Exit App'),
+        content: Text('Do you want to exit an App?'),
+        actions:[
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            //return false when click on "NO"
+            child:Text('No'),
+          ),
+
+          ElevatedButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            //return true when click on "Yes"
+            child:Text('Yes'),
+          ),
+
+        ],
+      ),
+    )??false; //if showDialog had returned null, then return false
+  }
+
   // Clean up the resources when you leave
   @override
   void dispose() async {
@@ -203,103 +233,98 @@ class _AgoraScreenState extends State<AgoraScreen> {
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Agora Video Call'),
-      ),
-      body: Stack(
-        children: [
+    return WillPopScope(
+      onWillPop: showExitPopup,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Agora Video Call'),
+        ),
+        body: Stack(
+          children: [
 
-          Center(
-            child: _remoteVideo(),
-          ),
+            Center(
+              child: _remoteVideo(),
+            ),
 
-          Align(
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: 100,
-              height: 150,
-              child: Center(
-                  child: _localPreview()
+            Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(
+                width: 100,
+                height: 150,
+                child: Center(
+                    child: _localPreview()
+                ),
               ),
             ),
-          ),
 
-          Container(
-            alignment: Alignment.bottomCenter,
-            padding: const EdgeInsets.symmetric(vertical: 48),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RawMaterialButton(
-                  onPressed: _onToggleMute,
-                  shape: const CircleBorder(),
-                  elevation: 2.0,
-                  fillColor: muted ? Colors.blueAccent : Colors.white,
-                  padding: const EdgeInsets.all(12.0),
-                  child: Icon(
-                    muted ? Icons.mic_off : Icons.mic,
-                    color: muted ? Colors.white : Colors.blueAccent,
-                    size: 20.0,
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RawMaterialButton(
+                    onPressed: _onToggleMute,
+                    shape: const CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: muted ? Colors.blueAccent : Colors.white,
+                    padding: const EdgeInsets.all(12.0),
+                    child: Icon(
+                      muted ? Icons.mic_off : Icons.mic,
+                      color: muted ? Colors.white : Colors.blueAccent,
+                      size: 20.0,
+                    ),
                   ),
-                ),
 
-                RawMaterialButton(
-                  onPressed: () {
-                    //leave();
-                    Timer(const Duration(seconds: 1),()  {
-                      if(loggedInUser == "Patient"){
-                        if(selectedService == "Doctor Live Consultation"){
+                  RawMaterialButton(
+                    onPressed: () {
+                      //leave();
+                      Timer(const Duration(seconds: 1),()  {
+                        if(loggedInUser == "Patient"){
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
                         }
 
-                        else if(selectedService == "CI Consultation"){
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                        else if (loggedInUser == "Doctor") {
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorUploadPrescription()), (Route<dynamic> route) => false);
                         }
 
                         else{
-                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const UploadingPrescription()), (Route<dynamic> route) => false);
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const ConsultantUploadPrescription()), (Route<dynamic> route) => false);
                         }
 
-                      }
+                      });
 
-
-                      else {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DoctorUploadPrescription()), (Route<dynamic> route) => false);
-                      }
-
-                    });
-
-                  },
-                  shape: const CircleBorder(),
-                  elevation: 2.0,
-                  fillColor: Colors.redAccent,
-                  padding: const EdgeInsets.all(15.0),
-                  child: const Icon(
-                    Icons.call_end,
-                    color: Colors.white,
-                    size: 35.0,
+                    },
+                    shape: const CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: Colors.redAccent,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const Icon(
+                      Icons.call_end,
+                      color: Colors.white,
+                      size: 35.0,
+                    ),
                   ),
-                ),
 
-                RawMaterialButton(
-                  onPressed: _onSwitchCamera,
-                  shape: const CircleBorder(),
-                  elevation: 2.0,
-                  fillColor: Colors.white,
-                  padding: const EdgeInsets.all(12.0),
-                  child: const Icon(
-                    Icons.switch_camera,
-                    color: Colors.blueAccent,
-                    size: 20.0,
+                  RawMaterialButton(
+                    onPressed: _onSwitchCamera,
+                    shape: const CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: Colors.white,
+                    padding: const EdgeInsets.all(12.0),
+                    child: const Icon(
+                      Icons.switch_camera,
+                      color: Colors.blueAccent,
+                      size: 20.0,
+                    ),
                   ),
-                ),
 
-              ],
-            ),
-          )
+                ],
+              ),
+            )
 
-        ],
+          ],
+        ),
       ),
     );
   }
