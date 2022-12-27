@@ -64,9 +64,11 @@ dependencies:
   path_provider:
   dio:
   gallery_saver:
-  image_cropper:
+  image_cropper: ^2.0.3
   flutter_image_compress:
   firebase_messaging: ^14.1.4
+  mrz_parser: ^2.0.0
+  flutter_mrz_scanner: ^2.1.0
 
 
 

@@ -22,51 +22,6 @@ class _WaitingScreenState extends State<WaitingScreen> {
   Timer? timer;
   String? consultationStatus;
 
-  retrieveConsultationDataFromDatabase() {
-    DatabaseReference reference = FirebaseDatabase.instance.ref()
-        .child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!);
-
-    if (selectedService == "CI Consultation") {
-      reference.child("CIConsultations")
-          .child(consultationId!)
-          .once()
-          .then((dataSnap) {
-        DataSnapshot snapshot = dataSnap.snapshot;
-        if (snapshot.exists) {
-          selectedCIConsultationInfo =
-              CIConsultationModel.fromSnapshot(snapshot);
-        }
-
-        else {
-          Fluttertoast.showToast(
-              msg: "No consultation record exist with this credentials");
-        }
-      });
-    }
-
-    else if (selectedService == "Doctor Live Consultation") {
-      reference.child("consultations")
-          .child(consultationId!)
-          .once()
-          .then((dataSnap) {
-        DataSnapshot snapshot = dataSnap.snapshot;
-        if (snapshot.exists) {
-          selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-        }
-
-        else {
-          Fluttertoast.showToast(
-              msg: "No consultation record exist with this credentials");
-        }
-      });
-    }
-  }
-
-
-
   void checkWaitingStatus() {
     timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
       if(selectedService == "Doctor Live Consultation"){
@@ -95,7 +50,7 @@ class _WaitingScreenState extends State<WaitingScreen> {
                 }
             );
 
-            Timer(const Duration(seconds: 5), () {
+            Timer(const Duration(seconds: 3), () {
               Navigator.pop(context);
               channelName = consultationId;
               Fluttertoast.showToast(msg: channelName!);
@@ -132,7 +87,7 @@ class _WaitingScreenState extends State<WaitingScreen> {
                     }
                 );
 
-                Timer(const Duration(seconds: 5), () {
+                Timer(const Duration(seconds: 3), () {
                   Navigator.pop(context);
                   channelName = consultationId;
                   Fluttertoast.showToast(msg: channelName!);
@@ -183,7 +138,6 @@ class _WaitingScreenState extends State<WaitingScreen> {
         }
     );
 
-    retrieveConsultationDataFromDatabase();
     Timer(const Duration(seconds: 3), () {
       Navigator.pop(context);
     });

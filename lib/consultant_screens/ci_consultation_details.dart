@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
-import '../models/ci_consultation_model.dart';
 import '../models/consultation_payload_model.dart';
 import '../models/push_notification_screen.dart';
 import '../navigation_service.dart';
@@ -25,6 +24,14 @@ class CIConsultationDetails extends StatefulWidget {
 
 class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   late final LocalNotificationService service;
+  DateTime date = DateTime.now();
+  TimeOfDay time = TimeOfDay.now();
+  String? formattedDate,formattedTime;
+  int dateCounter = 0;
+  int timeCounter = 0;
+  bool flag = false;
+
+
   TextEditingController patientIdTextEditingController = TextEditingController(text: "");
   TextEditingController patientNameTextEditingController = TextEditingController(text: "");
   TextEditingController patientAgeTextEditingController = TextEditingController(text: "");
@@ -32,19 +39,87 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   TextEditingController genderTextEditingController = TextEditingController(text: "");
 
   void retrievePatientDataFromDatabase() {
-    patientIdTextEditingController.text = selectedCIConsultationInfo!.patientId!;
-    patientNameTextEditingController.text = selectedCIConsultationInfo!.patientName!;
-    patientAgeTextEditingController.text = selectedCIConsultationInfo!.patientAge!;
-    patientCountryTextEditingController.text = selectedCIConsultationInfo!.selectedCountry!;
-    genderTextEditingController.text = selectedCIConsultationInfo!.gender!;
+    FirebaseDatabase.instance.ref()
+        .child("CIConsultationRequests")
+        .child(consultationId!)
+        .once()
+        .then((dataSnap){
+      final DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
+        genderTextEditingController.text = (snapshot.value as Map)['gender'];
+        patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
+        patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
+        patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
+      }
+
+      else {
+        FirebaseDatabase.instance.ref()
+            .child("Consultant")
+            .child(currentFirebaseUser!.uid)
+            .child("CIConsultations")
+            .child(consultationId!)
+            .once()
+            .then((dataSnap) {
+          final DataSnapshot snapshot = dataSnap.snapshot;
+          if (snapshot.exists) {
+            patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
+            genderTextEditingController.text = (snapshot.value as Map)['gender'];
+            patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
+            patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
+            patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
+          }
+        });
+      }
+   });
+
   }
+
+  pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), //get today's date
+        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2030)
+    );
+
+    if(pickedDate != null ){
+      setState(() {
+        date = pickedDate;
+        formattedDate = DateFormat('dd-MM-yyyy').format(date);
+        dateCounter++;
+        flag = true;
+      });
+    }
+
+    else{
+      print("Date is not selected");
+    }
+
+  }
+
+  pickTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(), //get today's date
+    );
+
+    if(pickedTime != null ){
+      setState(() {
+        time = pickedTime;
+        formattedTime = time.format(context);
+        timeCounter++;
+      });
+    }
+  }
+
 
   setCIConsultationInfoToUpcoming() async {
     Map consultantCIConsultationInfoMap = {
       "id" : consultationId,
       "userId" : selectedCIConsultationInfo!.userId!,
-      "date" : selectedCIConsultationInfo!.date,
-      "time" : selectedCIConsultationInfo!.time!,
+      "date" : formattedDate,
+      "time" : formattedTime,
       "patientId" : selectedCIConsultationInfo!.patientId!,
       "patientName" : selectedCIConsultationInfo!.patientName!,
       "patientAge" : selectedCIConsultationInfo!.patientAge!,
@@ -106,11 +181,11 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   }
 
   Future<void> generateLocalNotification() async{
-    var df = DateFormat.jm().parse(selectedCIConsultationInfo!.time!);
-    DateTime date = DateFormat("dd-MM-yyyy").parse(selectedCIConsultationInfo!.date!);
-    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    String formattedTime = DateFormat('HH:mm').format(df);
-    dateTime =  formattedDate + " " + formattedTime;
+    var df = DateFormat.jm().parse(formattedTime!);
+    DateTime date = DateFormat("dd-MM-yyyy").parse(formattedDate!);
+    String formattedD = DateFormat('yyyy-MM-dd').format(date);
+    String formattedT = DateFormat('HH:mm').format(df);
+    dateTime =  formattedD + " " + formattedT;
     Fluttertoast.showToast(msg: dateTime!);
 
     ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: selectedCIConsultationInfo!.patientId!, selectedServiceName: "CI Consultation", consultationId: consultationId!);
@@ -599,93 +674,162 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                             ),
                           ),
 
-                          SizedBox(height: height * 0.03,),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          (selectedCIConsultationInfo!.consultationStatus == "Waiting")
+                              ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: ElevatedButton(
-                                    onPressed: ()  async {
-                                      showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context){
-                                            return ProgressDialog(message: "Please wait...");
-                                          }
-                                      );
-
-                                      setCIConsultationInfoToUpcoming();
-
-                                      Timer(const Duration(seconds: 5),()  {
-                                        Navigator.pop(context);
-                                        var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
-                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                        Navigator.pop(context);
-                                      });
-
-                                    },
-
-                                    style: ElevatedButton.styleFrom(
-                                        primary: (Colors.blue),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20))),
-
-                                    child: Text(
-                                      "Confirm",
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white
-                                      ),
-                                    ),
-                                  ),
+                              SizedBox(height: height * 0.03,),
+                              Text(
+                                "Date",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.montserrat(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20
                                 ),
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: ElevatedButton(
-                                    onPressed: ()  async {
-                                      showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context){
-                                            return ProgressDialog(message: "Please wait...");
-                                          }
-                                      );
+                              SizedBox(height: height * 0.01,),
+                              // Date Picker
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.grey.shade200,
+                                    child: IconButton(
+                                      onPressed: () {  },
+                                      icon: const Icon(Icons.calendar_month,color: Colors.black,size: 35,),
+                                    ),
+                                  ),
 
-                                      //setConsultationInfoToUpcoming();
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          pickDate();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: (Colors.white70),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        ),
+                                        child: Text(
+                                          (dateCounter != 0) ? '$formattedDate' :  "Select date",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
 
-                                      Timer(const Duration(seconds: 5),()  {
-                                        Navigator.pop(context);
-                                        var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
-                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                      });
+                              SizedBox(height: height * 0.03,),
+                              // Test Time
+                              Text(
+                                "Time",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.montserrat(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20
+                                ),
+                              ),
+                              SizedBox(height: height * 0.01,),
+                              // Time Picker
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.grey.shade200,
+                                    child: IconButton(
+                                      onPressed: () {  },
+                                      icon: const Icon(Icons.watch_later_outlined,color: Colors.black,size: 35,),
+                                    ),
+                                  ),
 
-                                    },
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          pickTime();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: (Colors.white70),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        ),
+                                        child: Text(
+                                          (timeCounter != 0) ? '$formattedTime' :  "Select time",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
 
-                                    style: ElevatedButton.styleFrom(
-                                        primary: (Colors.blue),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20))),
+                              SizedBox(height: height * 0.05,),
 
-                                    child: Text(
-                                      "Reschedule",
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: ElevatedButton(
+                                        onPressed: ()  async {
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context){
+                                                return ProgressDialog(message: "Please wait...");
+                                              }
+                                          );
+
+                                          setCIConsultationInfoToUpcoming();
+
+                                          Timer(const Duration(seconds: 5),()  {
+                                            Navigator.pop(context);
+                                            var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
+                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                            Navigator.pop(context);
+                                          });
+
+                                        },
+
+                                        style: ElevatedButton.styleFrom(
+                                            primary: (Colors.blue),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20))),
+
+                                        child: Text(
+                                          "Confirm",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
-                          ),
-
+                          ) : Container(),
 
                         ],
                       ),

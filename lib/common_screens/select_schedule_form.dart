@@ -174,35 +174,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
     }
   }
 
-  /*saveConsultationInfo() async {
-    DatabaseReference reference = FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(patientId!);
-
-    consultationId = idGenerator();
-    if(selectedService == "CI Consultation"){
-      Map CIConsultationInfoMap = {
-        "id" : consultationId,
-        "consultantName" : "TBA",
-        "date" : formattedDate,
-        "time" : selectedTime,
-        "selectedCountry" : selectedCountry,
-        "consultantFee" : "500",
-        "consultationType" : "Scheduled",
-        "visitationReason": selectedReasonOfVisit,
-        "problem": problemTextEditingController.text.trim(),
-        "payment" : "Pending"
-      };
-
-      reference.child(selectedServiceDatabaseParentName!).child(consultationId!).set(CIConsultationInfoMap);
-    }
-
-
-
-  }*/
-
-
   @override
   void initState() {
     // TODO: implement initState

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:app/models/consultant_model.dart';
 import 'package:app/models/consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -11,6 +12,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../common_screens/coundown_screen.dart';
+import '../../common_screens/waiting_screen.dart';
 import '../../global/global.dart';
 import '../../models/doctor_model.dart';
 import '../../widgets/progress_dialog.dart';
@@ -26,6 +29,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   String consultationStatus = "Upcoming";
   Timer? timer;
+  String? consultantId;
 
   setConsultationInfoToAccepted() async {
     FirebaseDatabase.instance.ref()
@@ -36,8 +40,40 @@ class _HistoryScreenState extends State<HistoryScreen> {
         .child("consultations")
         .child(consultationId!).child("consultationType").set("Accepted");
 
-    await retrieveConsultationDataFromDatabase();
     countNumberOfChild();
+  }
+
+  void countNumberOfChild(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Doctors').child(doctorId!);
+    reference.once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count + 1).toString());
+
+        Map info = {
+          "patientId" : patientId
+        };
+
+        reference.child('patientQueue').child(consultationId!).set(info);
+
+        if(count == 0){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+        }
+
+        else{
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+        }
+
+        //selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No doctor record exist with these credentials");
+      }
+    });
+    retrieveConsultationDataFromDatabase();
+
   }
 
   retrieveConsultationDataFromDatabase() {
@@ -60,39 +96,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     selectedService = "Doctor Live Consultation";
   }
 
-  void countNumberOfChild(){
-    FirebaseDatabase.instance.ref('Doctors').child(selectedConsultationInfo!.doctorId!).once().then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
-        //reference.child('patientQueueLength').set((count + 1).toString());
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
-      }
-    });
-
-    Map info = {
-      "patientId" : patientId!
-    };
-
-    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
-    FirebaseDatabase.instance.ref('Doctors').child(selectedDoctorInfo!.doctorId!).child('patientQueueLength').set(count);
-    FirebaseDatabase.instance.ref('Doctors').child(selectedDoctorInfo!.doctorId!).child('patientQueue').child(consultationId!).set(info);
-  }
-
-
-
-  /*void checkTiming(){
-    timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
-      setState(() {
-        timeNow = TimeOfDay.now();
-        formattedTime = timeNow!.format(context);
-      });
-      Fluttertoast.showToast(msg: "Time:" + formattedTime!);
-    });
-  }*/
 
 
   @override
@@ -107,7 +110,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     //timer!.cancel();
     super.dispose();
   }
-
 
 
   @override
@@ -432,26 +434,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             children: [
                                               SizedBox(
                                                 child: ElevatedButton.icon(
-                                                  onPressed: ()  {
-                                                    showDialog(
-                                                        context: context,
-                                                        barrierDismissible: false,
-                                                        builder: (BuildContext context){
-                                                          return ProgressDialog(message: "Please wait...");
-                                                        }
-                                                    );
-
+                                                  onPressed: ()  async {
                                                     consultationId = (snapshot.value as Map)["id"];
-                                                    setConsultationInfoToAccepted();
-                                                    Timer(const Duration(seconds: 5),()  {
-                                                      Navigator.pop(context);
-                                                      channelName = consultationId;
-                                                      Fluttertoast.showToast(msg: channelName!);
-                                                      tokenRole = 2;
-                                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-                                                    });
-
-
+                                                    doctorId = (snapshot.value as Map)["doctorId"];
+                                                    await setConsultationInfoToAccepted();
                                                   },
 
                                                   style: ElevatedButton.styleFrom(

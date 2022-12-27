@@ -23,11 +23,18 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   String patientLength = "0";
 
   void countNumberOfChild(){
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).once().then((snapData) {
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Doctors').child(doctorId!);
+    reference.once().then((snapData) {
       DataSnapshot snapshot = snapData.snapshot;
       if(snapshot.value != null){
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count + 1).toString());
+        Map info = {
+          "patientId" : patientId!
+        };
+
+        reference.child('patientQueue').child(consultationId!).set(info);
         selectedDoctorInfo = DoctorModel.fromSnapshot(snapshot);
-        patientLength = selectedDoctorInfo!.patientQueueLength!;
       }
 
       else{
@@ -35,13 +42,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       }
     });
 
-    Map info = {
-      "patientId" : patientId!
-    };
-
-    String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
+    /*String count = (int.parse(selectedDoctorInfo!.patientQueueLength.toString()) + 1).toString();
     FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueueLength').set(count);
-    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);
+    FirebaseDatabase.instance.ref('Doctors').child(doctorId!).child('patientQueue').child(consultationId!).set(info);*/
   }
 
   Future<bool> showExitPopup() async {

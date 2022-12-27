@@ -12,6 +12,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
+import '../../common_screens/coundown_screen.dart';
+import '../../common_screens/waiting_screen.dart';
 import '../../global/global.dart';
 import '../../widgets/progress_dialog.dart';
 import '../visa_invitation/video_call.dart';
@@ -26,6 +28,7 @@ class ConsultationHistory extends StatefulWidget {
 class _ConsultationHistoryState extends State<ConsultationHistory> {
   String consultationStatus = "Upcoming";
   int toggleIndex = 0;
+  String? consultantId;
 
   setCIConsultationInfoToAccepted() async {
     FirebaseDatabase.instance.ref()
@@ -36,7 +39,41 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
         .child("CIConsultations")
         .child(consultationId!).child("consultationStatus").set("Accepted");
 
+    countNumberOfChild();
+  }
+
+  void countNumberOfChild(){
+    DatabaseReference reference = FirebaseDatabase.instance.ref('Consultant').child(consultantId!);
+    reference.once().then((snapData) {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
+        reference.child('patientQueueLength').set((count + 1).toString());
+
+        Map info = {
+          "patientId" : patientId
+        };
+
+        reference.child('patientQueue').child(consultationId!).set(info);
+        //selectedConsultantInfo = ConsultantModel.fromSnapshot(snapshot);
+
+        if(count == 0){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const CountDownScreen()));
+        }
+
+        else{
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const WaitingScreen()));
+        }
+
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "No consultant record exist with these credentials");
+      }
+    });
+
     retrieveConsultationDataFromDatabase();
+
   }
 
   retrieveConsultationDataFromDatabase() {
@@ -57,30 +94,9 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
     });
 
     selectedService = "CI Consultation";
-    countNumberOfChild();
   }
 
-  countNumberOfChild(){
-    DatabaseReference reference = FirebaseDatabase.instance.ref('Consultant').child(selectedCIConsultationInfo!.consultantId!);
-    reference.once().then((snapData) {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        int count = int.parse((snapshot.value as Map)["patientQueueLength"].toString());
-        reference.child('patientQueueLength').set((count + 1).toString());
 
-        Map info = {
-          "patientId" : selectedCIConsultationInfo!.patientId!
-        };
-
-        reference.child('patientQueue').child(consultationId!).set(info);
-      }
-
-      else{
-        Fluttertoast.showToast(msg: "No doctor record exist with this credentials");
-      }
-    });
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -312,26 +328,11 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                                           children: [
                                                             SizedBox(
                                                               child: ElevatedButton.icon(
-                                                                onPressed: ()  {
-                                                                  showDialog(
-                                                                      context: context,
-                                                                      barrierDismissible: false,
-                                                                      builder: (BuildContext context){
-                                                                        return ProgressDialog(message: "Please wait...");
-                                                                      }
-                                                                  );
-
+                                                                onPressed: ()  async {
                                                                   consultationId = (snapshot.value as Map)["id"];
-                                                                  setCIConsultationInfoToAccepted();
-                                                                  Timer(const Duration(seconds: 5),()  {
-                                                                    Navigator.pop(context);
-                                                                    channelName = consultationId;
-                                                                    Fluttertoast.showToast(msg: channelName!);
-                                                                    tokenRole = 2;
-                                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AgoraScreen()));
-                                                                  });
-
-
+                                                                  patientId = (snapshot.value as Map)["patientId"];
+                                                                  consultantId = (snapshot.value as Map)["consultantId"];
+                                                                  await setCIConsultationInfoToAccepted();
                                                                 },
 
                                                                 style: ElevatedButton.styleFrom(

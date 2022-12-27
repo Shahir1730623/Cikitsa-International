@@ -40,7 +40,7 @@ CIConsultationModel? selectedCIConsultationInfo;
 VisaInvitationModel? selectedVisaInvitationInfo;
 
 String selectedService = "";
-String? selectedCountry;
+String? selectedCountry = "Select a country";
 String? selectedServiceDatabaseParentName;
 
 bool? pushNotify = false;

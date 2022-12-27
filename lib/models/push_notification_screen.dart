@@ -79,7 +79,12 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         }
     );
 
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const CIConsultations()), (Route<dynamic> route) => false);
+    Timer(const Duration(seconds: 2),()  {
+      Navigator.pop(context);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const CIConsultations()), (Route<dynamic> route) => false);
+    });
+
+
   }
 
   @override

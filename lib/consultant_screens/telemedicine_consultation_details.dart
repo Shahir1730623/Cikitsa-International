@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../widgets/progress_dialog.dart';
@@ -18,12 +19,57 @@ class TelemedicineConsultationDetails extends StatefulWidget {
 }
 
 class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultationDetails> {
+  DateTime date = DateTime.now();
+  TimeOfDay time = TimeOfDay.now();
+  String? formattedDate,formattedTime;
+  int dateCounter = 0;
+  int timeCounter = 0;
+  bool flag = false;
+
+  pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), //get today's date
+        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2030)
+    );
+
+    if(pickedDate != null ){
+      setState(() {
+        date = pickedDate;
+        formattedDate = DateFormat('dd-MM-yyyy').format(date);
+        dateCounter++;
+        flag = true;
+      });
+    }
+
+    else{
+      print("Date is not selected");
+    }
+
+  }
+
+  pickTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(), //get today's date
+    );
+
+    if(pickedTime != null ){
+      setState(() {
+        time = pickedTime;
+        formattedTime = time.format(context);
+        timeCounter++;
+      });
+    }
+  }
+
   setConsultationInfoToUpcoming() async {
     Map doctorLiveConsultationForDoctor = {
       "id" : consultationId,
       "userId" : selectedConsultationInfoForDocAndConsultant!.userId,
-      "date" : selectedConsultationInfoForDocAndConsultant!.date!,
-      "time" : selectedConsultationInfoForDocAndConsultant!.time!,
+      "date" : formattedDate,
+      "time" : formattedTime,
       "consultantFee" : "500",
       "patientId" : selectedConsultationInfoForDocAndConsultant!.patientId,
       "patientName" : selectedConsultationInfoForDocAndConsultant!.patientName!,
@@ -425,7 +471,6 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
                         );
 
                         setConsultationInfoToUpcoming();
-
                         Timer(const Duration(seconds: 5),()  {
                           Navigator.pop(context);
                           var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
@@ -442,45 +487,6 @@ class _TelemedicineConsultationDetailsState extends State<TelemedicineConsultati
 
                       child: Text(
                         "Confirm",
-                        style: GoogleFonts.montserrat(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: ElevatedButton(
-                      onPressed: ()  async {
-                        showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context){
-                              return ProgressDialog(message: "Please wait...");
-                            }
-                        );
-
-                        //setConsultationInfoToUpcoming();
-
-                        Timer(const Duration(seconds: 5),()  {
-                          Navigator.pop(context);
-                          var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        });
-
-                      },
-
-                      style: ElevatedButton.styleFrom(
-                          primary: (Colors.blue),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20))),
-
-                      child: Text(
-                        "Reschedule",
                         style: GoogleFonts.montserrat(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,

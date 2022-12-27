@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'consultant_screens/ci_consultation_details.dart';
 import 'navigation_service.dart';
+import 'our_services/ci_consultation/mrz_testing.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,7 @@ void main() async {
   runApp(
       MyApp(
         child: MaterialApp(
-          title: 'Cikitsa International',
+          title:'Cikitsa International',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),

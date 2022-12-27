@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:app/consultant_screens/ci_consultations.dart';
-import 'package:app/consultant_screens/telemedicine_consultation_details.dart';
 import 'package:app/consultant_screens/telemedicine_consultations.dart';
 import 'package:app/global/global.dart';
 import 'package:firebase_database/firebase_database.dart';

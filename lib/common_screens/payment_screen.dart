@@ -10,7 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../global/global.dart';
-import '../service_file/local_notification_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   String? formattedDate;
@@ -65,9 +64,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     Map consultationInfoMap = {
       "id" : consultationId,
       "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "time" : (selectedDoctorInfo!.status == "Online") ? widget.formattedTime : 'TBA',
       "doctorId" : selectedDoctorInfo!.doctorId,
-      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "doctorName" : "Dr. ${selectedDoctorInfo!.doctorFirstName!} ${selectedDoctorInfo!.doctorLastName!}",
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
       "specialization" : selectedDoctorInfo!.specialization,
       "doctorFee" : selectedDoctorInfo!.fee,
@@ -103,7 +102,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "userId" : currentFirebaseUser!.uid,
       "imageUrl" : selectedDoctorInfo!.doctorImageUrl!,
       "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "time" :  'TBA',
       "consultantFee" : "500",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
@@ -133,7 +132,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "id" : consultationId,
       "userId" : currentFirebaseUser!.uid,
       "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "time" : (selectedDoctorInfo!.status == "Online") ? widget.formattedTime : 'TBA',
       "consultantFee" : "500",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : "${selectedPatientInfo!.firstName!} ${selectedPatientInfo!.lastName!}",
@@ -165,7 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "id" : consultationId,
       "userId" : currentFirebaseUser!.uid,
       "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "time" : "TBA",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : selectedPatientInfo!.firstName! + " " +  selectedPatientInfo!.lastName!,
       "patientAge" : selectedPatientInfo!.age!,
@@ -199,7 +198,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "id" : consultationId,
       "userId" : currentFirebaseUser!.uid,
       "date" : widget.formattedDate,
-      "time" : widget.formattedTime,
+      "time" : "TBA",
       "patientId" : selectedPatientInfo!.id!,
       "patientName" : selectedPatientInfo!.firstName! + " " +  selectedPatientInfo!.lastName!,
       "patientAge" : selectedPatientInfo!.age!,

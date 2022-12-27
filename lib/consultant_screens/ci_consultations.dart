@@ -25,12 +25,12 @@ class CIConsultations extends StatefulWidget {
 class _CIConsultationsState extends State<CIConsultations> {
   String consultationStatus = "Upcoming";
 
-  setConsultationInfoToAccepted(String consultationId){
+  setConsultationInfoToAccepted(){
     FirebaseDatabase.instance.ref()
         .child("Consultant")
         .child(currentFirebaseUser!.uid)
-        .child("consultations")
-        .child(consultationId)
+        .child("CIConsultations")
+        .child(consultationId!)
         .child("consultationStatus")
         .set("Accepted");
   }
@@ -413,7 +413,7 @@ class _CIConsultationsState extends State<CIConsultations> {
                                                     );
 
                                                     consultationId = (snapshot.value as Map)["id"];
-                                                    setConsultationInfoToAccepted(consultationId!);
+                                                    setConsultationInfoToAccepted();
                                                     Timer(const Duration(seconds: 5),()  {
                                                       Navigator.pop(context);
                                                       channelName = consultationId;

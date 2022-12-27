@@ -1,4 +1,5 @@
 import 'package:app/common_screens/choose_user.dart';
+import 'package:app/our_services/ci_consultation/mrz_testing.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../common_screens/choose_user2.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
+import '../../testing.dart';
 
 class CIConsultationDashboard extends StatefulWidget {
   const CIConsultationDashboard({Key? key}) : super(key: key);
@@ -26,6 +28,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
     selectedServiceDatabaseParentName = "CIConsultations";
     selectedService = "CI Consultation";
     selectedDoctorInfo = null;
+    selectedCountry = countryList[1];
   }
 
   @override
@@ -136,7 +139,7 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
                           decoration: InputDecoration(
                             isDense: true,
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: const UnderlineInputBorder(
@@ -321,7 +324,9 @@ class _CIConsultationDashboardState extends State<CIConsultationDashboard> {
 
                         // How to book Consultation
                         GestureDetector(
-                          onTap: (){},
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const MRZTester()));
+                          },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),
                             height: height * 0.1,

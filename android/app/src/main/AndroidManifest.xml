@@ -5,6 +5,11 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+       <activity
+           android:name="com.yalantis.ucrop.UCropActivity"
+           android:screenOrientation="portrait"
+           android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -48,4 +53,5 @@
     <uses-permission  android:name="android.permission.ACCESS_NETWORK_STATE"  />
     <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
     <uses-permission  android:name="android.permission.BLUETOOTH"  />
+    <uses-permission android:name="io.github.edufolly.fluttermobilevision.ocr.OcrCaptureActivity" />
 </manifest>
