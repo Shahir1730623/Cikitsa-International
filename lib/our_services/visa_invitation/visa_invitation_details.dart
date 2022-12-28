@@ -12,10 +12,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-
-
-
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';import '../../global/global.dart';
 import '../../widgets/progress_dialog.dart';class VisaInvitationDetails extends StatefulWidget {
   const VisaInvitationDetails({Key? key}) : super(key: key);

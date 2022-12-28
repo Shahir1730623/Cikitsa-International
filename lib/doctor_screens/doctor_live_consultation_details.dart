@@ -1,47 +1,33 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
-
-import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
-import '../models/consultation_payload_model.dart';
-import '../models/push_notification_screen.dart';
-import '../navigation_service.dart';
-import '../service_file/local_notification_service.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/upload_image_dialog.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-class CIConsultationDetails extends StatefulWidget {
-  const CIConsultationDetails({Key? key}) : super(key: key);
+class DoctorLiveConsultationDetails extends StatefulWidget {
+  const DoctorLiveConsultationDetails({Key? key}) : super(key: key);
 
   @override
-  State<CIConsultationDetails> createState() => _CIConsultationDetailsState();
+  State<DoctorLiveConsultationDetails> createState() => _DoctorLiveConsultationDetailsState();
 }
 
-class _CIConsultationDetailsState extends State<CIConsultationDetails> {
-  late final LocalNotificationService service;
-  DateTime date = DateTime.now();
-  TimeOfDay time = TimeOfDay.now();
-  String? formattedDate,formattedTime;
-  int dateCounter = 0;
-  int timeCounter = 0;
-  bool flag = false;
+class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDetails> {
   XFile? imageFile;
   String imageUrl = "";
+  bool flag = false;
   late Future<ListResult> futureFiles;
 
   TextEditingController patientIdTextEditingController = TextEditingController(text: "");
@@ -49,46 +35,13 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   TextEditingController patientAgeTextEditingController = TextEditingController(text: "");
   TextEditingController patientCountryTextEditingController = TextEditingController(text: "");
   TextEditingController genderTextEditingController = TextEditingController(text: "");
+  TextEditingController heightTextEditingController = TextEditingController(text: "");
+  TextEditingController weightTextEditingController = TextEditingController(text: "");
+  TextEditingController visitationReasonTextEditingController = TextEditingController(text: "");
 
-  void retrievePatientDataFromDatabase() {
-    FirebaseDatabase.instance.ref()
-        .child("CIConsultationRequests")
-        .child(consultationId!)
-        .once()
-        .then((dataSnap){
-      final DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
-        patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
-        patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
-        genderTextEditingController.text = (snapshot.value as Map)['gender'];
-        patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
-      }
-
-      else {
-        FirebaseDatabase.instance.ref()
-            .child("Consultant")
-            .child(currentFirebaseUser!.uid)
-            .child("CIConsultations")
-            .child(consultationId!)
-            .once()
-            .then((dataSnap) {
-          final DataSnapshot snapshot = dataSnap.snapshot;
-          if (snapshot.exists) {
-            patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
-            patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
-            patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
-            genderTextEditingController.text = (snapshot.value as Map)['gender'];
-            patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
-          }
-        });
-      }
-   });
-
-  }
 
   Future<void> checkPrescriptionStatus() async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref("CIConsultationImages/"+ consultationId! + "/consultantPrescription.png");
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/doctorPrescription.png" );
     try{
       imageUrl = await reference.getDownloadURL();
     }
@@ -114,7 +67,7 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
     try{
       // Pick an Image
       final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if(pickedImage!=null){
+      if(pickedImage != null){
         showDialog(
             context: context,
             barrierDismissible: false,
@@ -137,8 +90,7 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   }
 
   saveImage() async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref("CIConsultationImages/"+ consultationId! + "/consultantPrescription.png");
-
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/doctorPrescription.png" );
     // Upload the image to firebase storage
     try{
       await reference.putFile(File(imageFile!.path));
@@ -181,171 +133,38 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
 
   }
 
-  pickDate() async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(), //get today's date
-        firstDate:DateTime.now(), //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2030)
-    );
-
-    if(pickedDate != null ){
-      setState(() {
-        date = pickedDate;
-        formattedDate = DateFormat('dd-MM-yyyy').format(date);
-        dateCounter++;
-        flag = true;
-      });
-    }
-
-    else{
-      print("Date is not selected");
-    }
-
-  }
-
-  pickTime() async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(), //get today's date
-    );
-
-    if(pickedTime != null ){
-      setState(() {
-        time = pickedTime;
-        formattedTime = time.format(context);
-        timeCounter++;
-      });
-    }
-  }
-
-  setCIConsultationInfoToUpcoming() async {
-    Map consultantCIConsultationInfoMap = {
-      "id" : consultationId,
-      "userId" : selectedCIConsultationInfo!.userId!,
-      "date" : formattedDate,
-      "time" : formattedTime,
-      "patientId" : selectedCIConsultationInfo!.patientId!,
-      "patientName" : selectedCIConsultationInfo!.patientName!,
-      "patientAge" : selectedCIConsultationInfo!.patientAge!,
-      "gender" : selectedCIConsultationInfo!.gender!,
-      "height" : selectedCIConsultationInfo!.height!,
-      "weight" : selectedCIConsultationInfo!.weight!,
-      "country" : selectedCIConsultationInfo!.selectedCountry,
-      "consultantId" : currentConsultantInfo!.id,
-      "consultantName" : currentConsultantInfo!.name!,
-      "consultantFee" : "500",
-      "consultationStatus" : "Upcoming",
-      "visitationReason": selectedCIConsultationInfo!.visitationReason,
-      "problem": selectedCIConsultationInfo!.problem!,
-      "payment" : "Paid",
-    };
-
+  void retrievePatientDataFromDatabase() {
     FirebaseDatabase.instance.ref()
-        .child("Consultant")
+        .child("Doctors")
         .child(currentFirebaseUser!.uid)
-        .child("CIConsultations")
+        .child("consultations")
         .child(consultationId!)
-        .set(consultantCIConsultationInfoMap);
-
-    FirebaseDatabase.instance.ref()
-        .child("Users")
-        .child(selectedCIConsultationInfo!.userId!)
-        .child("patientList")
-        .child(selectedCIConsultationInfo!.patientId!)
-        .child("CIConsultations")
-        .child(consultationId!)
-        .set(consultantCIConsultationInfoMap);
-
-    FirebaseDatabase.instance.ref()
-        .child("CIConsultationRequests")
-        .child(consultationId!)
-        .remove();
-
-    getRegistrationTokenForUserAndNotify();
-  }
-
-  void getRegistrationTokenForUserAndNotify(){
-    FirebaseDatabase.instance.ref()
-        .child("Users")
-        .child(userId!)
-        .child("tokens").once().then((snapData) async {
-      DataSnapshot snapshot = snapData.snapshot;
-      if(snapshot.value != null){
-        String deviceRegistrationToken = snapshot.value.toString();
-        // send notification now
-        await AssistantMethods.sendCIConsultationPushNotificationToPatientNow(deviceRegistrationToken, selectedCIConsultationInfo!.patientId!, "CI Consultation", context);
-        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
-        generateLocalNotification();
+        .once()
+        .then((dataSnap){
+      final DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
+        patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
+        patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
+        genderTextEditingController.text = (snapshot.value as Map)['gender'];
+        heightTextEditingController.text = (snapshot.value as Map)['height'];
+        weightTextEditingController.text = (snapshot.value as Map)['weight'];
+        visitationReasonTextEditingController.text = (snapshot.value as Map)['visitationReason'];
       }
 
-      else{
-        Fluttertoast.showToast(msg: "Error sending notifications");
+      else {
       }
     });
-  }
 
-  Future<void> generateLocalNotification() async{
-    var df = DateFormat.jm().parse(formattedTime!);
-    DateTime date = DateFormat("dd-MM-yyyy").parse(formattedDate!);
-    String formattedD = DateFormat('yyyy-MM-dd').format(date);
-    String formattedT = DateFormat('HH:mm').format(df);
-    dateTime =  formattedD + " " + formattedT;
-    Fluttertoast.showToast(msg: dateTime!);
-
-    ConsultationPayloadModel consultationPayloadModel = ConsultationPayloadModel(currentUserId: currentFirebaseUser!.uid, patientId: selectedCIConsultationInfo!.patientId!, selectedServiceName: "CI Consultation", consultationId: consultationId!);
-    String payloadJsonString = consultationPayloadModel.toJsonString();
-    await service.showScheduledNotification(id: 0, title: "Appointment reminder", body: "You have CI Appointment Now. Click here to join", seconds: 1, payload: payloadJsonString, dateTime: dateTime!);
-  }
-
-  void listenToNotification(){
-    service.onNotificationClick.stream.listen(onNotificationListener);
-  }
-
-  void onNotificationListener(String? payload){
-    if(payload!=null && payload.isNotEmpty){
-     Navigator.push(NavigationService.navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => PushNotificationScreen(payload:payload)));
-    }
-    else{
-      Fluttertoast.showToast(msg: 'payload empty');
-    }
-  }
-
-  void loadScreen(){
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context){
-          return ProgressDialog(message: "Fetching data...");
-        }
-    );
-
-    Timer(const Duration(seconds: 2),()  {
-      Navigator.pop(context);
-    });
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureFiles = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/medical_documents").listAll();
-    Future.delayed(Duration.zero, () {
-      loadScreen();
-      retrievePatientDataFromDatabase();
-      checkPrescriptionStatus();
-    });
-
-
-
-    service = LocalNotificationService();
-    service.intialize();
-    listenToNotification();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    futureFiles = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/medical_documents").listAll();
+    retrievePatientDataFromDatabase();
+    checkPrescriptionStatus();
   }
 
   @override
@@ -365,11 +184,11 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
             child: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
                     ),
 
@@ -403,7 +222,7 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "History Details",
+                                    "Telemedicine Details",
                                     style: GoogleFonts.montserrat(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -418,25 +237,25 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
 
                           // Patient Name
                           Text(
-                            "Patient Name",
+                            "Patient ID",
                             style: GoogleFonts.montserrat(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue
                             ),
                           ),
                           SizedBox(
                             height: height * 0.01,
                           ),
                           TextFormField(
-                            controller: patientNameTextEditingController,
+                            controller: patientIdTextEditingController,
                             readOnly: true,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
                             decoration: InputDecoration(
-                              labelText: "Name",
-                              hintText: "Name",
+                              labelText: "ID",
+                              hintText: "ID",
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.person),
                                 onPressed: () {},
@@ -460,10 +279,10 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
 
                           // Patient Id
                           Text(
-                            "Patient ID",
+                            "Patient Name",
                             style: GoogleFonts.montserrat(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.blue
                             ),
                           ),
@@ -471,14 +290,14 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                             height: height * 0.01,
                           ),
                           TextFormField(
-                            controller: patientIdTextEditingController,
+                            controller: patientNameTextEditingController,
                             readOnly: true,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
                             decoration: InputDecoration(
-                              labelText: "ID",
-                              hintText: "ID",
+                              labelText: "Name",
+                              hintText: "Name",
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.numbers),
                                 onPressed: () {},
@@ -504,8 +323,8 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                           Text(
                             "Patient Age",
                             style: GoogleFonts.montserrat(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.blue
                             ),
                           ),
@@ -543,8 +362,8 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                           Text(
                             "Gender",
                             style: GoogleFonts.montserrat(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.blue
                             ),
                           ),
@@ -581,9 +400,9 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                             height: height * 0.03,
                           ),
 
-                          // Patient Country
+                          // Patient Height
                           Text(
-                            "Country",
+                            "Height",
                             style: GoogleFonts.montserrat(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -594,14 +413,98 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                             height: height * 0.01,
                           ),
                           TextFormField(
-                            controller: patientCountryTextEditingController,
+                            controller: heightTextEditingController,
                             readOnly: true,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
                             decoration: InputDecoration(
-                              labelText: "Country",
-                              hintText: "Country",
+                              labelText: "Height",
+                              hintText: "Height",
+                              prefixIcon: IconButton(
+                                icon: const Icon(Icons.add_location_alt),
+                                onPressed: () {},
+                              ),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                              ),
+                              hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 15),
+                              labelStyle:
+                              const TextStyle(color: Colors.black, fontSize: 15),
+                            ),
+
+                          ),
+                          SizedBox(
+                            height: height * 0.03,
+                          ),
+
+                          // Patient Country
+                          Text(
+                            "Weight",
+                            style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue
+                            ),
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          TextFormField(
+                            controller: weightTextEditingController,
+                            readOnly: true,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: "Weight",
+                              hintText: "Weight",
+                              prefixIcon: IconButton(
+                                icon: const Icon(Icons.add_location_alt),
+                                onPressed: () {},
+                              ),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                              ),
+                              hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 15),
+                              labelStyle:
+                              const TextStyle(color: Colors.black, fontSize: 15),
+                            ),
+
+                          ),
+                          SizedBox(
+                            height: height * 0.03,
+                          ),
+
+                          // Sickness
+                          Text(
+                            "Sickness",
+                            style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue
+                            ),
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          TextFormField(
+                            controller: visitationReasonTextEditingController,
+                            readOnly: true,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: "Sickness",
+                              hintText: "Sickness",
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.add_location_alt),
                                 onPressed: () {},
@@ -665,55 +568,7 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedCIConsultationInfo!.id!,
-                                        style: GoogleFonts.montserrat(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: height * 0.02,
-                                      ),
-
-                                      // Consultant Name
-                                      Text(
-                                        "Consultant Name",
-                                        style: GoogleFonts.montserrat(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: height * 0.01,
-                                      ),
-                                      Text(
-                                        selectedCIConsultationInfo!.consultantName!,
-                                        style: GoogleFonts.montserrat(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: height * 0.02,
-                                      ),
-
-                                      // Consultant Fee
-                                      Text(
-                                        "Consultant Fee",
-                                        style: GoogleFonts.montserrat(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: height * 0.01,
-                                      ),
-                                      Text(
-                                        "৳" + selectedCIConsultationInfo!.consultantFee!,
+                                        selectedConsultationInfo!.consultationId!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -737,7 +592,55 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedCIConsultationInfo!.visitationReason!,
+                                        selectedConsultationInfo!.visitationReason!,
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: height * 0.02,
+                                      ),
+
+                                      // Date
+                                      Text(
+                                        "Date",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: height * 0.01,
+                                      ),
+                                      Text(
+                                        selectedConsultationInfo!.date!,
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: height * 0.02,
+                                      ),
+
+                                      // Visitation Reason
+                                      Text(
+                                        "Time",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: height * 0.01,
+                                      ),
+                                      Text(
+                                        selectedConsultationInfo!.time!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -761,7 +664,7 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedCIConsultationInfo!.problem!,
+                                        selectedConsultationInfo!.problem!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -774,29 +677,11 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                     ],
                                   ),
                                 ],
-
-
                               ),
                             ),
                           ),
 
                           SizedBox(height: height * 0.02,),
-
-                          const Divider(
-                            height: 50,
-                            thickness: 1,
-                            color: Colors.blue,
-                          ),
-
-                          Text(
-                            "Download Reports and Prescriptions",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-                          SizedBox(height: height * 0.020,),
 
                           FutureBuilder<ListResult>(
                             future: futureFiles,
@@ -845,164 +730,9 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                             color: Colors.blue,
                           ),
 
-                          (selectedCIConsultationInfo!.consultationStatus == "Waiting") ?
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: height * 0.03,),
-                              Text(
-                                "Date",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                ),
-                              ),
-                              SizedBox(height: height * 0.01,),
-                              // Date Picker
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey.shade200,
-                                    child: IconButton(
-                                      onPressed: () {  },
-                                      icon: const Icon(Icons.calendar_month,color: Colors.black,size: 35,),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 10,),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 40,
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          pickDate();
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: (Colors.white70),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                        ),
-                                        child: Text(
-                                          (dateCounter != 0) ? '$formattedDate' :  "Select date",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-
-                              SizedBox(height: height * 0.03,),
-                              // Test Time
-                              Text(
-                                "Time",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                ),
-                              ),
-                              SizedBox(height: height * 0.01,),
-                              // Time Picker
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey.shade200,
-                                    child: IconButton(
-                                      onPressed: () {  },
-                                      icon: const Icon(Icons.watch_later_outlined,color: Colors.black,size: 35,),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 10,),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 40,
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          pickTime();
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: (Colors.white70),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                        ),
-                                        child: Text(
-                                          (timeCounter != 0) ? '$formattedTime' :  "Select time",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-
-                              SizedBox(height: height * 0.05,),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: ElevatedButton(
-                                        onPressed: ()  async {
-                                          showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (BuildContext context){
-                                                return ProgressDialog(message: "Please wait...");
-                                              }
-                                          );
-
-                                          setCIConsultationInfoToUpcoming();
-
-                                          Timer(const Duration(seconds: 5),()  {
-                                            Navigator.pop(context);
-                                            var snackBar = const SnackBar(content: Text("Consultation request sent successfully"));
-                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                            Navigator.pop(context);
-                                          });
-
-                                        },
-
-                                        style: ElevatedButton.styleFrom(
-                                            primary: (Colors.blue),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20))),
-
-                                        child: Text(
-                                          "Confirm",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ) :
                           (flag == false) ?
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Uploaded Image Container
                               GestureDetector(
@@ -1068,48 +798,49 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                 ),
                               ),
                               SizedBox(height: height * 0.05,),
+
                               SizedBox(
                                   height: 45,
                                   width: double.infinity,
-                                  child: ElevatedButton.icon(
-                                      onPressed: ()  async {
-                                        showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (BuildContext context){
-                                              return ProgressDialog(message: "Please wait...");
-                                            }
-                                        );
+                                  child:  ElevatedButton.icon(
+                                    onPressed: ()  async {
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context){
+                                            return ProgressDialog(message: "Please wait...");
+                                          }
+                                      );
 
-                                        saveImage();
-                                        Timer(const Duration(seconds: 5),()  {
-                                          Navigator.pop(context);
-                                          var snackBar = const SnackBar(content: Text("CI Report uploaded successfully"));
-                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                          Navigator.pop(context);
-                                        });
+                                      saveImage();
+                                      var snackBar = const SnackBar(content: Text("Prescription uploaded successfully"));
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                                      },
+                                      Timer(const Duration(seconds: 5),()  {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      });
 
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: (Colors.blue),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(20))),
+                                    },
 
-                                      icon: const Icon(Icons.contact_page),
-                                      label: Text(
-                                        "Upload CI Report",
-                                        style: GoogleFonts.montserrat(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white
-                                        ),
-                                      )
+                                    style: ElevatedButton.styleFrom(
+                                        primary: (Colors.blue),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20))),
+
+                                    icon: const Icon(Icons.contact_page),
+                                    label: Text(
+                                      "Upload Prescription",
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white
+                                      ),
+                                    ),
                                   )
-
                               ),
-                          ],
-                          ) : Container(),
+                            ],
+                          ) : Container()
 
                         ],
                       ),

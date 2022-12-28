@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:app/models/consultation_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,7 @@ import 'package:intl/intl.dart';
 import '../global/global.dart';
 import '../our_services/visa_invitation/video_call.dart';
 import '../widgets/progress_dialog.dart';
+import 'doctor_live_consultation_details.dart';
 
 class DoctorLiveConsultation extends StatefulWidget {
   const DoctorLiveConsultation({Key? key}) : super(key: key);
@@ -28,6 +30,25 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
         .child(currentFirebaseUser!.uid)
         .child("consultations")
         .child(consultationId).child("consultationType").set("Accepted");
+  }
+
+  void retrieveConsultationDataFromDatabase() {
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(currentFirebaseUser!.uid)
+        .child("consultations")
+        .child(consultationId!)
+        .once()
+        .then((dataSnap){
+      final DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No Patient record exist with this credentials");
+      }
+    });
   }
 
 
@@ -195,7 +216,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                     if (consultationStatus == consultationType) {
                       if(consultationType == "Upcoming"){
                         return GestureDetector(
-                          /*onTap: () {
+                          onTap: () {
                           showDialog(
                               context: context,
                               barrierDismissible: false,
@@ -205,14 +226,13 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
                           );
 
                           consultationId = (snapshot.value as Map)["id"];
-                          retrieveConsultationDataFromDatabase(consultationId!);
+                          retrieveConsultationDataFromDatabase();
 
                           Timer(const Duration(seconds: 1), () {
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => HistoryScreenDetails()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultationDetails()));
                           });
-                        },*/
+                        },
 
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -454,24 +474,23 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
 
                       else{
                         return GestureDetector(
-                          /*onTap: () {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                return ProgressDialog(message: 'message');
-                              }
-                          );
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return ProgressDialog(message: 'message');
+                                }
+                            );
 
-                          consultationId = (snapshot.value as Map)["id"];
-                          retrieveConsultationDataFromDatabase(consultationId!);
+                            consultationId = (snapshot.value as Map)["id"];
+                            retrieveConsultationDataFromDatabase();
 
-                          Timer(const Duration(seconds: 1), () {
-                            Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => HistoryScreenDetails()));
-                          });
-                        },*/
+                            Timer(const Duration(seconds: 1), () {
+                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultationDetails()));
+                            });
+                        },
 
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

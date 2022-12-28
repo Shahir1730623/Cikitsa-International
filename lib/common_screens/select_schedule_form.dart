@@ -93,10 +93,10 @@ class _SelectScheduleState extends State<SelectSchedule> {
     late firebase_storage.Reference reference;
 
     if(selectedService == "Doctor Live Consultation"){
-      reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+      reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ consultationId! + "/medical_documents/" + idGenerator() + ".png" );
     }
     else {
-      reference = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/" + idGenerator() + ".png" );
+      reference = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/medical_documents/" + idGenerator() + ".png" );
     }
 
     // Upload the image to firebase storage
@@ -159,20 +159,6 @@ class _SelectScheduleState extends State<SelectSchedule> {
 
   }
 
-  pickTime() async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(DateTime.now()), //get today's date
-    );
-
-    if(pickedTime != null ){
-      setState(() {
-        time = pickedTime;
-        formattedTime = time.format(context);
-        timeCounter++;
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -361,64 +347,8 @@ class _SelectScheduleState extends State<SelectSchedule> {
                               )
                             ],
                           ),
-                          SizedBox(height: height * 0.03,),
-
-                          // Test Time
-                          Text(
-                            "Time",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            ),
-                          ),
-                          SizedBox(height: height * 0.01,),
-                          // Time Picker
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    "assets/medical.png",
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 40,
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      pickTime();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: (Colors.white70),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: Text(
-                                      (timeCounter != 0) ? '$formattedTime' :  "Select time",
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-
-
                           SizedBox(height: height * 0.05,),
+
 
                           // Reason of Consultation
                           Text(

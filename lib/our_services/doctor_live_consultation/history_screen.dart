@@ -604,8 +604,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                                           // Doctor Specialization
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 (snapshot

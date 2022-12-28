@@ -101,7 +101,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
             children: [
               Container(
                 width: double.infinity,
-                height: 200,
+                height: height * 0.25,
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,

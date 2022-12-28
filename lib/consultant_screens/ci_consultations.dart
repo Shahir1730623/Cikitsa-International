@@ -35,7 +35,7 @@ class _CIConsultationsState extends State<CIConsultations> {
         .set("Accepted");
   }
 
-  void retrievePatientDataFromDatabase() {
+  void retrieveCIConsultationDataFromDatabase() {
     FirebaseDatabase.instance.ref()
         .child("Consultant")
         .child(currentFirebaseUser!.uid)
@@ -210,7 +210,7 @@ class _CIConsultationsState extends State<CIConsultations> {
 
                             consultationId = (snapshot.value as Map)["id"];
                             userId = (snapshot.value as Map)["userId"];
-                            retrievePatientDataFromDatabase();
+                            retrieveCIConsultationDataFromDatabase();
                             Timer(const Duration(seconds: 1), () {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDetails()));
@@ -472,7 +472,7 @@ class _CIConsultationsState extends State<CIConsultations> {
 
                             consultationId = (snapshot.value as Map)["id"];
                             userId = (snapshot.value as Map)["userId"];
-                            retrievePatientDataFromDatabase();
+                            retrieveCIConsultationDataFromDatabase();
                             Timer(const Duration(seconds: 1), () {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDetails()));
