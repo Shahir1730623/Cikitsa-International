@@ -1,6 +1,7 @@
 import 'package:app/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
@@ -71,7 +72,7 @@ class _PrescriptionDialogState extends State<PrescriptionDialog> {
               height: 45,
               child: ElevatedButton(
                 onPressed: ()  {
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                  SystemNavigator.pop();
                 },
 
                 style: ElevatedButton.styleFrom(

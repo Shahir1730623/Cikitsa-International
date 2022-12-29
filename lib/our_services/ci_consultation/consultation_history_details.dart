@@ -7,8 +7,8 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
-import '../../global/global.dart';
-import '../../widgets/progress_dialog.dart';
+import '../../../global/global.dart';
+import '../../../widgets/progress_dialog.dart';
 
 class ConsultationHistoryDetails extends StatefulWidget {
   const ConsultationHistoryDetails({Key? key}) : super(key: key);
@@ -34,7 +34,7 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId!)
+        .child(selectedCIConsultationInfo!.patientId!)
         .child("CIConsultations")
         .child(consultationId!)
         .once()
@@ -114,8 +114,12 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
   void initState() {
     // TODO: implement initState
     super.initState();
-    retrievePatientDataFromDatabase();
-    checkPrescriptionStatus();
+    Future.delayed(Duration.zero, () {
+      retrievePatientDataFromDatabase();
+      checkPrescriptionStatus();
+    });
+
+
   }
 
   @override

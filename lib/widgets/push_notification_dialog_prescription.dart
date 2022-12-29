@@ -1,20 +1,21 @@
 import 'dart:async';
 
 import 'package:app/global/global.dart';
-import 'package:app/our_services/visa_invitation/visa_invitation_details.dart';
+import 'package:app/our_services/ci_consultation/consultation_history_details.dart';
+import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PushNotificationDialogInvitationLetter extends StatefulWidget {
-  const PushNotificationDialogInvitationLetter({Key? key}) : super(key: key);
+class PushNotificationDialogPrescription extends StatefulWidget {
+  const PushNotificationDialogPrescription({Key? key}) : super(key: key);
 
   @override
-  State<PushNotificationDialogInvitationLetter> createState() => _PushNotificationDialogInvitationLetterState();
+  State<PushNotificationDialogPrescription> createState() => _PushNotificationDialogPrescriptionState();
 }
 
-class _PushNotificationDialogInvitationLetterState extends State<PushNotificationDialogInvitationLetter> {
+class _PushNotificationDialogPrescriptionState extends State<PushNotificationDialogPrescription> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -33,7 +34,7 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
             SizedBox(height: height * 0.05,),
 
             Text(
-              "Your invitation letter is uploaded",
+              (selectedService == "Doctor Live Consultation") ? "Your prescription is uploaded" : "Your CI Report is uploaded",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.blue,
@@ -45,7 +46,7 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
             SizedBox(height: height * 0.03,),
 
             Text(
-              'Please press the button "Check Letter" to get redirected to the download page',
+              (selectedService == "Doctor Live Consultation") ? 'Please press the button "Check prescription" to get redirected to the download page' : 'Please press the button "Check Report" to get redirected to the download page' ,
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -54,7 +55,7 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
               ),
             ),
 
-            SizedBox(height: height * 0.08,),
+            SizedBox(height: height * 0.06,),
 
             SizedBox(
               width: double.infinity,
@@ -71,7 +72,13 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
 
                   Timer(const Duration(seconds: 5),()  {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationDetails()));
+                    if(selectedService == "Doctor Live Consultation"){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreenDetails()));
+                    }
+                    else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ConsultationHistoryDetails()));
+                    }
+
                   });
                 },
 
@@ -80,9 +87,9 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20))),
 
-                icon: const Icon(Icons.video_call),
+                icon: const Icon(Icons.newspaper),
                 label: Text(
-                  "Check Letter",
+                  (selectedService == "Doctor Live Consultation") ? "Check Prescription" : "Check Report",
                   style: GoogleFonts.montserrat(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

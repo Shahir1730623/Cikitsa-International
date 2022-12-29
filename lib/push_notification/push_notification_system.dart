@@ -3,6 +3,7 @@ import 'package:app/main_screen/user_dashboard.dart';
 import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:app/widgets/push_notification_dialog_doctor.dart';
+import 'package:app/widgets/push_notification_dialog_prescription.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,14 +34,12 @@ class PushNotificationSystem{
         }
 
         else{
-          //consultationId = remoteMessage.data["consultation_id"];
-          //patientId = remoteMessage.data["patient_id"];
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
-            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"],context);
           }
 
           else if(remoteMessage.data["selected_service"] == "CI Consultation"){
-            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
           else{
@@ -60,14 +59,12 @@ class PushNotificationSystem{
           retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
         }
         else{
-          //consultationId = remoteMessage.data["consultation_id"];
-          //patientId = remoteMessage.data["patient_id"];
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
-            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"],context);
           }
 
           else if(remoteMessage.data["selected_service"] == "CI Consultation"){
-            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
           else{
@@ -87,14 +84,12 @@ class PushNotificationSystem{
         }
 
         else{
-          //consultationId = remoteMessage.data["consultation_id"];
-          //patientId = remoteMessage.data["patient_id"];
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
-            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"],context);
           }
 
           else if(remoteMessage.data["selected_service"] == "CI Consultation"){
-            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"],context);
+            retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
           else{
@@ -166,20 +161,38 @@ class PushNotificationSystem{
     });
   }
 
-  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context) {
-    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
+  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, String p, BuildContext context) {
+    pushNotifyForDoc = p;
+    selectedService = "Doctor Live Consultation";
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId)
-        .child("consultations").child(consultationId).once().then((dataSnap) {
+        .child("consultations")
+        .child(consultationId)
+        .once()
+        .then((dataSnap) {
       DataSnapshot snapshot = dataSnap.snapshot;
       if (snapshot.exists) {
         consultationId = (snapshot.value as Map)["id"].toString();
         patientId = (snapshot.value as Map)["patientId"].toString();
         selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
-        localNotify = true;
+        if(pushNotifyForDoc == "true"){
+          Fluttertoast.showToast(msg: pushNotifyForDoc!);
+          pushNotifyForDoc = "false";
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder:(BuildContext context) => const PushNotificationDialogPrescription()
+          );
+        }
+
+        else{
+          Fluttertoast.showToast(msg: pushNotifyForDoc!);
+          localNotify = true;
+        }
+
       }
 
       else {
@@ -188,20 +201,38 @@ class PushNotificationSystem{
     });
   }
 
-  retrieveCIConsultationDataFromDatabase(String consultationId, String patientId, BuildContext context){
-    Fluttertoast.showToast(msg: "ID:" + consultationId + "Patient ID: " + patientId);
+  retrieveCIConsultationDataFromDatabase(String consultationId, String patientId, String p, BuildContext context){
+    Fluttertoast.showToast(msg: "ID:" + consultationId + " Patient ID: " + patientId);
+    pushNotifyForCI = p;
+    selectedService = "CI Consultation";
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId)
-        .child("CIConsultations").child(consultationId).once().then((dataSnap) {
+        .child("CIConsultations")
+        .child(consultationId)
+        .once().then((dataSnap) {
           DataSnapshot snapshot = dataSnap.snapshot;
-          if (snapshot.exists) {
+          if(snapshot.exists) {
             consultationId = (snapshot.value as Map)["id"].toString();
             patientId = (snapshot.value as Map)["patientId"].toString();
             selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
-            localNotifyForCI = true;
+            if(pushNotifyForCI == "true"){
+              Fluttertoast.showToast(msg: pushNotifyForCI!);
+              pushNotifyForCI = "false";
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder:(BuildContext context) => const PushNotificationDialogPrescription()
+              );
+            }
+
+            else{
+              Fluttertoast.showToast(msg: pushNotifyForCI!);
+              localNotifyForCI = true;
+            }
+
           }
           else {
             Fluttertoast.showToast(msg: "No consultation record exist");

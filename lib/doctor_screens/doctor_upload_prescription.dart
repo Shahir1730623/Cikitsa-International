@@ -13,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import '../assistants/assistant_methods.dart';
 import '../widgets/prescription_dialog_consultant.dart';
 import '../widgets/progress_dialog.dart';
 
@@ -78,6 +79,25 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
       imageFile = null;
       setState(() {});
     }
+  }
+
+  getRegistrationTokenForUserAndSendPrescriptionNotification(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, patientId!, "Doctor Live Consultation", context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
   }
 
   void loadScreen(){
@@ -194,6 +214,7 @@ class _DoctorUploadPrescriptionState extends State<DoctorUploadPrescription> {
                 GestureDetector(
                   onTap: () async {
                     await pickAndSaveImage();
+                    getRegistrationTokenForUserAndSendPrescriptionNotification();
                     var snackBar = const SnackBar(content: Text("Prescription uploaded successfully"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     showDialog(

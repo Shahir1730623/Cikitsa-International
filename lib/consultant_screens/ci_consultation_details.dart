@@ -51,28 +51,35 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
   TextEditingController genderTextEditingController = TextEditingController(text: "");
 
   void retrievePatientDataFromDatabase() {
-    FirebaseDatabase.instance.ref()
-        .child("CIConsultationRequests")
-        .child(consultationId!)
-        .once()
-        .then((dataSnap){
-      final DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
-        patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
-        patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
-        genderTextEditingController.text = (snapshot.value as Map)['gender'];
-        patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
-      }
+    if (selectedCIConsultationInfo!.consultationStatus == "Waiting"){
+      FirebaseDatabase.instance.ref()
+          .child("CIConsultationRequests")
+          .child(consultationId!)
+          .once()
+          .then((dataSnap){
+        final DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
+          patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
+          patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
+          genderTextEditingController.text = (snapshot.value as Map)['gender'];
+          patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
+        }
 
-      else {
+        else {
+
+        }
+      });
+    }
+
+    else{
         FirebaseDatabase.instance.ref()
             .child("Consultant")
             .child(currentFirebaseUser!.uid)
             .child("CIConsultations")
             .child(consultationId!)
             .once()
-            .then((dataSnap) {
+            .then((dataSnap){
           final DataSnapshot snapshot = dataSnap.snapshot;
           if (snapshot.exists) {
             patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
@@ -81,11 +88,14 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
             genderTextEditingController.text = (snapshot.value as Map)['gender'];
             patientCountryTextEditingController.text = (snapshot.value as Map)['country'];
           }
-        });
-      }
-   });
+
+          else {
+
+          }
+    });
 
   }
+ }
 
   Future<void> checkPrescriptionStatus() async {
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref("CIConsultationImages/"+ consultationId! + "/consultantPrescription.png");
@@ -285,6 +295,26 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
     });
   }
 
+  getRegistrationTokenForUserAndSendPrescriptionNotification(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, selectedCIConsultationInfo!.patientId!, "CI Consultation", context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
+  }
+
+
   Future<void> generateLocalNotification() async{
     var df = DateFormat.jm().parse(formattedTime!);
     DateTime date = DateFormat("dd-MM-yyyy").parse(formattedDate!);
@@ -332,9 +362,10 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
     futureFiles = firebase_storage.FirebaseStorage.instance.ref('CIConsultationImages/'+ consultationId! + "/medical_documents").listAll();
     Future.delayed(Duration.zero, () {
       loadScreen();
-      retrievePatientDataFromDatabase();
       checkPrescriptionStatus();
     });
+
+    retrievePatientDataFromDatabase();
 
 
 
@@ -1047,9 +1078,9 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                               // Display Image Container
                               Padding(
                                 padding: const EdgeInsets.only(left: 20),
-                                child: Container(
-                                  width: Get.width,
-                                  height: 150,
+                                child: SizedBox(
+                                  width: Get.width * 0.3,
+                                  height: height * 0.3,
                                   child: imageFile == null
                                       ? const Center(
                                     child: Text("No Images found"),
@@ -1081,7 +1112,8 @@ class _CIConsultationDetailsState extends State<CIConsultationDetails> {
                                             }
                                         );
 
-                                        saveImage();
+                                        await saveImage();
+                                        getRegistrationTokenForUserAndSendPrescriptionNotification();
                                         Timer(const Duration(seconds: 5),()  {
                                           Navigator.pop(context);
                                           var snackBar = const SnackBar(content: Text("CI Report uploaded successfully"));

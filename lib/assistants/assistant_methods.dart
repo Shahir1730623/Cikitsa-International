@@ -70,7 +70,8 @@ class AssistantMethods{
         "consultation_id" : consultationId,
         "selected_service" : selectedService,
         "patient_id" : patientId,
-        "dateTime" : dateTime
+        "dateTime" : dateTime,
+        "push_notify" : "false"
       },
 
       "to" : deviceRegistrationToken
@@ -138,6 +139,7 @@ class AssistantMethods{
         "consultation_id" : consultationId,
         "patient_id" : patientId,
         "selected_service" : selectedService,
+        "push_notify" : "false"
       },
 
       "to" : deviceRegistrationToken
@@ -172,6 +174,41 @@ class AssistantMethods{
         "status" : "done",
         "visa_invitation_id" : invitationId,
         "patient_Id" : patientId,
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
+  static sendPrescriptionPushNotificationToPatientNow(String deviceRegistrationToken, String patientId, String selectedService, BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "Your prescription is uploaded by doctor. Click here to see",
+        "title" : "Doctor Prescription Uploaded"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "consultation_id" : consultationId,
+        "patient_id" : patientId,
+        "selected_service" : selectedService,
+        "push_notify" : "true"
       },
 
       "to" : deviceRegistrationToken

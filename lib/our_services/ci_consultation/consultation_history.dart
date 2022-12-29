@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:app/consultant_screens/consultation_history_details.dart';
+import 'package:app/our_services/ci_consultation/consultation_history_details.dart';
 import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/models/consultant_model.dart';
 import 'package:dotted_border/dotted_border.dart';

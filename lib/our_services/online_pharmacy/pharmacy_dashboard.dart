@@ -53,9 +53,9 @@ class _PharmacyDashboardState extends State<PharmacyDashboard> {
 
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryScreen()));
             },
-            icon: Icon(Icons.history),
+            icon: const Icon(Icons.history),
             color: Colors.black,
           ),
         ],
@@ -69,7 +69,7 @@ class _PharmacyDashboardState extends State<PharmacyDashboard> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(25.0),
+                padding: const EdgeInsets.all(25.0),
                 // Searchbar
                 child: GestureDetector(
                   onTap: () {

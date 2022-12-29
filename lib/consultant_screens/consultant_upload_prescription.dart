@@ -6,9 +6,11 @@ import 'package:app/widgets/prescription_dialog_consultant.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../assistants/assistant_methods.dart';
 import '../widgets/prescription_dialog_doctor.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/upload_image_dialog.dart';
@@ -76,6 +78,25 @@ class _ConsultantUploadPrescriptionState extends State<ConsultantUploadPrescript
       imageFile = null;
       setState(() {});
     }
+  }
+
+  getRegistrationTokenForUserAndSendPrescriptionNotification(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, selectedCIConsultationInfo!.patientId!, "CI Consultation", context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
   }
 
   void loadScreen(){
@@ -183,6 +204,7 @@ class _ConsultantUploadPrescriptionState extends State<ConsultantUploadPrescript
                 GestureDetector(
                   onTap: () async {
                     await pickAndSaveImage();
+                    getRegistrationTokenForUserAndSendPrescriptionNotification();
                     var snackBar = const SnackBar(content: Text("CI consultation report uploaded successfully"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     showDialog(

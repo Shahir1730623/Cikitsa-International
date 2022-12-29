@@ -6,6 +6,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -13,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
+import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/upload_image_dialog.dart';
@@ -133,6 +135,25 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
 
   }
 
+  getRegistrationTokenForUserAndSendPrescriptionNotification(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(selectedConsultationInfoForDocAndConsultant!.userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, selectedConsultationInfoForDocAndConsultant!.patientId!, "Doctor Live Consultation", context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
+  }
+
   void retrievePatientDataFromDatabase() {
     FirebaseDatabase.instance.ref()
         .child("Doctors")
@@ -155,7 +176,6 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
       else {
       }
     });
-
   }
 
   @override
@@ -568,7 +588,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedConsultationInfo!.consultationId!,
+                                        selectedConsultationInfoForDocAndConsultant!.id!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -592,7 +612,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedConsultationInfo!.visitationReason!,
+                                        selectedConsultationInfoForDocAndConsultant!.visitationReason!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -616,7 +636,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedConsultationInfo!.date!,
+                                        selectedConsultationInfoForDocAndConsultant!.date!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -640,7 +660,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedConsultationInfo!.time!,
+                                        selectedConsultationInfoForDocAndConsultant!.time!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -664,7 +684,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                         height: height * 0.01,
                                       ),
                                       Text(
-                                        selectedConsultationInfo!.problem!,
+                                        selectedConsultationInfoForDocAndConsultant!.problem!,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -777,24 +797,26 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                               // Display Image Container
                               Padding(
                                 padding: const EdgeInsets.only(left: 20),
-                                child: Container(
-                                  width: Get.width,
-                                  height: 150,
-                                  child: imageFile == null
-                                      ? const Center(
-                                    child: Text("No Images found"),
-                                  ) :
-                                  Container(
-                                      width: height * 0.1,
-                                      margin: EdgeInsets.only(right: 10),
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.black),
-                                          borderRadius: BorderRadius.circular(2)),
-                                      child: Image.file(
-                                        File(imageFile!.path),
-                                        fit: BoxFit.cover,
-                                      )),
+                                child: Center(
+                                  child: Container(
+                                    width: Get.width * 0.35,
+                                    height: height * 0.25,
+                                    child: imageFile == null
+                                        ? const Center(
+                                      child: Text("No Images found"),
+                                    ) :
+                                    Container(
+                                        width: height * 0.1,
+                                        margin: const EdgeInsets.only(right: 10),
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.black),
+                                            borderRadius: BorderRadius.circular(2)),
+                                        child: Image.file(
+                                          File(imageFile!.path),
+                                          fit: BoxFit.cover,
+                                        )),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: height * 0.05,),
@@ -812,12 +834,12 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
                                           }
                                       );
 
-                                      saveImage();
-                                      var snackBar = const SnackBar(content: Text("Prescription uploaded successfully"));
-                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
+                                      await saveImage();
+                                      getRegistrationTokenForUserAndSendPrescriptionNotification();
                                       Timer(const Duration(seconds: 5),()  {
                                         Navigator.pop(context);
+                                        var snackBar = const SnackBar(content: Text("Prescription uploaded successfully"));
+                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                         Navigator.pop(context);
                                       });
 

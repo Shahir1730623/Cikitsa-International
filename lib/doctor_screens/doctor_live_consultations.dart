@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:app/models/consultation_model.dart';
+import 'package:app/models/consultation_model2.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,7 +43,7 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
         .then((dataSnap){
       final DataSnapshot snapshot = dataSnap.snapshot;
       if (snapshot.exists) {
-        selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+        selectedConsultationInfoForDocAndConsultant = ConsultationModel2.fromSnapshot(snapshot);
       }
 
       else {
@@ -485,7 +486,6 @@ class _DoctorLiveConsultationState extends State<DoctorLiveConsultation> {
 
                             consultationId = (snapshot.value as Map)["id"];
                             retrieveConsultationDataFromDatabase();
-
                             Timer(const Duration(seconds: 1), () {
                               Navigator.pop(context);
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorLiveConsultationDetails()));

@@ -7,6 +7,7 @@ import 'package:app/our_services/doctor_live_consultation/video_consultation_das
 import 'package:app/our_services/online_pharmacy/pharmacy_dashboard.dart';
 import 'package:app/our_services/visa_invitation/visa_invitation_dashboard.dart';
 import 'package:app/push_notification/push_notification_system.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,6 @@ class _UserDashboardState extends State<UserDashboard> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -240,20 +240,16 @@ class _UserDashboardState extends State<UserDashboard> {
 
         body: Container(
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-              )
+              color: Colors.white
           ),
 
            child: SingleChildScrollView(
              child: Column(
                children: [
-                 const SizedBox(height: 10),
+                 SizedBox(height: 10),
 
                  //Emergency Service Container
-                 Container(
+                 /*Container(
                    decoration: const BoxDecoration(
                      image: DecorationImage(
                          image: AssetImage("assets/background_color.png"),
@@ -465,9 +461,66 @@ class _UserDashboardState extends State<UserDashboard> {
                      ),
                    ],
                  ),
-               ),
+               ),*/
 
-                 const SizedBox(height: 10),
+                 Container(
+                   height: height * 0.32,
+                   decoration: const BoxDecoration(
+                     image: DecorationImage(
+                       image: AssetImage("assets/background_color.png"),
+                       opacity: 0.5,
+                       fit: BoxFit.cover,
+                     ),
+                   ),
+                   alignment: Alignment.topCenter,
+                   child: Column(
+                     children: [
+                       // Slideshow
+                       Padding(
+                         padding: const EdgeInsets.all(20),
+                         child: CarouselSlider(
+                           items: [
+                             // Slideshow first container
+                             Container(
+                               height: height * 0.30,
+                               decoration: BoxDecoration(
+                                 image: const DecorationImage(
+                                   image: AssetImage("assets/sliderImages/slider_img.jpg"),
+                                   fit: BoxFit.cover,
+                                 ),
+                                 borderRadius: BorderRadius.circular(10),
+                               ),
+                             ),
+
+                             // Slideshow second container
+                             Container(
+                               height: height * 0.30,
+                               decoration: BoxDecoration(
+                                 image: const DecorationImage(
+                                   image: AssetImage("assets/sliderImages/slider_img2.jpg"),
+                                   fit: BoxFit.cover,
+                                 ),
+                                 borderRadius: BorderRadius.circular(10),
+                               ),
+                             ),
+                           ],
+                           options: CarouselOptions(
+                             height: height * 0.25,
+                             enlargeCenterPage: true,
+                             autoPlay: true,
+                             aspectRatio: 16 / 9,
+                             autoPlayCurve: Curves.fastOutSlowIn,
+                             enableInfiniteScroll: true,
+                             autoPlayAnimationDuration: Duration(milliseconds: 800),
+                             viewportFraction: 0.8,
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
+                 ),
+
+                 SizedBox(height: height * 0.025),
 
                  //Our Services Container
                  Container(

@@ -43,7 +43,8 @@ String selectedService = "";
 String? selectedCountry = "Select a country";
 String? selectedServiceDatabaseParentName;
 
-bool? pushNotify = false;
+String? pushNotifyForDoc = "false";
+String? pushNotifyForCI = "false";
 String tempToken = "";
 bool isBroadcaster = true;
 bool? localNotify = false;
