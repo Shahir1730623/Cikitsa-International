@@ -1,40 +1,38 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
-import 'package:app/global/global.dart';
-import 'package:app/our_services/visa_invitation/medical_documents_form.dart';
-import 'package:app/our_services/visa_invitation/visa_form_screen_2.dart';
+import 'package:app/models/visa_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../global/global.dart';
 import '../../widgets/progress_dialog.dart';
 import '../ci_consultation/mrz_testing.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-class VisaFormScreen extends StatefulWidget {
-  const VisaFormScreen({Key? key}) : super(key: key);
+import 'medical_documents_form.dart';
+
+class VisaFormScreen2 extends StatefulWidget {
+  late Map<String,dynamic> mapData;
+  VisaFormScreen2({Key? key, required this.mapData}) : super(key: key);
 
   @override
-  State<VisaFormScreen> createState() => _VisaFormScreenState();
+  State<VisaFormScreen2> createState() => _VisaFormScreen2State();
 }
 
-class _VisaFormScreenState extends State<VisaFormScreen> {
-  TextEditingController documentTypeTextEditingController = TextEditingController();
-  TextEditingController countryCodeTextEditingController = TextEditingController();
-  TextEditingController passportNumberTextEditingController = TextEditingController();
-  TextEditingController surnameTextEditingController = TextEditingController();
-  TextEditingController givenNameTextEditingController = TextEditingController();
-  TextEditingController nationalityTextEditingController = TextEditingController();
-  TextEditingController personalNumberTextEditingController = TextEditingController();
-  TextEditingController dateOfBirthTextEditingController = TextEditingController();
-  TextEditingController genderTextEditingController = TextEditingController();
-  TextEditingController expiryTextEditingController = TextEditingController();
+class _VisaFormScreen2State extends State<VisaFormScreen2> {
+  TextEditingController attendantDocumentTypeTextEditingController = TextEditingController();
+  TextEditingController attendantCountryCodeTextEditingController = TextEditingController();
+  TextEditingController attendantPassportNumberTextEditingController = TextEditingController();
+  TextEditingController attendantSurnameTextEditingController = TextEditingController();
+  TextEditingController attendantGivenNameTextEditingController = TextEditingController();
+  TextEditingController attendantNationalityTextEditingController = TextEditingController();
+  TextEditingController attendantPersonalNumberTextEditingController = TextEditingController();
+  TextEditingController attendantDateOfBirthTextEditingController = TextEditingController();
+  TextEditingController attendantGenderTextEditingController = TextEditingController();
+  TextEditingController attendantExpiryTextEditingController = TextEditingController();
 
   XFile? imageFile;
   List<File> imageList = [];
@@ -88,22 +86,23 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
     //return url;
   }
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    invitationId = idGenerator();
-    documentTypeTextEditingController.addListener(() => setState(() {}));
-    countryCodeTextEditingController.addListener(() => setState(() {}));
-    passportNumberTextEditingController.addListener(() => setState(() {}));
-    surnameTextEditingController.addListener(() => setState(() {}));
-    givenNameTextEditingController.addListener(() => setState(() {}));
-    nationalityTextEditingController.addListener(() => setState(() {}));
-    personalNumberTextEditingController.addListener(() => setState(() {}));
-    dateOfBirthTextEditingController.addListener(() => setState(() {}));
-    genderTextEditingController.addListener(() => setState(() {}));
-    expiryTextEditingController.addListener(() => setState(() {}));
+    attendantDocumentTypeTextEditingController.addListener(() => setState(() {}));
+    attendantCountryCodeTextEditingController.addListener(() => setState(() {}));
+    attendantPassportNumberTextEditingController.addListener(() => setState(() {}));
+    attendantSurnameTextEditingController.addListener(() => setState(() {}));
+    attendantGivenNameTextEditingController.addListener(() => setState(() {}));
+    attendantNationalityTextEditingController.addListener(() => setState(() {}));
+    attendantPersonalNumberTextEditingController.addListener(() => setState(() {}));
+    attendantDateOfBirthTextEditingController.addListener(() => setState(() {}));
+    attendantGenderTextEditingController.addListener(() => setState(() {}));
+    attendantExpiryTextEditingController.addListener(() => setState(() {}));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -112,12 +111,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset(
-                    "assets/visaInvitationImages/Visa_Image-1.jpg",
+                    "assets/visaInvitationImages/Visa_Image-2.jpg",
                   ),
 
                   const SizedBox(height: 15,),
@@ -126,7 +125,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Visa Form",
+                        "Visa Form for Attendant",
                         style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
@@ -154,7 +153,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Attach your Passport",
+                        "Attach attendant's\nPassport",
                         style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
@@ -170,7 +169,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Please scan second page of\nPassport",
+                        "Please attach second page\nof Passport",
                         style: GoogleFonts.montserrat(
                             fontSize: 15,
                             color: Colors.grey
@@ -188,19 +187,19 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                       var snackBar = const SnackBar(content: Text("Scanned Successfully"));
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       setState(() {
-                        documentTypeTextEditingController.text = (data)['type'];
-                        countryCodeTextEditingController.text = (data)['country_Code'];
-                        passportNumberTextEditingController.text = (data)['document_Number'];
-                        surnameTextEditingController.text = (data)['surname'];
-                        givenNameTextEditingController.text = (data)['given_Name'];
-                        nationalityTextEditingController.text = (data)['nationality'];
-                        personalNumberTextEditingController.text = (data)['personal_Number'];
-                        dateOfBirthTextEditingController.text =  (data)['birth_Date'];
-                        genderTextEditingController.text = (data)['gender'];
-                        expiryTextEditingController.text = (data)['expiry_Date'];
+                        attendantDocumentTypeTextEditingController.text = (data)['type'];
+                        attendantCountryCodeTextEditingController.text = (data)['country_Code'];
+                        attendantPassportNumberTextEditingController.text = (data)['document_Number'];
+                        attendantSurnameTextEditingController.text = (data)['surname'];
+                        attendantGivenNameTextEditingController.text = (data)['given_Name'];
+                        attendantNationalityTextEditingController.text = (data)['nationality'];
+                        attendantPersonalNumberTextEditingController.text = (data)['personal_Number'];
+                        attendantDateOfBirthTextEditingController.text =  (data)['birth_Date'];
+                        attendantGenderTextEditingController.text = (data)['gender'];
+                        attendantExpiryTextEditingController.text = (data)['expiry_Date'];
                       });
 
-                      mapData = data;
+                      mapData2 = data;
 
                     },
 
@@ -287,7 +286,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: documentTypeTextEditingController,
+                            controller: attendantDocumentTypeTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -295,12 +294,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Type",
                               hintText: "Type",
-                              suffixIcon: documentTypeTextEditingController.text.isEmpty
+                              suffixIcon: attendantDocumentTypeTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    documentTypeTextEditingController.clear(),
+                                    attendantDocumentTypeTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -375,7 +374,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: countryCodeTextEditingController,
+                            controller: attendantCountryCodeTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -383,12 +382,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Country Code",
                               hintText: "Country Code",
-                              suffixIcon: countryCodeTextEditingController.text.isEmpty
+                              suffixIcon: attendantCountryCodeTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    countryCodeTextEditingController.clear(),
+                                    attendantCountryCodeTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -417,7 +416,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Passport No
                   Text(
-                    "Passport No",
+                    "Attendant's Passport No",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -463,7 +462,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: passportNumberTextEditingController,
+                            controller: attendantPassportNumberTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -471,12 +470,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Passport No",
                               hintText: "Passport No",
-                              suffixIcon: passportNumberTextEditingController.text.isEmpty
+                              suffixIcon: attendantPassportNumberTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    passportNumberTextEditingController.clear(),
+                                    attendantPassportNumberTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -505,7 +504,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Given Name
                   Text(
-                    "Given Name",
+                    "Attendant's Given Name",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -551,7 +550,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: givenNameTextEditingController,
+                            controller: attendantGivenNameTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -559,12 +558,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Given Name",
                               hintText: "Given Name",
-                              suffixIcon: givenNameTextEditingController.text.isEmpty
+                              suffixIcon: attendantGivenNameTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    givenNameTextEditingController.clear(),
+                                    attendantGivenNameTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -591,9 +590,9 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     height: height * 0.01,
                   ),
 
-                  // Given Name
+                  // Surname
                   Text(
-                    "Surname",
+                    "Attendant's Surname",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -639,7 +638,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: surnameTextEditingController,
+                            controller: attendantSurnameTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -647,12 +646,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Surname",
                               hintText: "Surname",
-                              suffixIcon: surnameTextEditingController.text.isEmpty
+                              suffixIcon: attendantSurnameTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    surnameTextEditingController.clear(),
+                                    attendantSurnameTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -681,7 +680,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Nationality
                   Text(
-                    "Nationality",
+                    "Attendant's Nationality",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -727,7 +726,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.name,
                             maxLines: null,
-                            controller: nationalityTextEditingController,
+                            controller: attendantNationalityTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -735,12 +734,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Nationality",
                               hintText: "Nationality",
-                              suffixIcon: nationalityTextEditingController.text.isEmpty
+                              suffixIcon: attendantNationalityTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    nationalityTextEditingController.clear(),
+                                    attendantNationalityTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -769,7 +768,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Personal No
                   Text(
-                    "Personal No",
+                    "Passport Personal No",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -815,7 +814,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             maxLines: null,
-                            controller: personalNumberTextEditingController,
+                            controller: attendantPersonalNumberTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -823,12 +822,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Personal No",
                               hintText: "Personal No",
-                              suffixIcon: personalNumberTextEditingController.text.isEmpty
+                              suffixIcon: attendantPersonalNumberTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    personalNumberTextEditingController.clear(),
+                                    attendantPersonalNumberTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -857,7 +856,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Date of Birth
                   Text(
-                    "Date of Birth",
+                    "Attendant's Date of Birth",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -903,7 +902,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.text,
                             maxLines: null,
-                            controller: dateOfBirthTextEditingController,
+                            controller: attendantDateOfBirthTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -911,12 +910,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Date of Birth",
                               hintText: "Date of Birth",
-                              suffixIcon: dateOfBirthTextEditingController.text.isEmpty
+                              suffixIcon: attendantDateOfBirthTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    dateOfBirthTextEditingController.clear(),
+                                    attendantDateOfBirthTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -945,7 +944,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
 
                   // Gender
                   Text(
-                    "Gender",
+                    "Attendant's Gender",
                     style: GoogleFonts.montserrat(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -991,7 +990,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.text,
                             maxLines: null,
-                            controller: genderTextEditingController,
+                            controller: attendantGenderTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -999,12 +998,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Gender",
                               hintText: "Gender",
-                              suffixIcon: genderTextEditingController.text.isEmpty
+                              suffixIcon: attendantGenderTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    genderTextEditingController.clear(),
+                                    attendantGenderTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -1079,7 +1078,7 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                           child: TextFormField(
                             keyboardType: TextInputType.text,
                             maxLines: null,
-                            controller: expiryTextEditingController,
+                            controller: attendantExpiryTextEditingController,
                             style: const TextStyle(
                               color: Colors.black,
                             ),
@@ -1087,12 +1086,12 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                               border: InputBorder.none,
                               labelText: "Date of Expiry",
                               hintText: "Date of Expiry",
-                              suffixIcon: expiryTextEditingController.text.isEmpty
+                              suffixIcon: attendantExpiryTextEditingController.text.isEmpty
                                   ? Container(width: 0)
                                   : IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () =>
-                                    expiryTextEditingController.clear(),
+                                    attendantExpiryTextEditingController.clear(),
                               ),
 
                               hintStyle:
@@ -1116,7 +1115,9 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.04,),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -1235,8 +1236,9 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                         }
 
                         Timer(const Duration(seconds: 5),()  {
+
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => VisaFormScreen2(mapData: mapData,)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MedicalDocumentsForm()));
                         });
 
 
@@ -1258,7 +1260,8 @@ class _VisaFormScreenState extends State<VisaFormScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.03,),
+                 SizedBox(height: height * 0.03,),
+
 
 
                 ],

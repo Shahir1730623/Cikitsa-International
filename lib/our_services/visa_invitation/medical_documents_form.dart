@@ -126,7 +126,7 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
   }
 
   Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/"+ idGenerator() + ".png" );
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/documents/"+ idGenerator() + ".png" );
 
     // Upload the image to firebase storage
     try{
@@ -146,7 +146,6 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    invitationId = idGenerator();
   }
 
   @override
@@ -482,8 +481,9 @@ class _MedicalDocumentsFormState extends State<MedicalDocumentsForm> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "The field is empty";
-                        } else
+                        } else {
                           return null;
+                        }
                       },
                     ),
 

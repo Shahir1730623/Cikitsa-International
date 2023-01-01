@@ -1,4 +1,3 @@
-
 import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/models/user_model.dart';
 import 'package:app/models/consultation_model.dart';
@@ -25,7 +24,6 @@ String? doctorId;
 String? userType;
 String? loggedInUser;
 
-
 UserModel? currentUserInfo;
 DoctorModel? currentDoctorInfo;
 ConsultantModel? currentConsultantInfo;
@@ -38,6 +36,7 @@ ConsultationModel? selectedConsultationInfo;
 ConsultationModel2? selectedConsultationInfoForDocAndConsultant;
 CIConsultationModel? selectedCIConsultationInfo;
 VisaInvitationModel? selectedVisaInvitationInfo;
+//MRZModel? mrzModel;
 
 String selectedService = "";
 String? selectedCountry = "Select a country";
@@ -68,5 +67,9 @@ String? attendantDateOfBirth;
 String? attendantIDNo;
 
 String? dateTime;
+
+late Map<String,dynamic> mapData;
+late Map<String,dynamic> mapData2;
+
 
 

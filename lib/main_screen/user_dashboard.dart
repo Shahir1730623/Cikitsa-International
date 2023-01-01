@@ -11,6 +11,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -134,239 +135,399 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: 130,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFC7E9F0), Color(0xFFFFFFFF)]
-                  )
-              ),
-
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0,right: 20,top: 15),
-                child: ListView(
-                  children: [
-                    // Logo, CircleAvatar
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              "assets/Logo.png",
-                              height: height * 0.05,
-                            ),
-                          ],
-                        ),
-
-                        GestureDetector(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const UserProfileScreen()));
-                          },
-                          child: Row(
-                            children: [
-                              (currentUserInfo!.imageUrl != null) ? CircleAvatar(
-                                backgroundColor: Colors.lightBlue,
-                                foregroundImage: NetworkImage(
-                                  currentUserInfo!.imageUrl!,
-                                ),
-                              ) :
-                              CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                child: Text(
-                                  currentUserInfo!.name![0],
-                                  style: GoogleFonts.montserrat(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-
-                    const SizedBox(height: 15,),
-
-                    // Searchbar
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            onChanged: (textTyped) {
-                              //;
-                            },
-
-                            decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.search),
-                                hintText: "Search by services",
-                                fillColor: Colors.white,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.all(15)),
-
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 70,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+                color: Color(0xfff5feff)
             ),
 
-        ),
-
-        body: Container(
-          decoration: const BoxDecoration(
-              color: Colors.white
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10.0,right: 20,top: 5,bottom: 5),
+              child: ListView(
+                children: [
+                  // Logo, CircleAvatar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            "assets/Logo.png",
+                            height: height * 0.075,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
 
-           child: SingleChildScrollView(
-             child: Column(
-               children: [
-                 SizedBox(height: 10),
+        actions: [
+          GestureDetector(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> const UserProfileScreen()));
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10,top: 0),
+            child: Row(
+              children: [
+                (currentUserInfo!.imageUrl != null) ? CircleAvatar(
+                  backgroundColor: Colors.lightBlue,
+                  foregroundImage: NetworkImage(
+                    currentUserInfo!.imageUrl!,
+                  ),
+                ) :
+                CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  radius: 35,
+                  child: Text(
+                    currentUserInfo!.name![0],
+                    style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        )],
 
-                 //Emergency Service Container
-                 /*Container(
-                   decoration: const BoxDecoration(
-                     image: DecorationImage(
-                         image: AssetImage("assets/background_color.png"),
-                         opacity: 0.5,
-                         fit: BoxFit.cover),
+      ),
+
+      body: Container(
+        decoration: const BoxDecoration(
+            color: Colors.white
+        ),
+
+         child: SingleChildScrollView(
+           child: Column(
+             children: [
+               const SizedBox(height: 10),
+
+               Container(
+                 height: height * 0.32,
+                 decoration: const BoxDecoration(
+                   image: DecorationImage(
+                     image: AssetImage("assets/background_color.png"),
+                     opacity: 0.5,
+                     fit: BoxFit.cover,
                    ),
-                   height: 170,
+                 ),
+                 alignment: Alignment.topCenter,
+                 child: Column(
+                   children: [
+                     // Slideshow
+                     Padding(
+                       padding: const EdgeInsets.all(20),
+                       child: CarouselSlider(
+                         items: [
+                           // Slideshow first container
+                           Container(
+                             height: height * 0.30,
+                             decoration: BoxDecoration(
+                               image: const DecorationImage(
+                                 image: AssetImage("assets/sliderImages/slider_img.jpg"),
+                                 fit: BoxFit.cover,
+                               ),
+                               borderRadius: BorderRadius.circular(10),
+                             ),
+                           ),
 
-
-                   child: Column(
-                     children: [
-                       const SizedBox(width: 10),
-
-                       // Title
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.start,
-                         children: [
-                           const SizedBox(width: 10),
-
-                           Text(
-                             "Emergency Doctor",
-                             style: GoogleFonts.montserrat(
-                               color: Colors.black,
-                               fontWeight: FontWeight.bold,
-                               fontSize: 15,
+                           // Slideshow second container
+                           Container(
+                             height: height * 0.30,
+                             decoration: BoxDecoration(
+                               image: const DecorationImage(
+                                 image: AssetImage("assets/sliderImages/slider_img2.jpg"),
+                                 fit: BoxFit.cover,
+                               ),
+                               borderRadius: BorderRadius.circular(10),
                              ),
                            ),
                          ],
+                         options: CarouselOptions(
+                           height: height * 0.25,
+                           enlargeCenterPage: true,
+                           autoPlay: true,
+                           aspectRatio: 16 / 9,
+                           autoPlayCurve: Curves.fastOutSlowIn,
+                           enableInfiniteScroll: true,
+                           autoPlayAnimationDuration: Duration(milliseconds: 800),
+                           viewportFraction: 0.8,
+                         ),
                        ),
+                     ),
+                   ],
+                 ),
+               ),
 
-                       // Emergency Container
-                       Expanded(
-                         child: ListView.builder(
-                           itemCount: 3,
-                           scrollDirection: Axis.horizontal,
-                           itemBuilder: (context, index) => Container(
-                             height: 150,
-                             width: 150,
-                             margin: const EdgeInsets.all(10),
+               SizedBox(height: height * 0.025),
 
+               //Our Services Container
+               Container(
+                 decoration:  const BoxDecoration(
+                   image: DecorationImage(
+                       image: AssetImage("assets/background_color.png"),
+                       opacity: 0.5,
+                       fit: BoxFit.cover,
+                   ),
+                 ),
+                 alignment: Alignment.center,
+                 height: 270,
+
+                 child: Column(
+                   children: [
+                     const SizedBox(height: 5),
+
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                         const SizedBox(width: 10),
+
+                         Text(
+                           "Our Services",
+                           style: GoogleFonts.montserrat(
+                             color: Colors.black,
+                             fontWeight: FontWeight.bold,
+                             fontSize: 15,
+                           ),
+                         ),
+                       ],
+                     ),
+
+                     const SizedBox(height: 5),
+
+                     Padding(
+                       padding: const EdgeInsets.only(left: 5,right: 5),
+                       child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                         shrinkWrap: true,
+                         scrollDirection: Axis.vertical,
+                         physics: const ScrollPhysics(),
+                         children: [
+                           GestureDetector(
+                             onTap: (){
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDashboard()));
+                             },
+                             child: Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(10),
+                                 color: Colors.white,
+                               ),
+                               margin: const EdgeInsets.fromLTRB(5,10,5,0),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Image.asset(
+                                     "assets/leader.png",
+                                      height: 50,
+                                      width: 50,
+                                   ),
+
+                                   const SizedBox(height: 10),
+
+                                   Text(
+                                     "CI Consultation",
+                                     style: GoogleFonts.montserrat(
+                                         color: Colors.black,
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold
+                                     ),
+                                   )
+
+                                 ],
+                               ),
+                             ),
+                           ),
+
+                           GestureDetector(
+                             onTap: (){
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => VideoConsultationDashboard()));
+                             },
+                             child: Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(10),
+                                 color: Colors.white,
+                               ),
+                               margin: EdgeInsets.fromLTRB(5,10,5,10),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Image.asset(
+                                     "assets/live consultation.png",
+                                     height: 50,
+                                     width: 50,
+                                   ),
+
+                                   Text(
+                                     "Doctor Live\nConsultation",
+                                     textAlign: TextAlign.center,
+                                     style: GoogleFonts.montserrat(
+                                         color: Colors.black,
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold
+                                     ),
+                                   )
+
+                                 ],
+                               ),
+                             ),
+                           ),
+
+                           GestureDetector(
+                             onTap: (){
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationDashboard()));
+                               selectedService = "Visa Invitation";
+                             },
+                             child: Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(10),
+                                 color: Colors.white,
+                               ),
+                               margin: const EdgeInsets.fromLTRB(5,10,5,10),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Image.asset(
+                                     "assets/visa.png",
+                                     height: 50,
+                                     width: 50,
+                                   ),
+
+                                   const SizedBox(height: 10),
+
+                                   Text(
+                                     "Visa Invitation",
+                                     style: GoogleFonts.montserrat(
+                                         color: Colors.black,
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold
+                                     ),
+                                   )
+
+                                 ],
+                               ),
+                             ),
+                           ),
+
+                           GestureDetector(
+                             onTap: (){
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => PharmacyDashboard()));
+                             },
+                             child: Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(10),
+                                 color: Colors.white,
+                               ),
+                               margin: EdgeInsets.fromLTRB(5,10,5,10),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Image.asset(
+                                     "assets/medicine-2.png",
+                                     height: 50,
+                                     width: 50,
+                                   ),
+
+                                   Text(
+                                     "Online Pharmacy",
+                                     textAlign: TextAlign.center,
+                                     style: GoogleFonts.montserrat(
+                                         color: Colors.black,
+                                         fontSize: 12,
+                                         fontWeight: FontWeight.bold
+                                     ),
+                                   )
+
+                                 ],
+                               ),
+                             ),
+                           ),
+                           Container(
                              decoration: BoxDecoration(
                                borderRadius: BorderRadius.circular(10),
                                color: Colors.white,
                              ),
-
-                             child: Center(
-                               child: Padding(
-                                 padding: const EdgeInsets.all(5.0),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                   children: [
-                                     Text(
-                                       firstListNames[index],
-                                       textAlign: TextAlign.center,
-                                       style: GoogleFonts.montserrat(
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold,
-                                       ),
-                                     ),
-
-                                     Image.asset(
-                                       'assets/' + firstListImages[index] + '.png',
-                                       height: 50,
-                                     ),
-
-                                     Text(
-                                       "৳500",
-                                       style: GoogleFonts.montserrat(
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold,
-                                       ),
-                                     ),
-
-                                     SizedBox(
-                                       width: double.infinity,
-                                       height: 20,
-                                       child: ElevatedButton(
-                                         onPressed: (){
-
-                                         },
-
-                                         child: const Text(
-                                           "See doctor Now",
-                                           style: TextStyle(
-                                             fontSize: 12,
-                                             fontWeight: FontWeight.bold
-                                           ),
-                                         ),
-
-                                       ),
-                                     ),
-
-                                   ],
+                             margin: EdgeInsets.fromLTRB(5,10,5,10),
+                             child: Column(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 Image.asset(
+                                   "assets/doctor (2).png",
+                                   height: 50,
+                                   width: 50,
                                  ),
-                               )
-                               ),
 
+                                 const SizedBox(height: 5,),
+
+                                 Text(
+                                   "Doctor Appointment",
+                                   textAlign: TextAlign.center,
+                                   style: GoogleFonts.montserrat(
+                                       color: Colors.black,
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold
+                                   ),
+                                 )
+
+                               ],
                              ),
                            ),
+                           Container(
+                             decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(10),
+                               color: Colors.white,
+                             ),
+                             margin: EdgeInsets.fromLTRB(5,10,5,10),
+                             child: Column(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 Image.asset(
+                                   "assets/report.png",
+                                   height: 50,
+                                   width: 50,
+                                 ),
+
+                                 const SizedBox(height: 10),
+
+                                 Text(
+                                   "Report Review",
+                                   style: GoogleFonts.montserrat(
+                                       color: Colors.black,
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold
+                                   ),
+                                 )
+
+                               ],
+                             ),
+                           ),
+                         ],
+
                        ),
-                     ],
-                   ),
+                     ),
+                   ],
+                 )
 
-                   ),
+               ),
 
-                 const SizedBox(height: 10),
+               SizedBox(height: height * 0.025),
 
-                 //Consult a specialist Container
-                 Container(
+               //Emergency Service Container
+               Container(
                  decoration: const BoxDecoration(
                    image: DecorationImage(
                        image: AssetImage("assets/background_color.png"),
                        opacity: 0.5,
                        fit: BoxFit.cover),
                  ),
-
                  height: 170,
+
 
                  child: Column(
                    children: [
@@ -379,7 +540,7 @@ class _UserDashboardState extends State<UserDashboard> {
                          const SizedBox(width: 10),
 
                          Text(
-                           "Consult a specialist",
+                           "Emergency Doctor",
                            style: GoogleFonts.montserrat(
                              color: Colors.black,
                              fontWeight: FontWeight.bold,
@@ -389,7 +550,7 @@ class _UserDashboardState extends State<UserDashboard> {
                        ],
                      ),
 
-                     // Specialist Container
+                     // Emergency Container
                      Expanded(
                        child: ListView.builder(
                          itemCount: 3,
@@ -403,378 +564,180 @@ class _UserDashboardState extends State<UserDashboard> {
                              borderRadius: BorderRadius.circular(10),
                              color: Colors.white,
                            ),
+
                            child: Center(
-                               child: Padding(
-                                 padding: const EdgeInsets.all(5.0),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                   children: [
-                                     Text(
-                                       secondListNames[index],
-                                       textAlign: TextAlign.center,
-                                       style: GoogleFonts.montserrat(
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold,
-                                       ),
+                             child: Padding(
+                               padding: const EdgeInsets.all(5.0),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 children: [
+                                   Text(
+                                     firstListNames[index],
+                                     textAlign: TextAlign.center,
+                                     style: GoogleFonts.montserrat(
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold,
                                      ),
+                                   ),
 
-                                     Image.asset(
-                                       'assets/' + secondListImages[index] + '.png',
-                                       height: 50,
+                                   Image.asset(
+                                     'assets/' + firstListImages[index] + '.png',
+                                     height: 50,
+                                   ),
+
+                                   Text(
+                                     "৳500",
+                                     style: GoogleFonts.montserrat(
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold,
                                      ),
+                                   ),
 
-                                     Text(
-                                       "৳500",
-                                       style: GoogleFonts.montserrat(
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold,
-                                       ),
-                                     ),
+                                   SizedBox(
+                                     width: double.infinity,
+                                     height: 20,
+                                     child: ElevatedButton(
+                                       onPressed: (){
 
-                                     SizedBox(
-                                       width: double.infinity,
-                                       height: 20,
-                                       child: ElevatedButton(
-                                         onPressed: (){
+                                       },
 
-                                         },
-
-                                         child: const Text(
-                                           "See doctor Now",
-                                           style: TextStyle(
-                                               fontSize: 12,
-                                               fontWeight: FontWeight.bold
-                                           ),
+                                       child: const Text(
+                                         "See doctor Now",
+                                         style: TextStyle(
+                                           fontSize: 12,
+                                           fontWeight: FontWeight.bold
                                          ),
-
-
                                        ),
-                                     )
 
-                                   ],
-                                 ),
-                               )
+                                     ),
+                                   ),
+
+                                 ],
+                               ),
+                             )
+                             ),
+
                            ),
-
                          ),
-                       ),
                      ),
                    ],
                  ),
-               ),*/
 
-                 Container(
-                   height: height * 0.32,
-                   decoration: const BoxDecoration(
-                     image: DecorationImage(
-                       image: AssetImage("assets/background_color.png"),
-                       opacity: 0.5,
-                       fit: BoxFit.cover,
-                     ),
-                   ),
-                   alignment: Alignment.topCenter,
-                   child: Column(
-                     children: [
-                       // Slideshow
-                       Padding(
-                         padding: const EdgeInsets.all(20),
-                         child: CarouselSlider(
-                           items: [
-                             // Slideshow first container
-                             Container(
-                               height: height * 0.30,
-                               decoration: BoxDecoration(
-                                 image: const DecorationImage(
-                                   image: AssetImage("assets/sliderImages/slider_img.jpg"),
-                                   fit: BoxFit.cover,
-                                 ),
-                                 borderRadius: BorderRadius.circular(10),
-                               ),
-                             ),
-
-                             // Slideshow second container
-                             Container(
-                               height: height * 0.30,
-                               decoration: BoxDecoration(
-                                 image: const DecorationImage(
-                                   image: AssetImage("assets/sliderImages/slider_img2.jpg"),
-                                   fit: BoxFit.cover,
-                                 ),
-                                 borderRadius: BorderRadius.circular(10),
-                               ),
-                             ),
-                           ],
-                           options: CarouselOptions(
-                             height: height * 0.25,
-                             enlargeCenterPage: true,
-                             autoPlay: true,
-                             aspectRatio: 16 / 9,
-                             autoPlayCurve: Curves.fastOutSlowIn,
-                             enableInfiniteScroll: true,
-                             autoPlayAnimationDuration: Duration(milliseconds: 800),
-                             viewportFraction: 0.8,
-                           ),
-                         ),
-                       ),
-                     ],
-                   ),
                  ),
 
-                 SizedBox(height: height * 0.025),
+               SizedBox(height: height * 0.025),
 
-                 //Our Services Container
-                 Container(
-                   decoration:  const BoxDecoration(
-                     image: DecorationImage(
-                         image: AssetImage("assets/background_color.png"),
-                         opacity: 0.5,
-                         fit: BoxFit.cover,
-                     ),
-                   ),
-                   alignment: Alignment.center,
-                   height: 270,
+               //Consult a specialist Container
+               Container(
+               decoration: const BoxDecoration(
+                 image: DecorationImage(
+                     image: AssetImage("assets/background_color.png"),
+                     opacity: 0.5,
+                     fit: BoxFit.cover),
+               ),
 
-                   child: Column(
+               height: 170,
+
+               child: Column(
+                 children: [
+                   const SizedBox(width: 10),
+
+                   // Title
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.start,
                      children: [
-                       const SizedBox(height: 5),
+                       const SizedBox(width: 10),
 
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.start,
-                         children: [
-                           const SizedBox(width: 10),
-
-                           Text(
-                             "Our Services",
-                             style: GoogleFonts.montserrat(
-                               color: Colors.black,
-                               fontWeight: FontWeight.bold,
-                               fontSize: 15,
-                             ),
-                           ),
-                         ],
-                       ),
-
-                       const SizedBox(height: 5),
-
-                       Padding(
-                         padding: const EdgeInsets.only(left: 5,right: 5),
-                         child: GridView(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                           shrinkWrap: true,
-                           scrollDirection: Axis.vertical,
-                           physics: const ScrollPhysics(),
-                           children: [
-                             GestureDetector(
-                               onTap: (){
-                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const CIConsultationDashboard()));
-                               },
-                               child: Container(
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(10),
-                                   color: Colors.white,
-                                 ),
-                                 margin: const EdgeInsets.fromLTRB(5,10,5,0),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Image.asset(
-                                       "assets/leader.png",
-                                        height: 50,
-                                        width: 50,
-                                     ),
-
-                                     const SizedBox(height: 10),
-
-                                     Text(
-                                       "CI Consultation",
-                                       style: GoogleFonts.montserrat(
-                                           color: Colors.black,
-                                           fontSize: 12,
-                                           fontWeight: FontWeight.bold
-                                       ),
-                                     )
-
-                                   ],
-                                 ),
-                               ),
-                             ),
-
-                             GestureDetector(
-                               onTap: (){
-                                 Navigator.push(context, MaterialPageRoute(builder: (context) => VideoConsultationDashboard()));
-                               },
-                               child: Container(
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(10),
-                                   color: Colors.white,
-                                 ),
-                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Image.asset(
-                                       "assets/live consultation.png",
-                                       height: 50,
-                                       width: 50,
-                                     ),
-
-                                     Text(
-                                       "Doctor Live\nConsultation",
-                                       textAlign: TextAlign.center,
-                                       style: GoogleFonts.montserrat(
-                                           color: Colors.black,
-                                           fontSize: 12,
-                                           fontWeight: FontWeight.bold
-                                       ),
-                                     )
-
-                                   ],
-                                 ),
-                               ),
-                             ),
-
-                             GestureDetector(
-                               onTap: (){
-                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationDashboard()));
-                                 selectedService = "Visa Invitation";
-                               },
-                               child: Container(
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(10),
-                                   color: Colors.white,
-                                 ),
-                                 margin: const EdgeInsets.fromLTRB(5,10,5,10),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Image.asset(
-                                       "assets/visa.png",
-                                       height: 50,
-                                       width: 50,
-                                     ),
-
-                                     const SizedBox(height: 10),
-
-                                     Text(
-                                       "Visa Invitation",
-                                       style: GoogleFonts.montserrat(
-                                           color: Colors.black,
-                                           fontSize: 12,
-                                           fontWeight: FontWeight.bold
-                                       ),
-                                     )
-
-                                   ],
-                                 ),
-                               ),
-                             ),
-
-                             GestureDetector(
-                               onTap: (){
-                                 Navigator.push(context, MaterialPageRoute(builder: (context) => PharmacyDashboard()));
-                               },
-                               child: Container(
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(10),
-                                   color: Colors.white,
-                                 ),
-                                 margin: EdgeInsets.fromLTRB(5,10,5,10),
-                                 child: Column(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Image.asset(
-                                       "assets/medicine-2.png",
-                                       height: 50,
-                                       width: 50,
-                                     ),
-
-                                     Text(
-                                       "Online Pharmacy",
-                                       textAlign: TextAlign.center,
-                                       style: GoogleFonts.montserrat(
-                                           color: Colors.black,
-                                           fontSize: 12,
-                                           fontWeight: FontWeight.bold
-                                       ),
-                                     )
-
-                                   ],
-                                 ),
-                               ),
-                             ),
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/doctor (2).png",
-                                     height: 50,
-                                     width: 50,
-                                   ),
-
-                                   const SizedBox(height: 5,),
-
-                                   Text(
-                                     "Doctor Appointment",
-                                     textAlign: TextAlign.center,
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
-                                     ),
-                                   )
-
-                                 ],
-                               ),
-                             ),
-                             Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.white,
-                               ),
-                               margin: EdgeInsets.fromLTRB(5,10,5,10),
-                               child: Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   Image.asset(
-                                     "assets/report.png",
-                                     height: 50,
-                                     width: 50,
-                                   ),
-
-                                   const SizedBox(height: 10),
-
-                                   Text(
-                                     "Report Review",
-                                     style: GoogleFonts.montserrat(
-                                         color: Colors.black,
-                                         fontSize: 12,
-                                         fontWeight: FontWeight.bold
-                                     ),
-                                   )
-
-                                 ],
-                               ),
-                             ),
-                           ],
-
+                       Text(
+                         "Consult a specialist",
+                         style: GoogleFonts.montserrat(
+                           color: Colors.black,
+                           fontWeight: FontWeight.bold,
+                           fontSize: 15,
                          ),
                        ),
                      ],
-                   )
+                   ),
 
-                 )
+                   // Specialist Container
+                   Expanded(
+                     child: ListView.builder(
+                       itemCount: 3,
+                       scrollDirection: Axis.horizontal,
+                       itemBuilder: (context, index) => Container(
+                         height: 150,
+                         width: 150,
+                         margin: const EdgeInsets.all(10),
 
-                 ]
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(10),
+                           color: Colors.white,
+                         ),
+                         child: Center(
+                             child: Padding(
+                               padding: const EdgeInsets.all(5.0),
+                               child: Column(
+                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 children: [
+                                   Text(
+                                     secondListNames[index],
+                                     textAlign: TextAlign.center,
+                                     style: GoogleFonts.montserrat(
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold,
+                                     ),
+                                   ),
+
+                                   Image.asset(
+                                     'assets/' + secondListImages[index] + '.png',
+                                     height: 50,
+                                   ),
+
+                                   Text(
+                                     "৳500",
+                                     style: GoogleFonts.montserrat(
+                                       fontSize: 12,
+                                       fontWeight: FontWeight.bold,
+                                     ),
+                                   ),
+
+                                   SizedBox(
+                                     width: double.infinity,
+                                     height: 20,
+                                     child: ElevatedButton(
+                                       onPressed: (){
+
+                                       },
+
+                                       child: const Text(
+                                         "See doctor Now",
+                                         style: TextStyle(
+                                             fontSize: 12,
+                                             fontWeight: FontWeight.bold
+                                         ),
+                                       ),
+
+
+                                     ),
+                                   )
+
+                                 ],
+                               ),
+                             )
+                         ),
+
+                       ),
+                     ),
+                   ),
+                 ],
                ),
              ),
+
+           ]
+             ),
            ),
-        )
-    );
+         ),
+      );
 
 }
 }

@@ -54,7 +54,7 @@ class _PushNotificationDialogInvitationLetterState extends State<PushNotificatio
               ),
             ),
 
-            SizedBox(height: height * 0.08,),
+            SizedBox(height: height * 0.06,),
 
             SizedBox(
               width: double.infinity,

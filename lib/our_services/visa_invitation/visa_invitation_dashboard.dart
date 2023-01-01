@@ -26,6 +26,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
     super.initState();
     selectedServiceDatabaseParentName = "visaConsultations";
     selectedService = "Visa Consultation";
+    selectedCountry = countryList[1];
   }
 
   @override

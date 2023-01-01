@@ -57,7 +57,7 @@ dependencies:
   timezone: ^0.8.0
   rxdart: ^0.27.4
   flutter_countdown_timer: ^4.1.0
-  google_mlkit_text_recognition: ^0.5.0
+  google_mlkit_text_recognition: ^0.4.0
   http: ^0.13.5
   agora_rtc_engine: ^6.0.0
   permission_handler: ^10.2.0
@@ -68,7 +68,7 @@ dependencies:
   flutter_image_compress:
   firebase_messaging: ^14.1.4
   mrz_parser: ^2.0.0
-  flutter_mrz_scanner: ^2.1.0
+  mrz_scanner: ^0.0.1+3
 
 
 

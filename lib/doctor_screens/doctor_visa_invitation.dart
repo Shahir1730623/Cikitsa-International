@@ -277,7 +277,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                         radius: 30,
                                         backgroundColor: Colors.lightBlue,
                                         child: Text(
-                                          (snapshot.value as Map)["patientName"][0],
+                                          (snapshot.value as Map)["patientGivenName"][0],
                                           style: GoogleFonts.montserrat(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
@@ -298,7 +298,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                       children: [
                                         // Doctor Name
                                         Text(
-                                          (snapshot.value as Map)["patientName"].toString(),
+                                          (snapshot.value as Map)["patientGivenName"].toString(),
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15,
@@ -312,7 +312,7 @@ class _DoctorVisaInvitationState extends State<DoctorVisaInvitation> {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              "Date of Birth: " + (snapshot.value as Map)["patientDateOfBirth"].toString(),
+                                              "Date of Birth: " + (snapshot.value as Map)["dateOfBirth"].toString(),
                                               style: GoogleFonts.montserrat(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,

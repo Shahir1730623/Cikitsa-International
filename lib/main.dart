@@ -2,6 +2,8 @@ import 'package:app/splash_screen/splash_screen.dart';
 import 'package:app/widgets/unfocus_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'consultant_screens/ci_consultation_details.dart';
 import 'navigation_service.dart';
@@ -17,11 +19,16 @@ void main() async {
           title:'Cikitsa International',
           theme: ThemeData(
             primarySwatch: Colors.blue,
+            appBarTheme: const AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              // 2
+            ),
           ),
-          home: const SplashScreen(),
+          home: SplashScreen(),
           builder: (context,child) => unFocus(child: child!),
           debugShowCheckedModeBanner: false,
           navigatorKey: NavigationService.navigatorKey,
+
         ),
   ));
 }

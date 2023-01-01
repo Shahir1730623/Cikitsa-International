@@ -1,44 +1,78 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
+import 'package:mrz_scanner/mrz_scanner.dart';
 
-import '../../testing.dart';
+import '../../global/global.dart';
 
-class Test extends StatelessWidget {
-  const Test({super.key});
+class CameraPage extends StatefulWidget {
+  @override
+  _CameraPageState createState() => _CameraPageState();
+}
+
+class _CameraPageState extends State<CameraPage> {
+  final MRZController controller = MRZController();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: FutureBuilder<PermissionStatus>(
-        future: Permission.camera.request(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data == PermissionStatus.granted) {
-            //return CameraPage();
-          }
-          if (snapshot.data == PermissionStatus.permanentlyDenied) {
-            // The user opted to never again see the permission request dialog for this
-            // app. The only way to change the permission's status now is to let the
-            // user manually enable it in the system settings.
-            openAppSettings();
-          }
-          return Scaffold(
-            body: Center(
+    return MRZScanner(
+      controller: controller,
+      onSuccess: (mrzResult) async {
+        await showDialog(
+          context: context,
+          builder: (context) => Dialog(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircularProgressIndicator(),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Awaiting for permissions'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      controller.currentState?.resetScanning();
+                    },
+                    child: const Text('Reset Scanning'),
                   ),
-                  Text('Current status: ${snapshot.data?.toString()}'),
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(
+                         context,
+                          {
+                          "type" : mrzResult.documentType,
+                          "country_Code" : mrzResult.countryCode,
+                          "document_Number" : mrzResult.documentNumber,
+                          "given_Name" : mrzResult.givenNames,
+                          "surname" : mrzResult.surnames,
+                          "nationality" : mrzResult.nationalityCountryCode,
+                          "personal_Number" : mrzResult.personalNumber,
+                          "birth_Date" : DateFormat('dd-MM-yyyy').format(mrzResult.birthDate),
+                          "gender" : mrzResult.sex.name,
+                          "expiry_Date" : DateFormat('dd-MM-yyyy').format(mrzResult.expiryDate),
+                          },
+                   );
+                  },
+                    child: const Text('Exit Scanning'),
+                  ),
+                  Text('Type : ${mrzResult.documentType}'),
+                  Text('Country Code : ${mrzResult.countryCode}'),
+                  Text('Passport Number : ${mrzResult.documentNumber}'),
+                  Text('First Name : ${mrzResult.givenNames}'),
+                  Text('Last Name : ${mrzResult.surnames}'),
+                  Text('Nationality : ${mrzResult.nationalityCountryCode}'),
+                  Text('Personal No : ${mrzResult.personalNumber}'),
+                  Text('Date of Birth : ${mrzResult.birthDate}'),
+                  Text('Sex : ${mrzResult.sex.name}'),
+                  Text('Expiry Date: ${mrzResult.expiryDate}'),
+
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
+
   }
+
 }

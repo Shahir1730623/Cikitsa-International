@@ -11,20 +11,37 @@ class VisaInvitationModel{
   String? date;
   String? time;
   String? patientId;
-  String? patientName;
-  String? patientDateOfBirth;
-  String? patientIdNo;
+  String? documentType;
+  String? countryCode;
+  String? passportNumber;
+  String? patientSurname;
+  String? patientGivenName;
+  String? nationality;
+  String? passportPersonalNumber;
+  String? dateOfBirth;
+  String? gender;
+  String? expiryDate;
   String? patientGender;
   String? patientWeight;
   String? patientHeight;
-  String? attendantName;
+
+  String? attendantDocumentType;
+  String? attendantCountryCode;
+  String? attendantPassportNumber;
+  String? attendantSurname;
+  String? attendantGivenName;
+  String? attendantNationality;
+  String? attendantPassportPersonalNumber;
   String? attendantDateOfBirth;
-  String? attendantIdNo;
+  String? attendantGender;
+  String? attendantExpiryDate;
   String? visitationReason;
   String? selectedVisaCenter;
   String? problem;
   String? status;
   String? payment;
+
+
 
   VisaInvitationModel.fromSnapshot(DataSnapshot snapshot){
     id = snapshot.key;
@@ -37,15 +54,29 @@ class VisaInvitationModel{
     date = (snapshot.value as dynamic)["date"];
     time = (snapshot.value as dynamic)["time"];
     patientId = (snapshot.value as dynamic)["patientId"];
-    patientName = (snapshot.value as dynamic)["patientName"];
-    patientDateOfBirth = (snapshot.value as dynamic)["patientDateOfBirth"];
-    patientIdNo = (snapshot.value as dynamic)["patientIdNo"];
+    documentType = (snapshot.value as dynamic)["documentType"];
+    countryCode = (snapshot.value as dynamic)["countryCode"];
+    passportNumber = (snapshot.value as dynamic)["passportNumber"];
+    patientSurname = (snapshot.value as dynamic)["patientSurname"];
+    patientGivenName = (snapshot.value as dynamic)["patientGivenName"];
+    nationality = (snapshot.value as dynamic)["nationality"];
+    passportPersonalNumber = (snapshot.value as dynamic)["passportPersonalNumber"];
+    dateOfBirth = (snapshot.value as dynamic)["dateOfBirth"];
+    gender = (snapshot.value as dynamic)["gender"];
+    expiryDate = (snapshot.value as dynamic)["expiryDate"];
     patientGender = (snapshot.value as dynamic)["patientGender"];
     patientWeight = (snapshot.value as dynamic)["patientWeight"];
     patientHeight = (snapshot.value as dynamic)["patientHeight"];
-    attendantName = (snapshot.value as dynamic)["attendantName"];
+    attendantDocumentType = (snapshot.value as dynamic)["attendantDocumentType"];
+    attendantCountryCode = (snapshot.value as dynamic)["attendantCountryCode"];
+    attendantPassportNumber = (snapshot.value as dynamic)["attendantPassportNumber"];
+    attendantSurname = (snapshot.value as dynamic)["attendantSurname"];
+    attendantGivenName = (snapshot.value as dynamic)["attendantGivenName"];
+    attendantNationality = (snapshot.value as dynamic)["attendantNationality"];
+    attendantPassportPersonalNumber = (snapshot.value as dynamic)["attendantPassportPersonalNumber"];
     attendantDateOfBirth = (snapshot.value as dynamic)["attendantDateOfBirth"];
-    attendantIdNo = (snapshot.value as dynamic)["attendantIdNo"];
+    attendantGender = (snapshot.value as dynamic)["attendantGender"];
+    attendantExpiryDate = (snapshot.value as dynamic)["attendantExpiryDate"];
     visitationReason = (snapshot.value as dynamic)["visitationReason"];
     selectedVisaCenter = (snapshot.value as dynamic)["selectedVisaCenter"];
     problem = (snapshot.value as dynamic)["problem"];

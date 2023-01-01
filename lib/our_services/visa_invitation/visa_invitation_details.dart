@@ -26,7 +26,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
   late Future<ListResult> futureFiles;
 
   Future<void> checkPrescriptionStatus() async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/Invitation_Letter.png" );
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/documents/Invitation_Letter.png" );
     try{
       imageUrl = await reference.getDownloadURL();
     }
@@ -84,7 +84,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
     // TODO: implement initState
     super.initState();
     checkPrescriptionStatus();
-    futureFiles = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents").listAll();
+    futureFiles = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/documents").listAll();
   }
 
 
@@ -216,7 +216,26 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.patientName!,
+              selectedVisaInvitationInfo!.patientGivenName! + " " + selectedVisaInvitationInfo!.patientSurname!,
+              style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+              ),
+            ),
+            SizedBox(height: height * 0.020,),
+
+            // Passport Number
+            Text(
+              "Passport Number",
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
+                color: Color(0x59090808),
+              ),
+            ),
+            SizedBox(height: height * 0.010,),
+            Text(
+              selectedVisaInvitationInfo!.passportNumber!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -235,7 +254,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.patientDateOfBirth!,
+              selectedVisaInvitationInfo!.dateOfBirth!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -244,9 +263,9 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.020,),
 
-            // Patient Date of Birth
+            // Nationality
             Text(
-              "Date of Birth",
+              "Nationality",
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 color: Color(0x59090808),
@@ -254,7 +273,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.patientDateOfBirth!,
+              selectedVisaInvitationInfo!.nationality!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -263,9 +282,9 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.020,),
 
-            // Patient Id No
+            // Nationality
             Text(
-              "ID No",
+              "Gender",
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 color: Color(0x59090808),
@@ -273,7 +292,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.patientIdNo!,
+              selectedVisaInvitationInfo!.gender!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -303,7 +322,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
 
             // Patient Weight
             Text(
-              "Height",
+              "Weight",
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 color: Color(0x59090808),
@@ -330,7 +349,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.attendantName!,
+              selectedVisaInvitationInfo!.attendantGivenName! + " " +selectedVisaInvitationInfo!.patientSurname!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -341,7 +360,45 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
 
             // Attendant DOB
             Text(
-              "Attendant Date Of Birth",
+              "Attendant Passport Number",
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
+                color: Color(0x59090808),
+              ),
+            ),
+            SizedBox(height: height * 0.010,),
+            Text(
+              selectedVisaInvitationInfo!.attendantPassportNumber!,
+              style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+              ),
+            ),
+            SizedBox(height: height * 0.020,),
+
+            // Attendant Id No
+            Text(
+              "Attendant Nationality",
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
+                color: Color(0x59090808),
+              ),
+            ),
+            SizedBox(height: height * 0.010,),
+            Text(
+              selectedVisaInvitationInfo!.attendantNationality!,
+              style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+              ),
+            ),
+            SizedBox(height: height * 0.020,),
+
+            // Attendant Id No
+            Text(
+              "Attendant Date of Birth",
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 color: Color(0x59090808),
@@ -360,7 +417,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
 
             // Attendant Id No
             Text(
-              "Attendant ID No",
+              "Attendant Gender",
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 color: Color(0x59090808),
@@ -368,7 +425,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             ),
             SizedBox(height: height * 0.010,),
             Text(
-              selectedVisaInvitationInfo!.attendantIdNo!,
+              selectedVisaInvitationInfo!.attendantGender!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -470,7 +527,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
                 child: ElevatedButton.icon(
                   onPressed: ()  async {
                     if(flag == true){
-                      firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/medical_documents/Invitation_Letter.png" );
+                      firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/documents/Invitation_Letter.png" );
                       downloadFiles(reference);
                     }
 
