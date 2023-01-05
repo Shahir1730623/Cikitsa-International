@@ -49,6 +49,39 @@ class AssistantMethods{
 
   }
 
+  // Generates Push Notification and sends it
+  static sendConsultationPushNotificationToDoctorNow(String deviceRegistrationToken,BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "You have appointment now. Click here to join",
+        "title" : "Appointment reminder"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "consultation_id" : consultationId,
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
   static sendConsultationPushNotificationToPatientNow(String deviceRegistrationToken, String patientId, String selectedService,BuildContext context){
     Map<String,String> headerNotification = {
       'Content-Type' : 'application/json',
@@ -85,38 +118,6 @@ class AssistantMethods{
     );
   }
 
-  // Generates Push Notification and sends it
-  static sendConsultationPushNotificationToDoctorNow(String deviceRegistrationToken,BuildContext context){
-    Map<String,String> headerNotification = {
-      'Content-Type' : 'application/json',
-      'Authorization' : cloudMessagingServerToken,
-    };
-
-    Map bodyNotification = {
-      "notification":{
-        "body": "You have appointment now. Click here to join",
-        "title" : "Appointment reminder"
-      },
-
-      "priority": "high",
-
-      "data" : {
-        "click_action": "FLUTTER_NOTIFICATION_CLICK",
-        "id" : "1",
-        "status" : "done",
-        "consultation_id" : consultationId,
-      },
-
-      "to" : deviceRegistrationToken
-    };
-
-    // Work of postman to send notification
-    var responseNotification = post(
-      Uri.parse("https://fcm.googleapis.com/fcm/send"),
-      headers: headerNotification,
-      body: jsonEncode(bodyNotification),
-    );
-  }
 
   static sendCIConsultationPushNotificationToPatientNow(String deviceRegistrationToken, String patientId, String selectedService,BuildContext context){
     Map<String,String> headerNotification = {
@@ -174,6 +175,8 @@ class AssistantMethods{
         "status" : "done",
         "visa_invitation_id" : invitationId,
         "patient_Id" : patientId,
+        "selected_service" : "Visa Invitation",
+        "push_notify" : "true"
       },
 
       "to" : deviceRegistrationToken

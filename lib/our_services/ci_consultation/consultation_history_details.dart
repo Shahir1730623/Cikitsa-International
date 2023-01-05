@@ -3,12 +3,14 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
 import '../../../global/global.dart';
 import '../../../widgets/progress_dialog.dart';
+import '../../main_screen.dart';
 
 class ConsultationHistoryDetails extends StatefulWidget {
   const ConsultationHistoryDetails({Key? key}) : super(key: key);
@@ -36,7 +38,7 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
         .child("patientList")
         .child(selectedCIConsultationInfo!.patientId!)
         .child("CIConsultations")
-        .child(consultationId!)
+        .child(selectedCIConsultationInfo!.id!)
         .once()
         .then((dataSnap){
       final DataSnapshot snapshot = dataSnap.snapshot;
@@ -105,8 +107,7 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
     }
 
     Navigator.pop(context);
-    var snackBar = SnackBar(content: Text("Downloaded ${reference.name}"));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Fluttertoast.showToast(msg: "Photo Saved to gallery");
 
   }
 
@@ -115,8 +116,9 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
     // TODO: implement initState
     super.initState();
     Future.delayed(Duration.zero, () {
-      retrievePatientDataFromDatabase();
       checkPrescriptionStatus();
+      retrievePatientDataFromDatabase();
+
     });
 
 
@@ -567,9 +569,10 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton.icon(
-                              onPressed: ()  {
+                              onPressed: ()  async {
                                 if(flag == true){
-                                  downloadFile();
+                                  await downloadFile();
+                                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
                                 }
 
                                 else{

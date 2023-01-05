@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app/main_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -13,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import 'package:path_provider/path_provider.dart';import '../../global/global.dart';
+import '../../navigation_service.dart';
 import '../../widgets/progress_dialog.dart';class VisaInvitationDetails extends StatefulWidget {
   const VisaInvitationDetails({Key? key}) : super(key: key);
 
@@ -73,9 +76,8 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
       print(e);
     }
 
-    Navigator.pop(context);
-    var snackBar = SnackBar(content: Text("Downloaded ${reference.name}"));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Navigator.pop(NavigationService.navigatorKey.currentContext!);
+    Fluttertoast.showToast(msg: "Photo Saved to gallery");
 
   }
 
@@ -148,7 +150,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
             SizedBox(height: height * 0.02),
 
             Text(
-              "Dr. " + selectedVisaInvitationInfo!.doctorName!,
+              selectedVisaInvitationInfo!.doctorName!,
               style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -528,7 +530,13 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
                   onPressed: ()  async {
                     if(flag == true){
                       firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('invitationImages/'+ invitationId! + "/documents/Invitation_Letter.png" );
-                      downloadFiles(reference);
+                      await downloadFiles(reference);
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+
+                      /*Timer(const Duration(seconds: 1), () {
+                        Navigator.pop(context);
+
+                      });*/
                     }
 
                     else{

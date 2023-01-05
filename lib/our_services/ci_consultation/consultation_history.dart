@@ -32,6 +32,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
   int toggleIndex = 0;
   String? consultantId;
 
+
   setCIConsultationInfoToAccepted() async {
     FirebaseDatabase.instance.ref()
         .child("Users")
@@ -102,6 +103,10 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    final double itemHeight = (height - kToolbarHeight - 24) / 2;
+    final double itemWidth = (width / 1.0);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -321,38 +326,12 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
 
                                                           const SizedBox(height: 10,),
 
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                'Consultant',
-                                                                style: GoogleFonts.montserrat(
-                                                                    color: Colors.grey.shade800,
-                                                                    fontSize: 15
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                decoration: BoxDecoration(
-                                                                    borderRadius: BorderRadius
-                                                                        .circular(50),
-                                                                    color: Colors.blue
-                                                                ),
-
-                                                                height: 30,
-                                                                width: 30,
-
-                                                                child: Transform.rotate(
-                                                                  angle: 180 * pi / 180,
-                                                                  child: const Icon(
-                                                                    Icons.arrow_back_ios_new,
-                                                                    color: Colors.white,
-                                                                    size: 20,
-                                                                  ),
-                                                                ),
-
-
-                                                              ),
-                                                            ],
+                                                          Text(
+                                                            'Consultant',
+                                                            style: GoogleFonts.montserrat(
+                                                                color: Colors.grey.shade800,
+                                                                fontSize: 15
+                                                            ),
                                                           ),
 
                                                           const SizedBox(height: 10,),
@@ -403,7 +382,31 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                                           ) : Container()
 
                                                         ],
-                                                      )
+                                                      ),
+
+                                                      const SizedBox(width: 10,),
+
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius
+                                                                .circular(50),
+                                                            color: Colors.blue
+                                                        ),
+
+                                                        height: 30,
+                                                        width: 30,
+
+                                                        child: Transform.rotate(
+                                                          angle: 180 * pi / 180,
+                                                          child: const Icon(
+                                                            Icons.arrow_back_ios_new,
+                                                            color: Colors.white,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+
+
+                                                      ),
 
                                                     ],
                                                   ),
@@ -518,7 +521,7 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                                           )
                                                       ),
 
-                                                      const SizedBox(width: 10,),
+                                                      const SizedBox(width: 15,),
 
                                                       Column(
                                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,43 +534,17 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                                                 color: Colors.black),
                                                           ),
 
-                                                          const SizedBox(height: 10,),
+                                                          SizedBox(height: height * 0.02,),
 
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                'Consultant',
-                                                                style: GoogleFonts.montserrat(
-                                                                    color: Colors.grey.shade800,
-                                                                    fontSize: 15
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                decoration: BoxDecoration(
-                                                                    borderRadius: BorderRadius
-                                                                        .circular(50),
-                                                                    color: Colors.grey.shade200
-                                                                ),
-
-                                                                height: 30,
-                                                                width: 30,
-
-                                                                child: Transform.rotate(
-                                                                  angle: 180 * pi / 180,
-                                                                  child: const Icon(
-                                                                    Icons.arrow_back_ios_new,
-                                                                    color: Colors.white,
-                                                                    size: 20,
-                                                                  ),
-                                                                ),
-
-
-                                                              ),
-                                                            ],
+                                                          Text(
+                                                            'Consultant',
+                                                            style: GoogleFonts.montserrat(
+                                                                color: Colors.grey.shade800,
+                                                                fontSize: 15
+                                                            ),
                                                           ),
 
-                                                          const SizedBox(height: 10,),
+                                                          SizedBox(height: height * 0.02,),
 
                                                           Text(
                                                             "Status: " + (snapshot.value as Map)["consultationStatus"].toString(),
@@ -576,8 +553,70 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                                                             ),
                                                           ),
 
+                                                          const SizedBox(height: 10,),
+
+                                                          ((TimeOfDay.now().hour == databaseTime.hour) &&
+                                                              (TimeOfDay.now().minute >= databaseTime.minute && (TimeOfDay.now().minute <= (databaseTime.minute + 5))))  ?
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              SizedBox(
+                                                                child: ElevatedButton.icon(
+                                                                  onPressed: ()  async {
+                                                                    consultationId = (snapshot.value as Map)["id"];
+                                                                    patientId = (snapshot.value as Map)["patientId"];
+                                                                    consultantId = (snapshot.value as Map)["consultantId"];
+                                                                    await setCIConsultationInfoToAccepted();
+                                                                  },
+
+                                                                  style: ElevatedButton.styleFrom(
+                                                                      primary: (Colors.blue),
+                                                                      shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(20))),
+
+                                                                  label: Text(
+                                                                    "Join video call" ,
+                                                                    style: GoogleFonts.montserrat(
+                                                                        fontSize: 15,
+                                                                        fontWeight: FontWeight.bold,
+                                                                        color: Colors.white
+                                                                    ),
+                                                                  ),
+
+                                                                  icon: const Icon(
+                                                                      Icons.video_call_rounded
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ) : Container()
+
                                                         ],
-                                                      )
+                                                      ),
+
+                                                      const SizedBox(width: 15,),
+
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius
+                                                                .circular(50),
+                                                            color: Colors.blue
+                                                        ),
+
+                                                        height: 30,
+                                                        width: 30,
+
+                                                        child: Transform.rotate(
+                                                          angle: 180 * pi / 180,
+                                                          child: const Icon(
+                                                            Icons.arrow_back_ios_new,
+                                                            color: Colors.white,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+
+
+                                                      ),
 
                                                     ],
                                                   ),

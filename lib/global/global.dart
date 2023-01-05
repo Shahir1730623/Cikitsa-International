@@ -19,6 +19,7 @@ String? userId;
 String? patientId;
 String? consultationId;
 String? invitationId;
+String? appointmentId;
 String? doctorConsultationId;
 String? doctorId;
 String? userType;
@@ -39,11 +40,12 @@ VisaInvitationModel? selectedVisaInvitationInfo;
 //MRZModel? mrzModel;
 
 String selectedService = "";
-String? selectedCountry = "Select a country";
+String? selectedCountry;
 String? selectedServiceDatabaseParentName;
 
 String? pushNotifyForDoc = "false";
 String? pushNotifyForCI = "false";
+String? pushNotifyForVisa = "false";
 String tempToken = "";
 bool isBroadcaster = true;
 bool? localNotify = false;
@@ -70,6 +72,7 @@ String? dateTime;
 
 late Map<String,dynamic> mapData;
 late Map<String,dynamic> mapData2;
+late Map<String,dynamic> mapDataForAppointment;
 
 
 

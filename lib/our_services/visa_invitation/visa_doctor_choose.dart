@@ -103,7 +103,7 @@ class _VisaDoctorChooseState extends State<VisaDoctorChoose> {
                           const SizedBox(width: 10),
 
                           Text(
-                            "Visa Invitation",
+                            (selectedService == "Doctor Appointment") ? "Doctor Appointment" : "Visa Invitation",
                             style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,

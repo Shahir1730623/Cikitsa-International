@@ -26,7 +26,6 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
     super.initState();
     selectedServiceDatabaseParentName = "visaConsultations";
     selectedService = "Visa Consultation";
-    selectedCountry = countryList[1];
   }
 
   @override
@@ -106,7 +105,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                         SizedBox(height: height * 0.02,),
 
                         Text(
-                          "Do you want to get visa appointment?",
+                          "Do you want to get visa invitation?",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.montserrat(
                               color: Colors.black,
@@ -149,7 +148,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                           iconSize: 30,
                           dropdownColor: Colors.white,
                           hint: const Text(
-                            "Select country",
+                            "Select your country",
                             style: TextStyle(
                               fontSize: 15.0,
                               color: Colors.black,
@@ -172,6 +171,15 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                               ),
                             );
                           }).toList(),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please select a country";
+                            }
+
+                            else {
+                              return null;
+                            }
+                          },
                         ),
 
                         SizedBox(height: height * 0.03,),

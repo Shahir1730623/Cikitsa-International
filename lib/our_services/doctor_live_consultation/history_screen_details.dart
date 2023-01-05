@@ -7,11 +7,15 @@ import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
 
+import '../../main_screen.dart';
+import '../../navigation_service.dart';
 import '../../widgets/progress_dialog.dart';
 
 class HistoryScreenDetails extends StatefulWidget {
@@ -76,9 +80,8 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
       print(e);
     }
 
-    Navigator.pop(context);
-    var snackBar = SnackBar(content: Text("Downloaded ${reference.name}"));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Navigator.pop(NavigationService.navigatorKey.currentContext!);
+    Fluttertoast.showToast(msg: "Photo Saved to gallery");
 
   }
 
@@ -449,9 +452,10 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
                 width: double.infinity,
                 height: 45,
                 child: ElevatedButton.icon(
-                  onPressed: ()  {
+                  onPressed: ()  async {
                     if(flag == true){
-                      downloadFile();
+                      await downloadFile();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
                     }
 
                     else{

@@ -51,6 +51,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
           saveCIConsultationInfoForPatient();
         }
 
+        else if(selectedService == "Doctor Appointment"){
+          saveAppointmentInfoForPatient();
+        }
+
       }
 
       else{
@@ -220,7 +224,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .set(consultantCIConsultationInfoMap);
   }
 
-
   void saveVisaInvitationInfoForPatient() async {
     Map visaInvitationInfoMap = {
       "id" : invitationId,
@@ -323,6 +326,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     reference.set(visaInvitationInfoMap);
     
+  }
+
+  void saveAppointmentInfoForPatient(){
+    Map appointmentInfoMap = {
+      "id" : appointmentId,
+      "userId" : currentFirebaseUser!.uid,
+      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      "time" : DateFormat.jm().format(DateTime.now()),
+      "doctorId" : selectedDoctorInfo!.doctorId,
+      "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+      "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
+      "specialization" : selectedDoctorInfo!.specialization,
+      "workplace" : selectedDoctorInfo!.workplace,
+      "patientId" : patientId,
+      "documentType" : (mapData)['type'],
+      "countryCode" : (mapData)['country_Code'],
+      "passportNumber" : (mapData)['document_Number'],
+      "patientSurname" : (mapData)['surname'],
+      "patientGivenName" : (mapData)['given_Name'],
+      "nationality" : (mapData['nationality'] == "BGD") ? "BANGLADESHI" : "INDIAN",
+      "passportPersonalNumber" : mapData['personal_Number'],
+      "dateOfBirth" : mapData['birth_Date'],
+      "gender" : mapData['gender'],
+      "expiryDate" : mapData['expiry_Date'],
+      "patientGender" : selectedPatientInfo!.gender,
+      "patientWeight" : selectedPatientInfo!.weight,
+      "patientHeight" : selectedPatientInfo!.height,
+      "visitationReason": widget.visitationReason,
+      "problem": widget.problem,
+      "payment" : "Paid",
+      "status" : "Waiting"
+    };
+
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child(patientId!).child('patientList')
+        .child("doctorAppointment")
+        .child(appointmentId!).set(appointmentInfoMap);
+
+    FirebaseDatabase.instance.ref().child("Doctors")
+        .child(selectedDoctorInfo!.doctorId!)
+        .child("doctorAppointment")
+        .child(appointmentId!).set(appointmentInfoMap);
   }
 
 

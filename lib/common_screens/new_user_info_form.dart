@@ -32,12 +32,9 @@ class _NewUserFormState extends State<NewUserForm> {
   TextEditingController genderTextEditingController = TextEditingController();
   TextEditingController relationTextEditingController = TextEditingController();
 
-
+  final _formKey = GlobalKey<FormState>();
   List<String> genderTypesList = ["Male", "Female","Other"];
   String? selectedGender;
-
-
-  final _formKey = GlobalKey<FormState>();
 
   String idGenerator() {
     Random random =  Random();
@@ -91,40 +88,40 @@ class _NewUserFormState extends State<NewUserForm> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            Image.asset(
-              "assets/Logo.png",
-              height: 50,
-              width: 50,
-              alignment: Alignment.centerLeft,
-            ),
-            SizedBox(
-              height: height * 0.02,
-            ),
-            Text(
-              "Patient Information",
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ListView(
+            children: [
+              Image.asset(
+                "assets/Logo.png",
+                height: 50,
+                width: 50,
+                alignment: Alignment.centerLeft,
               ),
-            ),
+              SizedBox(
+                height: height * 0.02,
+              ),
+              Text(
+                "Patient Information",
+                style: GoogleFonts.montserrat(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
-            SizedBox(
-              height: height * 0.005,
-            ),
+              SizedBox(
+                height: height * 0.005,
+              ),
 
-            const Text(
-              "Fill up the required information",
-            ),
-            SizedBox(height: height * 0.03),
-            Form(
-              key: _formKey,
-              child: Column(
+              const Text(
+                "Fill up the required information",
+              ),
+              SizedBox(height: height * 0.03),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // First Name Field
@@ -138,6 +135,7 @@ class _NewUserFormState extends State<NewUserForm> {
                   SizedBox(
                     height: height * 0.01,
                   ),
+
                   TextFormField(
                     controller: firstNameTextEditingController,
                     style: const TextStyle(
@@ -172,12 +170,17 @@ class _NewUserFormState extends State<NewUserForm> {
                           const TextStyle(color: Colors.black, fontSize: 15),
                     ),
                     validator: (value) {
-                      if (value!.isEmpty) {
+                      if (value == null ||value.isEmpty) {
                         return "The field is empty";
-                      } else
+                      }
+                      else {
                         return null;
+                      }
                     },
+
                   ),
+
+
                   SizedBox(
                     height: height * 0.01,
                   ),
@@ -227,10 +230,13 @@ class _NewUserFormState extends State<NewUserForm> {
                           const TextStyle(color: Colors.black, fontSize: 15),
                     ),
                     validator: (value) {
-                      if (value!.isEmpty) {
+                      if (value == null ||value.isEmpty) {
                         return "The field is empty";
-                      } else
+                      }
+
+                      else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -282,10 +288,11 @@ class _NewUserFormState extends State<NewUserForm> {
                           const TextStyle(color: Colors.black, fontSize: 15),
                     ),
                     validator: (value) {
-                      if (value!.isEmpty) {
+                      if (value == null ||value.isEmpty) {
                         return "The field is empty";
-                      } else
+                      } else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -339,8 +346,15 @@ class _NewUserFormState extends State<NewUserForm> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "The field is empty";
-                      } else
+                      }
+
+                      else if(value.length < 11){
+                        return "Wrong phone number";
+                      }
+
+                      else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -408,7 +422,18 @@ class _NewUserFormState extends State<NewUserForm> {
                                   ),
                                 );
                               }).toList(),
+                              validator: (value){
+                                if (value == null) {
+                                  return "select a gender";
+                                }
+
+                                else {
+                                  return null;
+                                }
+                              },
                             ),
+
+
                             SizedBox(
                               height: height * 0.01,
                             ),
@@ -423,7 +448,7 @@ class _NewUserFormState extends State<NewUserForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Relation",
+                              "Relation(Ex:Self,Mother)",
                               style: GoogleFonts.montserrat(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -458,7 +483,17 @@ class _NewUserFormState extends State<NewUserForm> {
                                 labelStyle: const TextStyle(
                                     color: Colors.black, fontSize: 15),
                               ),
+                              validator: (value){
+                                if (value == null || value.isEmpty) {
+                                  return "The field is empty";
+                                }
+
+                                else {
+                                  return null;
+                                }
+                              },
                             ),
+
                             SizedBox(
                               height: height * 0.01,
                             ),
@@ -523,8 +558,9 @@ class _NewUserFormState extends State<NewUserForm> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "The field is empty";
-                                } else
+                                } else {
                                   return null;
+                                }
                               },
                             ),
                             SizedBox(
@@ -587,8 +623,9 @@ class _NewUserFormState extends State<NewUserForm> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "The field is empty";
-                                } else
+                                } else {
                                   return null;
+                                }
                               },
                             ),
                             SizedBox(
@@ -635,33 +672,41 @@ class _NewUserFormState extends State<NewUserForm> {
                             padding: EdgeInsets.all(10),
                             child: ElevatedButton(
                               onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context){
-                                      return ProgressDialog(message: 'message');
+                                if (_formKey.currentState!.validate()) {
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context){
+                                        return ProgressDialog(message: 'message');
+                                      }
+                                  );
+
+                                  saveNewUserInfo();
+
+                                  Timer(const Duration(seconds: 2),()  {
+                                    Navigator.pop(context);
+                                    if(selectedDoctorInfo == null){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
                                     }
-                                );
-                                saveNewUserInfo();
 
-                                Timer(const Duration(seconds: 2),()  {
-                                  Navigator.pop(context);
-                                  if(selectedDoctorInfo == null){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
-                                  }
+                                    if(selectedDoctorInfo!.status.toString() == "Online"){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
+                                    }
 
-                                  if(selectedDoctorInfo!.status.toString() == "Online"){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const TalkToDoctorNowInformation()));
-                                  }
+                                    else{
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
+                                    }
 
-                                  else{
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SelectSchedule()));
-                                  }
+                                  });
+                                }
 
-                                });
+                                else{
+                                  var snackBar = const SnackBar(content: Text('Fill up the form correctly'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                }
+
 
                                 },
-
 
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.lightBlue,
@@ -676,9 +721,9 @@ class _NewUserFormState extends State<NewUserForm> {
                   ),
 
                 ],
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -147,7 +147,7 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(5),
                                   decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(5)),
                                       color: Colors.blue
@@ -244,6 +244,14 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                                       ),
                                     );
                                   }).toList(),
+                                  validator: (value) {
+                                    if (value == null ||value.isEmpty) {
+                                      return "Please select a reason";
+                                    }
+                                    else {
+                                      return null;
+                                    }
+                                  },
                                 ),
                               ),
                             ],
@@ -299,10 +307,12 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                               const TextStyle(color: Colors.black, fontSize: 15),
                             ),
                             validator: (value) {
-                              if (value!.isEmpty) {
+                              if (value == null ||value.isEmpty) {
                                 return "The field is empty";
-                              } else
+                              }
+                              else {
                                 return null;
+                              }
                             },
                           ),
 
@@ -415,23 +425,31 @@ class _TalkToDoctorNowInformationState extends State<TalkToDoctorNowInformation>
                             height: 45,
                             child: ElevatedButton(
                               onPressed: ()  async {
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context){
-                                      return ProgressDialog(message: "Please wait...");
-                                    }
-                                );
+                                if (_formKey.currentState!.validate()){
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context){
+                                        return ProgressDialog(message: "Please wait...");
+                                      }
+                                  );
 
-                                for (int i = 0; i < imageList.length; i++) {
-                                  await uploadFile(imageList[i]);
-                                  //downloadUrls.add(url);
+                                  for (int i = 0; i < imageList.length; i++) {
+                                    await uploadFile(imageList[i]);
+                                    //downloadUrls.add(url);
+                                  }
+
+                                  Timer(const Duration(seconds: 2),()  {
+                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
+                                  });
+
                                 }
 
-                                Timer(const Duration(seconds: 3),()  {
-                                  Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: DateFormat('dd-MM-yyyy').format(DateTime.now()), formattedTime: DateFormat.jm().format(DateTime.now()), visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
-                                });
+                                else{
+                                  var snackBar = const SnackBar(content: Text('Fill up the form correctly'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                }
 
                               },
 

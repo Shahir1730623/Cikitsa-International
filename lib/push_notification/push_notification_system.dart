@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../global/global.dart';
@@ -16,6 +17,7 @@ import '../models/consultation_model.dart';
 import '../models/consultation_model2.dart';
 import '../models/consultation_payload_model.dart';
 import '../models/visa_invitation_model.dart';
+import '../navigation_service.dart';
 import '../service_file/local_notification_service.dart';
 import '../widgets/push_notification_dialog_select_schedule.dart';
 import '../widgets/push_notification_dialog_invitation_letter.dart';
@@ -42,8 +44,12 @@ class PushNotificationSystem{
             retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
+          else if(remoteMessage.data["selected_service"] == "Visa Invitation"){
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
           else{
-            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+            Fluttertoast.showToast(msg: "Nothing");
           }
 
         }
@@ -54,7 +60,7 @@ class PushNotificationSystem{
 
     // Background - When the app is minimized and the app resumes from the push notification
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage remoteMessage) {
-      if(remoteMessage!=null){
+      if(remoteMessage != null){
         if(loggedInUser == "Doctor"){
           retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
         }
@@ -67,8 +73,12 @@ class PushNotificationSystem{
             retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
+          else if(remoteMessage.data["selected_service"] == "Visa Invitation"){
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
           else{
-            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+            Fluttertoast.showToast(msg: "Nothing");
           }
 
 
@@ -92,8 +102,12 @@ class PushNotificationSystem{
             retrieveCIConsultationDataFromDatabase(remoteMessage.data["consultation_id"],remoteMessage.data["patient_id"], remoteMessage.data["push_notify"], context);
           }
 
+          else if(remoteMessage.data["selected_service"] == "Visa Invitation"){
+            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
           else{
-            retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],context);
+            Fluttertoast.showToast(msg: "Nothing");
           }
         }
 
@@ -161,30 +175,30 @@ class PushNotificationSystem{
     });
   }
 
-  void retrieveConsultationDataFromDatabase(String consultationId, String patientId, String p, BuildContext context) {
+  void retrieveConsultationDataFromDatabase(String cId, String pId, String p, BuildContext context) {
     pushNotifyForDoc = p;
     selectedService = "Doctor Live Consultation";
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId)
+        .child(pId)
         .child("consultations")
-        .child(consultationId)
+        .child(cId)
         .once()
         .then((dataSnap) {
       DataSnapshot snapshot = dataSnap.snapshot;
       if (snapshot.exists) {
-        consultationId = (snapshot.value as Map)["id"].toString();
-        patientId = (snapshot.value as Map)["patientId"].toString();
+        consultationId = cId;
+        patientId = pId;
         selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
         if(pushNotifyForDoc == "true"){
           Fluttertoast.showToast(msg: pushNotifyForDoc!);
           pushNotifyForDoc = "false";
           showDialog(
-              context: context,
+              context: NavigationService.navigatorKey.currentContext!,
               barrierDismissible: false,
-              builder:(BuildContext context) => const PushNotificationDialogPrescription()
+              builder:(context) => const PushNotificationDialogPrescription()
           );
         }
 
@@ -201,30 +215,29 @@ class PushNotificationSystem{
     });
   }
 
-  retrieveCIConsultationDataFromDatabase(String consultationId, String patientId, String p, BuildContext context){
-    Fluttertoast.showToast(msg: "ID:" + consultationId + " Patient ID: " + patientId);
+  retrieveCIConsultationDataFromDatabase(String ciConsultationId, String pId, String p, BuildContext context){
     pushNotifyForCI = p;
     selectedService = "CI Consultation";
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
-        .child(patientId)
+        .child(pId)
         .child("CIConsultations")
-        .child(consultationId)
+        .child(ciConsultationId)
         .once().then((dataSnap) {
           DataSnapshot snapshot = dataSnap.snapshot;
           if(snapshot.exists) {
-            consultationId = (snapshot.value as Map)["id"].toString();
-            patientId = (snapshot.value as Map)["patientId"].toString();
+            consultationId = ciConsultationId;
+            patientId = pId;
             selectedCIConsultationInfo = CIConsultationModel.fromSnapshot(snapshot);
             if(pushNotifyForCI == "true"){
               Fluttertoast.showToast(msg: pushNotifyForCI!);
               pushNotifyForCI = "false";
               showDialog(
-                  context: context,
+                  context: NavigationService.navigatorKey.currentContext!,
                   barrierDismissible: false,
-                  builder:(BuildContext context) => const PushNotificationDialogPrescription()
+                  builder:(context) => const PushNotificationDialogPrescription()
               );
             }
 
@@ -242,27 +255,36 @@ class PushNotificationSystem{
 
   }
 
-  void retrieveVisaInvitationDataFromDatabase(String visaInvitationId, String patientId, BuildContext context) {
-    Fluttertoast.showToast(msg: "ID:" + visaInvitationId + "Patient ID:" + patientId);
+  void retrieveVisaInvitationDataFromDatabase(String visaInvitationId, String patientId, String p, BuildContext context) {
+    pushNotifyForVisa = p;
+    selectedService = "Visa Invitation";
     FirebaseDatabase.instance.ref()
         .child("Users")
         .child(currentFirebaseUser!.uid)
         .child("patientList")
         .child(patientId)
         .child("visaInvitation")
-        .child(invitationId!)
+        .child(visaInvitationId)
         .once()
         .then((dataSnap) {
       DataSnapshot snapshot = dataSnap.snapshot;
       if (snapshot.exists) {
-        selectedVisaInvitationInfo = VisaInvitationModel.fromSnapshot(snapshot);
-        if(visaInvitationId != null && patientId != null){
+        Fluttertoast.showToast(msg: pushNotifyForVisa!);
+        if(pushNotifyForVisa == "true"){
+          pushNotifyForVisa = "false";
+          invitationId = visaInvitationId;
+          selectedVisaInvitationInfo = VisaInvitationModel.fromSnapshot(snapshot);
           showDialog(
-              context: context,
+              context: NavigationService.navigatorKey.currentContext!,
               barrierDismissible: false,
-              builder:(BuildContext context) => const PushNotificationDialogInvitationLetter()
+              builder:(context) => const PushNotificationDialogInvitationLetter()
           );
         }
+
+        else{
+          Fluttertoast.showToast(msg: pushNotifyForCI!);
+        }
+
       }
 
       else {

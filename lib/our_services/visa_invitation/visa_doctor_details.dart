@@ -252,8 +252,6 @@ class _VisaDoctorDetailsState extends State<VisaDoctorDetails> {
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
                                 });
-
-
                               },
 
                               style: ElevatedButton.styleFrom(

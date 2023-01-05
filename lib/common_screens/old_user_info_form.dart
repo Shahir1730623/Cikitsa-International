@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:app/common_screens/choose_user.dart';
 import 'package:app/common_screens/new_user_info_form.dart';
 import 'package:app/common_screens/select_schedule_form.dart';
 import 'package:app/common_screens/talk_to_doctor_now.dart';
+import 'package:app/our_services/doctor_appointment/appointment_form_screen.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -527,6 +527,10 @@ class _OldUserFormState extends State<OldUserForm> {
                                   Navigator.pop(context);
                                   if(selectedService == "Visa Consultation"){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaFormScreen()));
+                                  }
+
+                                  else if(selectedService == "Doctor Appointment"){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AppointmentFormScreen()));
                                   }
 
                                   else if(selectedService == "CI Consultation"){

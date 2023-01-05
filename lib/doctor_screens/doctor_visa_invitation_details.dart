@@ -18,6 +18,7 @@ import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import '../navigation_service.dart';
 import '../widgets/progress_dialog.dart';
 
 class DoctorVisaInvitationDetails extends StatefulWidget {
@@ -83,7 +84,7 @@ class _DoctorVisaInvitationDetailsState extends State<DoctorVisaInvitationDetail
       print(e);
     }
 
-    Navigator.pop(context);
+    Navigator.pop(NavigationService.navigatorKey.currentContext!);
     var snackBar = SnackBar(content: Text("Downloaded ${reference.name}"));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 

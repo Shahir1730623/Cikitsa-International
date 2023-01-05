@@ -293,6 +293,7 @@ class _SelectScheduleState extends State<SelectSchedule> {
                               )
                             ],
                           ),
+
                           SizedBox(height: height * 0.03,),
 
                           Text(
@@ -413,6 +414,14 @@ class _SelectScheduleState extends State<SelectSchedule> {
                                       ),
                                     );
                                   }).toList(),
+                                  validator: (value){
+                                    if(value == null || value.isEmpty){
+                                      return "Select a reason";
+                                    }
+                                    else{
+                                      return null;
+                                    }
+                                  },
                                 ),
                               ),
                             ],
@@ -470,8 +479,9 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return "The field is empty";
-                              } else
+                              } else {
                                 return null;
+                              }
                             },
                           ),
 
@@ -587,23 +597,45 @@ class _SelectScheduleState extends State<SelectSchedule> {
                             height: 45,
                             child: ElevatedButton(
                               onPressed: ()  async {
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context){
-                                      return ProgressDialog(message: "Please wait...");
-                                    }
-                                );
+                                if (_formKey.currentState!.validate() && (dateCounter != 0 && dateCounter2 != 0)){
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context){
+                                        return ProgressDialog(message: "Please wait...");
+                                      }
+                                  );
 
-                                for (int i = 0; i < imageList.length; i++) {
-                                  await uploadFile(imageList[i]);
-                                  //downloadUrls.add(url);
+                                  for (int i = 0; i < imageList.length; i++) {
+                                    await uploadFile(imageList[i]);
+                                    //downloadUrls.add(url);
+                                  }
+
+                                  Timer(const Duration(seconds: 2),()  {
+                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
+                                  });
                                 }
 
-                                Timer(const Duration(seconds: 2),()  {
-                                  Navigator.pop(context);
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: formattedTime, visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
-                                });
+                                else{
+                                  if(dateCounter ==  0){
+                                    var snackBar = const SnackBar(content: Text('Please select From date'));
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
+
+                                  else if(dateCounter2 ==  0){
+                                    var snackBar = const SnackBar(content: Text('Please select To date'));
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
+
+                                  else{
+                                    var snackBar = const SnackBar(content: Text('Fill up the form correctly'));
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
+
+
+                                }
+
                               },
 
                               style: ElevatedButton.styleFrom(
