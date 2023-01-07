@@ -4,6 +4,7 @@ import 'package:app/TabPages/history_screen.dart';
 import 'package:app/home/home_screen.dart';
 import 'package:app/main_screen.dart';
 import 'package:app/main_screen/user_dashboard.dart';
+import 'package:app/our_services/visa_invitation/visa_doctor_choose.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../global/global.dart';
 import '../../models/specialization_model.dart';
 import '../../widgets/progress_dialog.dart';
 import 'live_doctors.dart';
@@ -188,7 +190,13 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                       if(searchTextEditingController.text.isEmpty){
                         return GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
+                            if(selectedService == "Doctor Live Consultation"){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
+                            }
+                            else{
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaDoctorChoose()));
+                            }
+
                           },
                           child: Container(
                             height: 130,
@@ -262,7 +270,12 @@ class _LiveConsultationCategoryState extends State<LiveConsultationCategory> {
                       else if ((specialization.toLowerCase().contains(searchTextEditingController.text.toLowerCase()))){
                         return GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
+                            if(selectedService == "Doctor Live Consultation"){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveDoctors()));
+                            }
+                            else{
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaDoctorChoose()));
+                            }
                           },
                           child: Container(
                             height: 130,

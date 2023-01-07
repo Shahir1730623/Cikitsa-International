@@ -225,6 +225,78 @@ class AssistantMethods{
     );
   }
 
+  static sendAppointmentPushNotificationToPatientNow(String deviceRegistrationToken, String appointmentId, String patientId, BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "Your appointment has been scheduled. Click here to see",
+        "title" : "Doctor Appointment Confirmation"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "appointment_id" : appointmentId,
+        "patient_id" : patientId,
+        "selected_service" : "Doctor Appointment",
+        "push_notify" : "true"
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
+  static sendAppointmentPushNotificationToDoctorNow(String deviceRegistrationToken, String appointmentId, String patientId, BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "You have an upcoming physical appointment. Click here to see",
+        "title" : "Physical Appointment Confirmation"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "appointment_id" : appointmentId,
+        "patient_id" : patientId,
+        "selected_service" : "Doctor Appointment",
+        "push_notify" : "true"
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
+
+
 
 
 }

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/consultant_model.dart';
 import '../models/consultation_model2.dart';
+import '../models/doctor_appointment_model.dart';
 import '../models/patient_model.dart';
 import '../models/visa_invitation_model.dart';
 
@@ -37,6 +38,7 @@ ConsultationModel? selectedConsultationInfo;
 ConsultationModel2? selectedConsultationInfoForDocAndConsultant;
 CIConsultationModel? selectedCIConsultationInfo;
 VisaInvitationModel? selectedVisaInvitationInfo;
+DoctorAppointmentModel? selectedDoctorAppointmentInfo;
 //MRZModel? mrzModel;
 
 String selectedService = "";
@@ -46,6 +48,8 @@ String? selectedServiceDatabaseParentName;
 String? pushNotifyForDoc = "false";
 String? pushNotifyForCI = "false";
 String? pushNotifyForVisa = "false";
+String? pushNotifyForAppointment = "false";
+
 String tempToken = "";
 bool isBroadcaster = true;
 bool? localNotify = false;

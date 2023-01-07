@@ -115,91 +115,89 @@ class _ChooseUserState extends State<ChooseUser> {
             const SizedBox(height: 70,),
 
            (selectedServiceDatabaseParentName == "consultations")?
-            Container(
-             child:  Row(
-               mainAxisAlignment: MainAxisAlignment.start,
-               children: [
-                 const SizedBox(width: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(width: 10),
 
-                 CircleAvatar(
-                   radius: 25,
-                   backgroundColor: Colors.grey[100],
-                   foregroundImage: NetworkImage(
-                     selectedDoctorInfo!.doctorImageUrl!,
-                   ),
-                 ),
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.grey[100],
+                  foregroundImage: NetworkImage(
+                    selectedDoctorInfo!.doctorImageUrl!,
+                  ),
+                ),
 
-                 const SizedBox(width: 10),
+                const SizedBox(width: 10),
 
-                 Expanded(
-                   flex: 2,
-                   child:  Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-                       Text(
-                          "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
-                           style: GoogleFonts.montserrat(
-                               fontWeight: FontWeight.bold,fontSize: 13
-                           )
-                       ),
+                Expanded(
+                  flex: 2,
+                  child:  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                         "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,fontSize: 13
+                          )
+                      ),
 
-                       const SizedBox(height: 5),
+                      const SizedBox(height: 5),
 
-                       Text(
-                           selectedDoctorInfo!.specialization!,
-                           style: GoogleFonts.montserrat(fontSize: 13
-                           )
-                       ),
+                      Text(
+                          selectedDoctorInfo!.specialization!,
+                          style: GoogleFonts.montserrat(fontSize: 13
+                          )
+                      ),
 
-                       const SizedBox(height: 5),
+                      const SizedBox(height: 5),
 
-                       Text(
-                           selectedDoctorInfo!.workplace!,
-                           style: GoogleFonts.montserrat(fontSize: 13
-                           )
-                       ),
+                      Text(
+                          selectedDoctorInfo!.workplace!,
+                          style: GoogleFonts.montserrat(fontSize: 13
+                          )
+                      ),
 
-                     ],
-                   ),
-                 ),
+                    ],
+                  ),
+                ),
 
-                 Expanded(
-                   flex: 1,
-                   child: Column(
-                     crossAxisAlignment: CrossAxisAlignment.center,
-                     children: [
-                       const SizedBox(height: 5,),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 5,),
 
-                       Text(
-                           "Patient in Queue",
-                           textAlign: TextAlign.center,
-                           style: GoogleFonts.montserrat(
-                               fontWeight: FontWeight.bold,fontSize: 10,color: Colors.blue
-                           )
-                       ),
+                      Text(
+                          "Patient in Queue",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,fontSize: 10,color: Colors.blue
+                          )
+                      ),
 
-                       const SizedBox(height: 5,),
+                      const SizedBox(height: 5,),
 
-                      CircleAvatar(
-                         radius: 20,
-                         backgroundColor: Colors.blue,
-                         child: Text(
-                           patientLength,
-                           style: const TextStyle(
-                               fontWeight: FontWeight.bold,color: Colors.white
-                           ),
-                         ),
-                       ),
-                     ],
-                   ),
-                 ),
+                     CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          patientLength,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,color: Colors.white
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                 const SizedBox(width: 5,),
+                const SizedBox(width: 5,),
 
 
-               ],
-             ),
-           ) : Container(),
+              ],
+            ) : Container(),
 
             SizedBox(height: height * 0.001),
 

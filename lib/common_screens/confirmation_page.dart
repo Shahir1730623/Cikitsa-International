@@ -68,7 +68,7 @@ class _ConfirmationPageScreenState extends State<ConfirmationPageScreen> {
     // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 3),(){
-      if(selectedService == "Visa Consultation"){
+      if(selectedService == "Visa Consultation" || selectedService == "Doctor Appointment"){
         showDialog(
             context: context,
             barrierDismissible: false,

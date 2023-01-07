@@ -9,6 +9,7 @@ import '../../common_screens/choose_user.dart';
 import '../../common_screens/choose_user2.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
+import '../doctor_live_consultation/live_consultation_category.dart';
 
 class VisaInvitationDashboard extends StatefulWidget {
   const VisaInvitationDashboard({Key? key}) : super(key: key);
@@ -187,7 +188,7 @@ class _VisaInvitationDashboardState extends State<VisaInvitationDashboard> {
                         // New Invitation History
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaDoctorChoose()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveConsultationCategory()));
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 10),

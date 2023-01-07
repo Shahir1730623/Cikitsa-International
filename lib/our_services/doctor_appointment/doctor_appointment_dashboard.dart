@@ -8,6 +8,7 @@ import '../../common_screens/choose_user2.dart';
 import '../../global/global.dart';
 import '../../main_screen.dart';
 import '../../testing.dart';
+import '../doctor_live_consultation/live_consultation_category.dart';
 
 class DoctorAppointmentDashboard extends StatefulWidget {
   const DoctorAppointmentDashboard({Key? key}) : super(key: key);
@@ -218,7 +219,7 @@ class _DoctorAppointmentDashboardState extends State<DoctorAppointmentDashboard>
                           // New Consultation History
                           GestureDetector(
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ChooseUser()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const LiveConsultationCategory()));
                             },
                             child: Container(
                               padding: const EdgeInsets.only(left: 10),

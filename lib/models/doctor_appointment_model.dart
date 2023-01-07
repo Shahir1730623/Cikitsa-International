@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
-class VisaInvitationModel{
+class DoctorAppointmentModel{
   String? id;
   String? userId;
   String? doctorId;
@@ -24,26 +24,12 @@ class VisaInvitationModel{
   String? patientGender;
   String? patientWeight;
   String? patientHeight;
-
-  String? attendantDocumentType;
-  String? attendantCountryCode;
-  String? attendantPassportNumber;
-  String? attendantSurname;
-  String? attendantGivenName;
-  String? attendantNationality;
-  String? attendantPassportPersonalNumber;
-  String? attendantDateOfBirth;
-  String? attendantGender;
-  String? attendantExpiryDate;
   String? visitationReason;
-  String? selectedVisaCenter;
   String? problem;
   String? status;
   String? payment;
 
-
-
-  VisaInvitationModel.fromSnapshot(DataSnapshot snapshot){
+  DoctorAppointmentModel.fromSnapshot(DataSnapshot snapshot){
     id = snapshot.key;
     userId = (snapshot.value as dynamic)["userId"];
     doctorId = (snapshot.value as dynamic)["doctorId"];
@@ -67,21 +53,10 @@ class VisaInvitationModel{
     patientGender = (snapshot.value as dynamic)["patientGender"];
     patientWeight = (snapshot.value as dynamic)["patientWeight"];
     patientHeight = (snapshot.value as dynamic)["patientHeight"];
-
-    attendantDocumentType = (snapshot.value as dynamic)["attendantDocumentType"];
-    attendantCountryCode = (snapshot.value as dynamic)["attendantCountryCode"];
-    attendantPassportNumber = (snapshot.value as dynamic)["attendantPassportNumber"];
-    attendantSurname = (snapshot.value as dynamic)["attendantSurname"];
-    attendantGivenName = (snapshot.value as dynamic)["attendantGivenName"];
-    attendantNationality = (snapshot.value as dynamic)["attendantNationality"];
-    attendantPassportPersonalNumber = (snapshot.value as dynamic)["attendantPassportPersonalNumber"];
-    attendantDateOfBirth = (snapshot.value as dynamic)["attendantDateOfBirth"];
-    attendantGender = (snapshot.value as dynamic)["attendantGender"];
-    attendantExpiryDate = (snapshot.value as dynamic)["attendantExpiryDate"];
     visitationReason = (snapshot.value as dynamic)["visitationReason"];
-    selectedVisaCenter = (snapshot.value as dynamic)["selectedVisaCenter"];
     problem = (snapshot.value as dynamic)["problem"];
     status = (snapshot.value as dynamic)["status"];
     payment = (snapshot.value as dynamic)["payment"];
   }
+
 }

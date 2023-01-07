@@ -51,6 +51,7 @@ class _CreateProfileState extends State<CreateProfile> {
   List<String> doctorExperienceList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"];
   String? selectedSpecialization;
   String? selectedExperience;
+  final _formKey = GlobalKey<FormState>();
 
 
   @override
@@ -183,220 +184,185 @@ class _CreateProfileState extends State<CreateProfile> {
                       ),
 
                       (userType == "Users" || userType == "Consultant") ?
-                      Column(
-                        children: [
-                          const SizedBox(height: 50,),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 50,),
 
-                          // Full name Container
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    width: 1.5, color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(15)
+                            // Full Name
+                            Text(
+                              "Full Name",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            TextFormField(
+                              controller: nameTextEditingController,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                labelText: "Full Name",
+                                hintText: "Full Name",
+                                prefixIcon: IconButton(
+                                  icon: const Icon(Icons.person,color: Colors.black,),
+                                  onPressed: () {},
+                                ),
+                                suffixIcon: nameTextEditingController.text.isEmpty
+                                    ? Container(width: 0)
+                                    : IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () =>
+                                      nameTextEditingController.clear(),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white),
+                                ),
+                                hintStyle:
+                                const TextStyle(color: Colors.grey, fontSize: 15),
+                                labelStyle:
+                                const TextStyle(color: Colors.black, fontSize: 15),
+                              ),
+                              validator: (value) {
+                                if (value == null ||value.isEmpty) {
+                                  return "The field is empty";
+                                }
+                                else {
+                                  return null;
+                                }
+                              },
+
+                            ),
+                            SizedBox(
+                              height: height * 0.02,
                             ),
 
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  width: 10,
+                            // Email Container
+                            Text(
+                              "Email",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            TextFormField(
+                              controller: emailTextEditingController,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                labelText: "Email",
+                                hintText: "Email",
+                                prefixIcon: IconButton(
+                                  icon: const Icon(Icons.email,color: Colors.black,),
+                                  onPressed: () {},
                                 ),
-
-                                // Country Code
-                                const Icon(Icons.person, size: 30,),
-
-                                const SizedBox(
-                                  width: 5,
+                                suffixIcon: emailTextEditingController.text.isEmpty
+                                    ? Container(width: 0)
+                                    : IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () =>
+                                      emailTextEditingController.clear(),
                                 ),
-
-                                // Border
-                                const Text(
-                                  "|",
-                                  style: TextStyle(
-                                      fontSize: 40, color: Colors.black),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey.shade500),
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-
-                                const SizedBox(
-                                  width: 10,
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white),
                                 ),
+                                hintStyle:
+                                const TextStyle(color: Colors.grey, fontSize: 15),
+                                labelStyle:
+                                const TextStyle(color: Colors.black, fontSize: 15),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "The field is empty";
+                                }
 
-                                // Full Name TextField
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.name,
-                                    maxLines: null,
-                                    controller: nameTextEditingController,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      labelText: "Full Name",
-                                      hintText: "Full Name",
-                                      suffixIcon: nameTextEditingController.text
-                                          .isEmpty
-                                          ? Container(width: 0)
-                                          : IconButton(
-                                        icon: const Icon(Icons.close),
-                                        onPressed: () =>
-                                            nameTextEditingController.clear(),
-                                      ),
+                                else if(RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)){
+                                  return null;
+                                }
 
-                                      hintStyle:
-                                      const TextStyle(
-                                          color: Colors.grey, fontSize: 16),
-                                      labelStyle:
-                                      const TextStyle(
-                                          color: Colors.black, fontSize: 16),
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return "The field is empty";
-                                      }
+                                else {
+                                  return "Wrong email format!";
+                                }
+                              },
 
-                                      else {
-                                        return null;
-                                      }
-                                    },
+                            ),
+                            SizedBox(
+                              height: height * 0.02,
+                            ),
+
+                            SizedBox(height: height * 0.3),
+
+                            SizedBox(
+                              width: double.infinity,
+                              height: 45,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()){
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) {
+                                            return ProgressDialog(message: "Please wait...");
+                                          }
+                                      );
+
+                                      saveInformationToDatabase();
+                                      Timer(const Duration(seconds: 3), () {
+                                        Navigator.pop(context);
+                                        Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) => const Initialization()));
+                                      });
+                                    }
+
+                                    else{
+                                      var snackBar = const SnackBar(content: Text('Fill up the form correctly'));
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    }
+
+                                  },
+
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.lightBlue,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12)
+                                      )
                                   ),
-                                ),
 
-                              ],
-                            ),
-
-
-                          ),
-
-                          SizedBox(
-                            height: height * 0.02,
-                          ),
-
-                          // Email Container
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    width: 1.5, color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(15)
-                            ),
-
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  width: 10,
-                                ),
-
-                                // Country Code
-                                const Icon(Icons.email, size: 30,),
-
-                                const SizedBox(
-                                  width: 5,
-                                ),
-
-                                // Border
-                                const Text(
-                                  "|",
-                                  style: TextStyle(
-                                      fontSize: 40, color: Colors.black),
-                                ),
-
-                                const SizedBox(
-                                  width: 10,
-                                ),
-
-                                // Email TextField
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.emailAddress,
-                                    maxLines: null,
-                                    controller: emailTextEditingController,
-                                    style: const TextStyle(
-                                      color: Colors.black,
+                                  child: const Text(
+                                    "Continue",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold
                                     ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      labelText: "Email",
-                                      hintText: "Email",
-                                      suffixIcon: emailTextEditingController
-                                          .text.isEmpty
-                                          ? Container(width: 0)
-                                          : IconButton(
-                                        icon: const Icon(Icons.close),
-                                        onPressed: () =>
-                                            emailTextEditingController.clear(),
-                                      ),
-
-                                      hintStyle:
-                                      const TextStyle(
-                                          color: Colors.grey, fontSize: 15),
-                                      labelStyle:
-                                      const TextStyle(
-                                          color: Colors.black, fontSize: 15),
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return "The field is empty";
-                                      }
-
-                                      else {
-                                        return null;
-                                      }
-                                    },
-                                  ),
-                                )
-
-                              ],
+                                  )
+                              ),
                             ),
 
-
-                          ),
-
-                          SizedBox(height: height * 0.25),
-
-                          SizedBox(
-                            width: double.infinity,
-                            height: 45,
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (BuildContext context) {
-                                        return ProgressDialog(message: "Please wait...");
-                                      }
-                                  );
-
-                                  saveInformationToDatabase();
-
-                                  Timer(const Duration(seconds: 3), () {
-                                    Navigator.pop(context);
-                                    Navigator.push(context, MaterialPageRoute(
-                                        builder: (context) => const Initialization()));
-                                  });
-                                },
-
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.lightBlue,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12)
-                                    )
-                                ),
-
-                                child: const Text(
-                                  "Continue",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                )
-                            ),
-                          ),
-                        ],
+                            SizedBox(height: height * 0.1),
+                          ],
+                        ),
                       ) :
+
                       Column(
                         children: [
                           const SizedBox(height: 30,),
@@ -457,8 +423,9 @@ class _CreateProfileState extends State<CreateProfile> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return "The field is empty";
-                              } else
+                              } else {
                                 return null;
+                              }
                             },
                           ),
                           SizedBox(
@@ -522,8 +489,9 @@ class _CreateProfileState extends State<CreateProfile> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return "The field is empty";
-                              } else
+                              } else {
                                 return null;
+                              }
                             },
                           ),
                           SizedBox(
@@ -588,8 +556,15 @@ class _CreateProfileState extends State<CreateProfile> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return "The field is empty";
-                              } else
+                              }
+
+                              else if(RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)){
                                 return null;
+                              }
+
+                              else {
+                                return "Wrong email format!";
+                              }
                             },
                           ),
                           SizedBox(
@@ -658,6 +633,15 @@ class _CreateProfileState extends State<CreateProfile> {
                                 ),
                               );
                             }).toList(),
+                            validator: (value){
+                              if (value!.isEmpty) {
+                                return "Specify specialization";
+                              }
+
+                              else {
+                                return null;
+                              }
+                            },
                           ),
                           SizedBox(
                             height: height * 0.015,

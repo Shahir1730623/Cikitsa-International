@@ -4,6 +4,7 @@ import 'package:app/models/ci_consultation_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:app/widgets/push_notification_dialog_doctor.dart';
 import 'package:app/widgets/push_notification_dialog_prescription.dart';
+import 'package:app/widgets/push_notification_physical_appointment.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ import '../global/global.dart';
 import '../models/consultation_model.dart';
 import '../models/consultation_model2.dart';
 import '../models/consultation_payload_model.dart';
+import '../models/doctor_appointment_model.dart';
 import '../models/visa_invitation_model.dart';
 import '../navigation_service.dart';
 import '../service_file/local_notification_service.dart';
@@ -46,6 +48,10 @@ class PushNotificationSystem{
 
           else if(remoteMessage.data["selected_service"] == "Visa Invitation"){
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
+          else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
           }
 
           else{
@@ -290,6 +296,42 @@ class PushNotificationSystem{
       else {
         Fluttertoast.showToast(msg: "No Visa Invitation record exist");
       }
+    });
+  }
+
+  void retrieveDoctorAppointmentDataFromDatabase(String apptId,String pId,String p, BuildContext context){
+    pushNotifyForAppointment = p;
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(pId)
+        .child("doctorAppointment")
+        .child(apptId).once().then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        Fluttertoast.showToast(msg: pushNotifyForAppointment!);
+        if(pushNotifyForAppointment == "true"){
+          pushNotifyForAppointment = "false";
+          appointmentId = apptId;
+          selectedDoctorAppointmentInfo = DoctorAppointmentModel.fromSnapshot(snapshot);
+          showDialog(
+              context: NavigationService.navigatorKey.currentContext!,
+              barrierDismissible: false,
+              builder:(context) => const PushNotificationPhysicalAppointment()
+          );
+        }
+
+        else{
+          Fluttertoast.showToast(msg: pushNotifyForCI!);
+        }
+
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No Visa Invitation record exist");
+      }
+
     });
   }
 

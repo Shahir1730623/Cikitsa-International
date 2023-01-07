@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:app/consultant_screens/ci_consultations.dart';
+import 'package:app/consultant_screens/physical_appointments.dart';
 import 'package:app/consultant_screens/telemedicine_consultations.dart';
 import 'package:app/global/global.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -264,16 +265,21 @@ class _ConsultantDashboardState extends State<ConsultantDashboard> {
 
                           Column(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(width: 1,color: Colors.grey.shade400),
-                                ),
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: Image.asset(
-                                      "assets/authenticationImages/stethoscope-2.png"
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PhysicalAppointments()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(width: 1,color: Colors.grey.shade400),
+                                  ),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: Image.asset(
+                                        "assets/authenticationImages/stethoscope-2.png"
+                                    ),
                                   ),
                                 ),
                               ),

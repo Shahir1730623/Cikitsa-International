@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/our_services/ci_consultation/consultation_history.dart';
+import 'package:app/our_services/doctor_appointment/doctor_appointment_history.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -129,6 +130,10 @@ class _ChooseUser2State extends State<ChooseUser2> {
 
                               else if (selectedService == "Visa Consultation"){
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const VisaInvitationHistory()));
+                              }
+
+                              else if (selectedService == "Doctor Appointment"){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorAppointmentHistory()));
                               }
 
                               else{

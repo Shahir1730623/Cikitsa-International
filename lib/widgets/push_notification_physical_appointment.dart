@@ -1,25 +1,26 @@
-import 'package:app/global/global.dart';
+import 'dart:async';
+
+import 'package:app/our_services/doctor_appointment/doctor_appointment_history_details.dart';
+import 'package:app/widgets/progress_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../main_screen.dart';
-
-class VisaConfirmationProgressDialog extends StatefulWidget {
-  const VisaConfirmationProgressDialog({Key? key}) : super(key: key);
+class PushNotificationPhysicalAppointment extends StatefulWidget {
+  const PushNotificationPhysicalAppointment({Key? key}) : super(key: key);
 
   @override
-  State<VisaConfirmationProgressDialog> createState() => _VisaConfirmationProgressDialogState();
+  State<PushNotificationPhysicalAppointment> createState() => _PushNotificationPhysicalAppointmentState();
 }
 
-class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgressDialog> {
+class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPhysicalAppointment> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 250),
+        margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 240),
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 0),
         width: double.infinity,
         decoration: BoxDecoration(
@@ -28,13 +29,13 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
         ),
         child: Column(
           children: [
-            SizedBox(height: height * 0.04,),
+            SizedBox(height: height * 0.05,),
 
             Text(
-              "Your request is sent us",
+              "Your appointment is confirmed",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
-                  color: Colors.black,
+                  color: Colors.blue,
                   fontWeight: FontWeight.bold,
                   fontSize: 20
               ),
@@ -43,19 +44,7 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
             SizedBox(height: height * 0.03,),
 
             Text(
-              'Note',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.montserrat(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-            ),
-
-            SizedBox(height: height * 0.01,),
-
-            Text(
-              (selectedService == "Visa Invitation") ? 'You will receive notification once doctor\n uploads your invitation' : 'You will receive notification once your appointment booking is confirmed',
+              'Please press the button "View Details" to get redirected to the appointment page',
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -64,14 +53,25 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
               ),
             ),
 
-            SizedBox(height: height * 0.05,),
+            SizedBox(height: height * 0.06,),
 
             SizedBox(
               width: double.infinity,
               height: 45,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
                 onPressed: ()  {
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context){
+                        return ProgressDialog(message: "Please wait...");
+                      }
+                  );
+
+                  Timer(const Duration(seconds: 5),()  {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorAppointmentHistoryDetails()));
+                  });
                 },
 
                 style: ElevatedButton.styleFrom(
@@ -79,8 +79,9 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20))),
 
-                child: Text(
-                  ("Return"),
+                icon: const Icon(Icons.video_call),
+                label: Text(
+                  "View Details",
                   style: GoogleFonts.montserrat(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -90,10 +91,10 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
               ),
             ),
 
+
           ],
         ),
       ),
     );
   }
 }
-

@@ -332,25 +332,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
     Map appointmentInfoMap = {
       "id" : appointmentId,
       "userId" : currentFirebaseUser!.uid,
-      "date" : DateFormat('dd-MM-yyyy').format(DateTime.now()),
-      "time" : DateFormat.jm().format(DateTime.now()),
+      "date" : widget.formattedDate,
+      "time" : "TBA",
       "doctorId" : selectedDoctorInfo!.doctorId,
       "doctorName" : "Dr. " + selectedDoctorInfo!.doctorFirstName! + " " + selectedDoctorInfo!.doctorLastName!,
       "doctorImageUrl" : selectedDoctorInfo!.doctorImageUrl,
       "specialization" : selectedDoctorInfo!.specialization,
       "workplace" : selectedDoctorInfo!.workplace,
       "patientId" : patientId,
-      "documentType" : (mapData)['type'],
-      "countryCode" : (mapData)['country_Code'],
-      "passportNumber" : (mapData)['document_Number'],
-      "patientSurname" : (mapData)['surname'],
-      "patientGivenName" : (mapData)['given_Name'],
-      "nationality" : (mapData['nationality'] == "BGD") ? "BANGLADESHI" : "INDIAN",
-      "passportPersonalNumber" : mapData['personal_Number'],
-      "dateOfBirth" : mapData['birth_Date'],
-      "gender" : mapData['gender'],
-      "expiryDate" : mapData['expiry_Date'],
-      "patientGender" : selectedPatientInfo!.gender,
+      "documentType" : (mapDataForAppointment)['type'],
+      "countryCode" : (mapDataForAppointment)['country_Code'],
+      "passportNumber" : (mapDataForAppointment)['document_Number'],
+      "patientSurname" : (mapDataForAppointment)['surname'],
+      "patientGivenName" : (mapDataForAppointment)['given_Name'],
+      "nationality" : (mapDataForAppointment['nationality'] == "BGD") ? "BANGLADESHI" : "INDIAN",
+      "passportPersonalNumber" : mapDataForAppointment['personal_Number'],
+      "dateOfBirth" : mapDataForAppointment['birth_Date'],
+      "gender" : mapDataForAppointment['gender'],
+      "expiryDate" : mapDataForAppointment['expiry_Date'],
       "patientWeight" : selectedPatientInfo!.weight,
       "patientHeight" : selectedPatientInfo!.height,
       "visitationReason": widget.visitationReason,
@@ -361,14 +360,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     FirebaseDatabase.instance.ref().child("Users")
         .child(currentFirebaseUser!.uid)
-        .child(patientId!).child('patientList')
+        .child('patientList')
+        .child(patientId!)
         .child("doctorAppointment")
-        .child(appointmentId!).set(appointmentInfoMap);
+        .child(appointmentId!)
+        .set(appointmentInfoMap);
 
-    FirebaseDatabase.instance.ref().child("Doctors")
-        .child(selectedDoctorInfo!.doctorId!)
-        .child("doctorAppointment")
-        .child(appointmentId!).set(appointmentInfoMap);
+    FirebaseDatabase.instance.ref()
+        .child("doctorAppointmentRequests")
+        .child(appointmentId!)
+        .set(appointmentInfoMap);
+
   }
 
 
@@ -469,9 +471,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
               Row(
                 children: [
-                  SizedBox(width: 10,),
+                  const SizedBox(width: 10,),
                   Flexible(child: Image.asset("assets/Mastercard-logo.png",width: 50,)),
-                  SizedBox(width: 25,),
+                  const SizedBox(width: 25,),
                   Text(
                     "Pay with Card",
                     style: GoogleFonts.montserrat(
