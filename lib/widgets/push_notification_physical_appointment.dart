@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:app/global/global.dart';
 import 'package:app/our_services/doctor_appointment/doctor_appointment_history_details.dart';
 import 'package:app/widgets/progress_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../doctor_screens/doctor_physical_appointments_details.dart';
 
 class PushNotificationPhysicalAppointment extends StatefulWidget {
   const PushNotificationPhysicalAppointment({Key? key}) : super(key: key);
@@ -70,7 +73,13 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
 
                   Timer(const Duration(seconds: 5),()  {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorAppointmentHistoryDetails()));
+                    if(loggedInUser == "Users"){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorAppointmentHistoryDetails()));
+                    }
+                    else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorPhysicalAppointmentDetails()));
+                    }
+
                   });
                 },
 

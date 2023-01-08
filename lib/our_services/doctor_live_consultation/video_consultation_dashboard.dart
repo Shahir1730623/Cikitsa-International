@@ -162,7 +162,7 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                         ),
                       ),
 
-                      SizedBox(height: height * 0.02,),
+                      SizedBox(height: height * 0.03,),
 
                       // Consultation History
                       GestureDetector(
@@ -211,54 +211,7 @@ class _VideoConsultationDashboardState extends State<VideoConsultationDashboard>
                         ),
                       ),
 
-                      SizedBox(height: height * 0.02,),
-
-                      // Last Consultation
-                      GestureDetector(
-                        onTap: (){},
-                        child: Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: height * 0.1,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.grey,),
-                            color: Colors.white,
-                          ),
-
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: Color(0xffF5F5F5),
-                                radius: 30,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Image.asset(
-                                    "assets/history.png",
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(width: 25,),
-
-                              Text(
-                                "Last Consultation",
-                                style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17
-                                ),
-                              ),
-
-                            ],
-                          ),
-
-
-                        ),
-                      ),
-
-                      SizedBox(height: height * 0.02,),
+                      SizedBox(height: height * 0.03,),
 
                       // How to book Consultation
                       GestureDetector(

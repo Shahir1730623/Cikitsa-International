@@ -225,7 +225,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     backgroundColor: Colors.blue,
                     radius: 35,
                     child: Text(
-                      currentUserInfo!.name![0],
+                      (currentUserInfo != null) ? currentUserInfo!.name![0] : "",
                       style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           color: Colors.white
@@ -290,14 +290,14 @@ class _UserDashboardState extends State<UserDashboard> {
                            ),
                          ],
                          options: CarouselOptions(
-                           height: height * 0.25,
+                           height: height * 0.26,
                            enlargeCenterPage: true,
                            autoPlay: true,
                            aspectRatio: 16 / 9,
                            autoPlayCurve: Curves.fastOutSlowIn,
                            enableInfiniteScroll: true,
                            autoPlayAnimationDuration: Duration(milliseconds: 800),
-                           viewportFraction: 0.8,
+                           viewportFraction: 0.9,
                          ),
                        ),
                      ],

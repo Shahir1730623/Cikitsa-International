@@ -548,7 +548,7 @@ class _AppointmentMedicalDocumentFormState extends State<AppointmentMedicalDocum
 
                               Timer(const Duration(seconds: 5),()  {
                                 Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: '', formattedTime: '', visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(formattedDate: formattedDate, formattedTime: '', visitationReason: selectedReasonOfVisit, problem: problemTextEditingController.text.trim(), selectedCenter: '',)));
                               });
                             }
 

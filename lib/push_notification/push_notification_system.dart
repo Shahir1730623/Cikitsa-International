@@ -34,7 +34,14 @@ class PushNotificationSystem{
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? remoteMessage){
       if(remoteMessage!=null){
         if(loggedInUser == "Doctor"){
-          retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          }
+
+          else{
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
         }
 
         else{
@@ -83,6 +90,10 @@ class PushNotificationSystem{
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
           }
 
+          else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
           else{
             Fluttertoast.showToast(msg: "Nothing");
           }
@@ -110,6 +121,10 @@ class PushNotificationSystem{
 
           else if(remoteMessage.data["selected_service"] == "Visa Invitation"){
             retrieveVisaInvitationDataFromDatabase(remoteMessage.data["visa_invitation_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+          }
+
+          else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
           }
 
           else{
@@ -301,38 +316,74 @@ class PushNotificationSystem{
 
   void retrieveDoctorAppointmentDataFromDatabase(String apptId,String pId,String p, BuildContext context){
     pushNotifyForAppointment = p;
-    FirebaseDatabase.instance.ref()
-        .child("Users")
-        .child(currentFirebaseUser!.uid)
-        .child("patientList")
-        .child(pId)
-        .child("doctorAppointment")
-        .child(apptId).once().then((dataSnap) {
-      DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        Fluttertoast.showToast(msg: pushNotifyForAppointment!);
-        if(pushNotifyForAppointment == "true"){
-          pushNotifyForAppointment = "false";
-          appointmentId = apptId;
-          selectedDoctorAppointmentInfo = DoctorAppointmentModel.fromSnapshot(snapshot);
-          showDialog(
-              context: NavigationService.navigatorKey.currentContext!,
-              barrierDismissible: false,
-              builder:(context) => const PushNotificationPhysicalAppointment()
-          );
+    if(loggedInUser == "Users"){
+      FirebaseDatabase.instance.ref()
+          .child("Users")
+          .child(currentFirebaseUser!.uid)
+          .child("patientList")
+          .child(pId)
+          .child("doctorAppointment")
+          .child(apptId).once().then((dataSnap) {
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          Fluttertoast.showToast(msg: pushNotifyForAppointment!);
+          if(pushNotifyForAppointment == "true"){
+            pushNotifyForAppointment = "false";
+            appointmentId = apptId;
+            selectedDoctorAppointmentInfo = DoctorAppointmentModel.fromSnapshot(snapshot);
+            showDialog(
+                context: NavigationService.navigatorKey.currentContext!,
+                barrierDismissible: false,
+                builder:(context) => const PushNotificationPhysicalAppointment()
+            );
+          }
+
+          else{
+            Fluttertoast.showToast(msg: pushNotifyForCI!);
+          }
+
         }
 
-        else{
-          Fluttertoast.showToast(msg: pushNotifyForCI!);
+        else {
+          Fluttertoast.showToast(msg: "No Visa Invitation record exist");
         }
 
-      }
+      });
+    }
 
-      else {
-        Fluttertoast.showToast(msg: "No Visa Invitation record exist");
-      }
+    else{
+      FirebaseDatabase.instance.ref()
+          .child("Doctors")
+          .child(currentFirebaseUser!.uid)
+          .child("appointments")
+          .child(apptId).once().then((dataSnap) {
+        DataSnapshot snapshot = dataSnap.snapshot;
+        if (snapshot.exists) {
+          Fluttertoast.showToast(msg: pushNotifyForAppointment!);
+          if(pushNotifyForAppointment == "true"){
+            pushNotifyForAppointment = "false";
+            appointmentId = apptId;
+            selectedDoctorAppointmentInfo = DoctorAppointmentModel.fromSnapshot(snapshot);
+            showDialog(
+                context: NavigationService.navigatorKey.currentContext!,
+                barrierDismissible: false,
+                builder:(context) => const PushNotificationPhysicalAppointment()
+            );
+          }
 
-    });
+          else{
+            Fluttertoast.showToast(msg: pushNotifyForCI!);
+          }
+
+        }
+
+        else {
+          Fluttertoast.showToast(msg: "No Visa Invitation record exist");
+        }
+
+      });
+    }
+
   }
 
 

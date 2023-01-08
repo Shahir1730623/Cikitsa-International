@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dash/flutter_dash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../main_screen.dart';
 import '../../navigation_service.dart';
 import '../../widgets/progress_dialog.dart';
+import '../../widgets/seperator.dart';
 
 class HistoryScreenDetails extends StatefulWidget {
   const HistoryScreenDetails({Key? key}) : super(key: key);
@@ -28,7 +30,6 @@ class HistoryScreenDetails extends StatefulWidget {
 class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
   String imageUrl = "";
   bool flag = false;
-
 
   Future<void> checkPrescriptionStatus() async {
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('consultationImages/'+ selectedConsultationInfo!.consultationId! + "/doctorPrescription.png" );
@@ -97,45 +98,12 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 1,
-        title: Text(
-          "History details",
-          style: GoogleFonts.montserrat(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black
-          ),
-        ),
-
-        leading: GestureDetector(
-          onTap: (){
-            Navigator.pop(context);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Colors.blue
-              ),
-              child: const Icon(
-                Icons.arrow_back_outlined,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              height: height * 0.25,
+              height: height * 0.3,
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -160,183 +128,313 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
               ),
             ),
 
-            SizedBox(height: height * 0.02,),
+            SizedBox(height: height * 0.01,),
 
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Consultation Information",
-                        textAlign: TextAlign.start,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: height * 0.02,),
-
-                  DottedBorder(
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(10),
-                    color: Colors.blue,
-                    dashPattern: [10,5],
-                    strokeWidth: 1,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 58,right: 58,top: 15,bottom: 15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          // Consultation Fee
-                          Text(
-                            "Consultation ID",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 20,
-                              color: Color(0x59090808),
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            "#" + selectedConsultationInfo!.consultationId!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.020,),
-
-                          // Consultation Fee
-                          Text(
-                            "Consultation Fee",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 20,
-                              color: Color(0x59090808),
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            "৳" + selectedConsultationInfo!.doctorFee!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.020,),
-
-                          // Date
-                          Text(
-                            "Date",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                color: const Color(0x59090808)
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            selectedConsultationInfo!.date!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.020,),
-
-                          // Time
-                          Text(
-                            "Time",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                color: const Color(0x59090808)
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            selectedConsultationInfo!.time!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.020,),
-
-                          // Visitation Reason
-                          Text(
-                            "Visitation Reason",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                color: const Color(0x59090808)
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            selectedConsultationInfo!.visitationReason!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.020,),
-
-                          // ConsultationStatus Reason
-                          Text(
-                            "Consultation Status",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                color: const Color(0x59090808)
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.010,),
-
-                          Text(
-                            selectedConsultationInfo!.consultationType!,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                            ),
-                          ),
-
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+            Text(
+              selectedConsultationInfo!.specialization!,
+              style: GoogleFonts.montserrat(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade600
               ),
             ),
 
             SizedBox(height: height * 0.005,),
 
+            Text(
+              selectedConsultationInfo!.workplace!,
+              style: GoogleFonts.montserrat(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade600
+              ),
+            ),
+
+            SizedBox(height: height * 0.005,),
+
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Patient',
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade600
+                    ),
+                  ),
+
+                  const SizedBox(height: 5,),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedPatientInfo!.firstName! + " " + selectedPatientInfo!.lastName! +  " (" + selectedPatientInfo!.gender! + ", " + selectedPatientInfo!.age! + " yrs, " + selectedPatientInfo!.weight! + " kg",
+                          style: GoogleFonts.montserrat(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  const MySeparator(color: Colors.grey,),
+
+                  const SizedBox(height: 15,),
+
+                  Text(
+                    'Sickness',
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade600
+                    ),
+                  ),
+
+                  const SizedBox(height: 5,),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedConsultationInfo!.visitationReason!,
+                          style: GoogleFonts.montserrat(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  const MySeparator(color: Colors.grey,),
+
+                  const SizedBox(height: 15,),
+
+                  Text(
+                    'Problem (in details)',
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade600
+                    ),
+                  ),
+
+                  const SizedBox(height: 5,),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedConsultationInfo!.problem!,
+                          style: GoogleFonts.montserrat(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: height * 0.05,),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Consultation Information",
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.montserrat(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: height * 0.02,),
+
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.blue),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Consultation ID",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0x59090808),
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      "#${selectedConsultationInfo!.consultationId!}",
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Consultation Fee",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0x59090808),
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      "৳${selectedConsultationInfo!.doctorFee!}",
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 15,),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Date",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: const Color(0x59090808),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      selectedConsultationInfo!.date!,
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Time",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: const Color(0x59090808),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      selectedConsultationInfo!.time!,
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 15,),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Consultation Status",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Color(0x59090808),
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      selectedConsultationInfo!.consultationType!,
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Payment Status",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Color(0x59090808),
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.010,),
+                                    Text(
+                                      selectedConsultationInfo!.payment!,
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 13,
+                                          color: Colors.black
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10,),
 
             // Order Medicine Container
             GestureDetector(

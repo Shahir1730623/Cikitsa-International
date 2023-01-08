@@ -114,22 +114,10 @@ class _VisaInvitationHistoryState extends State<VisaInvitationHistory> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ProgressDialog(message: "Please wait...");
-                          }
-                      );
-
                       setState(() {
                         invitationStatus = "Waiting";
                       });
 
-
-                      Timer(const Duration(seconds: 1), () {
-                        Navigator.pop(context);
-                      });
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: (invitationStatus == "Waiting") ? Colors.white : Colors.grey.shade200,
@@ -155,21 +143,10 @@ class _VisaInvitationHistoryState extends State<VisaInvitationHistory> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ProgressDialog(message: "Please wait...");
-                          }
-                      );
-
                       setState(() {
                         invitationStatus = "Accepted";
                       });
 
-                      Timer(const Duration(seconds: 1), () {
-                        Navigator.pop(context);
-                      });
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: (invitationStatus == "Accepted") ? Colors.white : Colors.grey.shade200,

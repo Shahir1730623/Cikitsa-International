@@ -82,9 +82,20 @@ class _DoctorAppointmentHistoryDetailsState extends State<DoctorAppointmentHisto
             Text(
               selectedDoctorAppointmentInfo!.specialization!,
               style: GoogleFonts.montserrat(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade600
+              ),
+            ),
+
+            SizedBox(height: height * 0.01),
+
+            Text(
+              selectedDoctorAppointmentInfo!.workplace!,
+              style: GoogleFonts.montserrat(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey
+                  color: Colors.grey.shade600
               ),
             ),
 
@@ -684,155 +695,138 @@ class _DoctorAppointmentHistoryDetailsState extends State<DoctorAppointmentHisto
 
                 ),
 
-                SizedBox(height: height * 0.04,),
+                SizedBox(height: height * 0.03,),
 
-                DottedBorder(
-                  borderType: BorderType.RRect,
-                  radius: const Radius.circular(10),
-                  color: Colors.blue,
-                  dashPattern: [10,5],
-                  strokeWidth: 1,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Consultation ID
-                            Text(
-                              "Appointment ID",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            Text(
-                              selectedDoctorAppointmentInfo!.id!,
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            ),
-
-                            // Consultant Name
-                            Text(
-                              "Doctor Name",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            Text(
-                              selectedDoctorAppointmentInfo!.doctorName!,
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            ),
-
-                            // Consultant Fee
-                            Text(
-                              "Service Fee",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            Text(
-                              "৳700",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            ),
-
-                            // Visitation Reason
-                            Text(
-                              "Visitation Reason",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            Text(
-                              selectedDoctorAppointmentInfo!.visitationReason!,
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            ),
-
-                            // Sickness (in details)
-                            Text(
-                              "Sickness (in details)",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.01,
-                            ),
-                            Text(
-                              selectedDoctorAppointmentInfo!.problem!,
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black
-                              ),
-                            ),
-
-                            SizedBox(
-                              height: height * 0.02,
-                            ),
-
-                          ],
+                        Text(
+                          "Consultation Information",
+                          textAlign: TextAlign.start,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
-
-
                     ),
-                  ),
+
+                    SizedBox(height: height * 0.02,),
+
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.blue),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    "Appointment ID",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.010,),
+                                  Text(
+                                    selectedDoctorAppointmentInfo!.id!,
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              Column(
+                                children: [
+                                  Text(
+                                    "Service Fee",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.010,),
+                                  Text(
+                                    "৳700",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 15,),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    "Sickness",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.010,),
+                                  Text(
+                                    selectedDoctorAppointmentInfo!.visitationReason!,
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              Column(
+                                children: [
+                                  Text(
+                                    "Status",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.010,),
+                                  Text(
+                                    selectedDoctorAppointmentInfo!.status!,
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 13,
+                                        color: Colors.black
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+
+                        ],
+                      ),
+                    )
+                  ],
                 ),
+
               ],
             ),
           ),

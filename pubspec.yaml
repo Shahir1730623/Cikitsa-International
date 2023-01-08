@@ -71,6 +71,7 @@ dependencies:
   mrz_scanner: ^0.0.1+3
   firebase_analytics: ^10.1.0
   age_calculator: ^1.0.0
+  flutter_dash:
 
 
 

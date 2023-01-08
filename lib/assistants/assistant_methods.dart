@@ -69,6 +69,7 @@ class AssistantMethods{
         "id" : "1",
         "status" : "done",
         "consultation_id" : consultationId,
+        "selected_service" : "Doctor Live Consultation"
       },
 
       "to" : deviceRegistrationToken

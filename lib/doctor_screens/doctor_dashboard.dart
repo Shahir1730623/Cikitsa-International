@@ -45,7 +45,6 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
         .child(consultationId).child("consultationType").set("Accepted");
   }
 
-
   checkPatientsInQueue(){
     timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
       FirebaseDatabase.instance.ref()

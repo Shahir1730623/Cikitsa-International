@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:app/models/consultant_model.dart';
 import 'package:app/models/consultation_model.dart';
+import 'package:app/models/patient_model.dart';
 import 'package:app/our_services/doctor_live_consultation/history_screen_details.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -72,6 +73,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         Fluttertoast.showToast(msg: "No doctor record exist with these credentials");
       }
     });
+
     retrieveConsultationDataFromDatabase();
 
   }
@@ -86,6 +88,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
       DataSnapshot snapshot = dataSnap.snapshot;
       if (snapshot.exists) {
         selectedConsultationInfo = ConsultationModel.fromSnapshot(snapshot);
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No consultation record exist");
+      }
+    });
+
+    selectedService = "Doctor Live Consultation";
+    retrievePatientDataFromDatabase();
+  }
+
+  retrievePatientDataFromDatabase() {
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .once()
+        .then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
       }
 
       else {

@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../global/global.dart';
 import '../models/doctor_appointment_model.dart';
 import '../widgets/progress_dialog.dart';
+import 'doctor_physical_appointments_details.dart';
 
 class DoctorPhysicalAppointments extends StatefulWidget {
   const DoctorPhysicalAppointments({Key? key}) : super(key: key);
@@ -165,7 +166,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
 
                               Timer(const Duration(seconds: 5), () {
                                 Navigator.pop(context);
-                                //Navigator.push(context, MaterialPageRoute(builder: (context) => const PhysicalAppointmentDetails()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorPhysicalAppointmentDetails()));
                               });
                             },
 
@@ -352,6 +353,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                             ),
                           );
                         }
+
                         else {
                           return GestureDetector(
                             onTap: () {

@@ -17,7 +17,9 @@ import 'package:toggle_switch/toggle_switch.dart';
 import '../../common_screens/coundown_screen.dart';
 import '../../common_screens/waiting_screen.dart';
 import '../../global/global.dart';
+import '../../models/patient_model.dart';
 import '../../widgets/progress_dialog.dart';
+import '../../widgets/seperator.dart';
 import '../visa_invitation/video_call.dart';
 
 class ConsultationHistory extends StatefulWidget {
@@ -97,6 +99,27 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
     });
 
     selectedService = "CI Consultation";
+    retrievePatientDataFromDatabase();
+  }
+
+  retrievePatientDataFromDatabase() {
+    FirebaseDatabase.instance.ref().child("Users")
+        .child(currentFirebaseUser!.uid)
+        .child("patientList")
+        .child(patientId!)
+        .once()
+        .then((dataSnap) {
+      DataSnapshot snapshot = dataSnap.snapshot;
+      if (snapshot.exists) {
+        selectedPatientInfo = PatientModel.fromSnapshot(snapshot);
+      }
+
+      else {
+        Fluttertoast.showToast(msg: "No consultation record exist");
+      }
+    });
+
+    selectedService = "Doctor Live Consultation";
   }
 
 
@@ -154,10 +177,6 @@ class _ConsultationHistoryState extends State<ConsultationHistory> {
                         fontWeight: FontWeight.bold
                     ),
                   ),
-
-                  const SizedBox(height: 20,),
-
-                  const Divider(thickness: 2,height: 1,color: Colors.blue,),
 
                   const SizedBox(height: 20,),
 
