@@ -85,7 +85,7 @@ class _ConsultationHistoryDetailsState extends State<ConsultationHistoryDetails>
     }
 
     Navigator.pop(context);
-    Fluttertoast.showToast(msg: "Photo Saved to gallery");
+    Fluttertoast.showToast(msg: "Photo Saved to gallery",toastLength: Toast.LENGTH_LONG);
 
   }
 

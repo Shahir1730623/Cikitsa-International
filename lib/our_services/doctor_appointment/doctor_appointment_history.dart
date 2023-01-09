@@ -92,22 +92,10 @@ class _DoctorAppointmentHistoryState extends State<DoctorAppointmentHistory> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ProgressDialog(message: "Please wait...");
-                          }
-                      );
-
                       setState(() {
                         appointmentStatus = "Upcoming";
                       });
 
-
-                      Timer(const Duration(seconds: 1), () {
-                        Navigator.pop(context);
-                      });
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: (appointmentStatus == "Upcoming") ? Colors.white : Colors.grey.shade200,
@@ -133,21 +121,10 @@ class _DoctorAppointmentHistoryState extends State<DoctorAppointmentHistory> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ProgressDialog(message: "Please wait...");
-                          }
-                      );
-
                       setState(() {
                         appointmentStatus = "Completed";
                       });
 
-                      Timer(const Duration(seconds: 1), () {
-                        Navigator.pop(context);
-                      });
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: (appointmentStatus == "Completed") ? Colors.white : Colors.grey.shade200,
@@ -159,7 +136,7 @@ class _DoctorAppointmentHistoryState extends State<DoctorAppointmentHistory> {
                         )),
 
                     child: Text(
-                      "Accepted",
+                      "Completed",
                       style: GoogleFonts.montserrat(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

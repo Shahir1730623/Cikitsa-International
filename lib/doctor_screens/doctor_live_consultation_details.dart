@@ -137,7 +137,7 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
         String deviceRegistrationToken = snapshot.value.toString();
         // send notification now
         await AssistantMethods.sendPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, selectedConsultationInfoForDocAndConsultant!.patientId!, "Doctor Live Consultation", context);
-        Fluttertoast.showToast(msg: "Notification sent to patient successfully");
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully",toastLength: Toast.LENGTH_LONG);
       }
 
       else{
@@ -146,29 +146,6 @@ class _DoctorLiveConsultationDetailsState extends State<DoctorLiveConsultationDe
     });
   }
 
-  /*void retrievePatientDataFromDatabase() {
-    FirebaseDatabase.instance.ref()
-        .child("Doctors")
-        .child(currentFirebaseUser!.uid)
-        .child("consultations")
-        .child(consultationId!)
-        .once()
-        .then((dataSnap){
-      final DataSnapshot snapshot = dataSnap.snapshot;
-      if (snapshot.exists) {
-        patientNameTextEditingController.text = (snapshot.value as Map)['patientName'];
-        patientIdTextEditingController.text = (snapshot.value as Map)['patientId'];
-        patientAgeTextEditingController.text = (snapshot.value as Map)['patientAge'];
-        genderTextEditingController.text = (snapshot.value as Map)['gender'];
-        heightTextEditingController.text = (snapshot.value as Map)['height'];
-        weightTextEditingController.text = (snapshot.value as Map)['weight'];
-        visitationReasonTextEditingController.text = (snapshot.value as Map)['visitationReason'];
-      }
-
-      else {
-      }
-    });
-  }*/
 
   @override
   void initState() {

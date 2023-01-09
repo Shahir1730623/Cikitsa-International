@@ -10,7 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../doctor_screens/doctor_physical_appointments_details.dart';
 
 class PushNotificationPhysicalAppointment extends StatefulWidget {
-  const PushNotificationPhysicalAppointment({Key? key}) : super(key: key);
+  String? type = "";
+  PushNotificationPhysicalAppointment({Key? key,this.type}) : super(key: key);
 
   @override
   State<PushNotificationPhysicalAppointment> createState() => _PushNotificationPhysicalAppointmentState();
@@ -32,10 +33,10 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
         ),
         child: Column(
           children: [
-            SizedBox(height: height * 0.05,),
+            SizedBox(height: height * 0.04,),
 
             Text(
-              "Your appointment is confirmed",
+              (widget.type == "prescription") ? "Prescription uploaded" : "Your appointment is confirmed",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.blue,
@@ -44,10 +45,10 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
               ),
             ),
 
-            SizedBox(height: height * 0.03,),
+            SizedBox(height: height * 0.05,),
 
             Text(
-              'Please press the button "View Details" to get redirected to the appointment page',
+              (widget.type == "prescription") ? 'Please press the button "View Details" to get redirected to the download page' : 'Please press the button "View Details" to get redirected to the appointment page',
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,
@@ -61,7 +62,7 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
             SizedBox(
               width: double.infinity,
               height: 45,
-              child: ElevatedButton.icon(
+              child: ElevatedButton(
                 onPressed: ()  {
                   showDialog(
                       context: context,
@@ -73,7 +74,7 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
 
                   Timer(const Duration(seconds: 5),()  {
                     Navigator.pop(context);
-                    if(loggedInUser == "Users"){
+                    if(loggedInUser == "Patient"){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorAppointmentHistoryDetails()));
                     }
                     else{
@@ -86,11 +87,10 @@ class _PushNotificationPhysicalAppointmentState extends State<PushNotificationPh
                 style: ElevatedButton.styleFrom(
                     primary: Colors.blue,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
+                        borderRadius: BorderRadius.circular(5))),
 
-                icon: const Icon(Icons.video_call),
-                label: Text(
-                  "View Details",
+                child: Text(
+                  (widget.type ==  "prescription") ? "View Download" : "View Details",
                   style: GoogleFonts.montserrat(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

@@ -39,7 +39,7 @@ class PushNotificationSystem{
           }
 
           else{
-            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"],remoteMessage.data["type"],remoteMessage.data["push_notify"],context);
           }
 
         }
@@ -58,7 +58,7 @@ class PushNotificationSystem{
           }
 
           else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
-            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"],remoteMessage.data["type"] ,remoteMessage.data["push_notify"],context);
           }
 
           else{
@@ -75,7 +75,13 @@ class PushNotificationSystem{
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage remoteMessage) {
       if(remoteMessage != null){
         if(loggedInUser == "Doctor"){
-          retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          }
+
+          else{
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"],remoteMessage.data["type"],remoteMessage.data["push_notify"],context);
+          }
         }
         else{
           if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
@@ -91,7 +97,7 @@ class PushNotificationSystem{
           }
 
           else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
-            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"], remoteMessage.data["type"],remoteMessage.data["push_notify"],context);
           }
 
           else{
@@ -107,7 +113,13 @@ class PushNotificationSystem{
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
       if(remoteMessage!=null){
         if(loggedInUser == "Doctor"){
-          retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          if(remoteMessage.data["selected_service"] == "Doctor Live Consultation"){
+            retrieveConsultationInfoForDoctor(remoteMessage.data["consultation_id"], context);
+          }
+
+          else{
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"],remoteMessage.data["type"],remoteMessage.data["push_notify"],context);
+          }
         }
 
         else{
@@ -124,7 +136,7 @@ class PushNotificationSystem{
           }
 
           else if(remoteMessage.data["selected_service"] == "Doctor Appointment"){
-            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_Id"],remoteMessage.data["push_notify"],context);
+            retrieveDoctorAppointmentDataFromDatabase(remoteMessage.data["appointment_id"],remoteMessage.data["patient_id"],remoteMessage.data["type"],remoteMessage.data["push_notify"],context);
           }
 
           else{
@@ -177,7 +189,6 @@ class PushNotificationSystem{
             patientId = (snapshot.value as Map)["patientId"].toString();
             userId = (snapshot.value as Map)["userId"].toString();
             selectedConsultationInfoForDocAndConsultant = ConsultationModel2.fromSnapshot(snapshot);
-            Fluttertoast.showToast(msg: "ID:" + consultationId! + "User ID:" + userId! + "Patient ID:" + patientId! + "Date:" + selectedConsultationInfoForDocAndConsultant!.date!);
             localNotify = true;
 
             /*if(consultationId != null && userId != null && patientId != null){
@@ -314,9 +325,9 @@ class PushNotificationSystem{
     });
   }
 
-  void retrieveDoctorAppointmentDataFromDatabase(String apptId,String pId,String p, BuildContext context){
+  void retrieveDoctorAppointmentDataFromDatabase(String apptId,String pId, String type, String p, BuildContext context){
     pushNotifyForAppointment = p;
-    if(loggedInUser == "Users"){
+    if(loggedInUser == "Patient"){
       FirebaseDatabase.instance.ref()
           .child("Users")
           .child(currentFirebaseUser!.uid)
@@ -334,7 +345,7 @@ class PushNotificationSystem{
             showDialog(
                 context: NavigationService.navigatorKey.currentContext!,
                 barrierDismissible: false,
-                builder:(context) => const PushNotificationPhysicalAppointment()
+                builder:(context) => PushNotificationPhysicalAppointment(type: type)
             );
           }
 
@@ -345,13 +356,13 @@ class PushNotificationSystem{
         }
 
         else {
-          Fluttertoast.showToast(msg: "No Visa Invitation record exist");
+          Fluttertoast.showToast(msg: "No appointment record exist");
         }
 
       });
     }
 
-    else{
+    else {
       FirebaseDatabase.instance.ref()
           .child("Doctors")
           .child(currentFirebaseUser!.uid)
@@ -367,7 +378,7 @@ class PushNotificationSystem{
             showDialog(
                 context: NavigationService.navigatorKey.currentContext!,
                 barrierDismissible: false,
-                builder:(context) => const PushNotificationPhysicalAppointment()
+                builder:(context) => PushNotificationPhysicalAppointment()
             );
           }
 

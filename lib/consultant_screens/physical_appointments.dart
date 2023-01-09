@@ -332,7 +332,7 @@ class _PhysicalAppointmentsState extends State<PhysicalAppointments> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "You have no waiting Telemedicine consultations",
+                    "You have no waiting physical appointments",
                     style: GoogleFonts.montserrat(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

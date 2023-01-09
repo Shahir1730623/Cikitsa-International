@@ -53,7 +53,6 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
       });
     }
   }
-
   Future downloadFile() async {
     showDialog(
         context: context,
@@ -82,7 +81,7 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
     }
 
     Navigator.pop(NavigationService.navigatorKey.currentContext!);
-    Fluttertoast.showToast(msg: "Photo Saved to gallery");
+    Fluttertoast.showToast(msg: "Photo Saved to gallery",toastLength: Toast.LENGTH_LONG);
 
   }
 
@@ -544,36 +543,33 @@ class _HistoryScreenDetailsState extends State<HistoryScreenDetails> {
                 ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton.icon(
-                  onPressed: ()  async {
-                    if(flag == true){
-                      await downloadFile();
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
-                    }
+            SizedBox(
+              width: double.infinity,
+              height: 45,
+              child: ElevatedButton.icon(
+                onPressed: ()  async {
+                  if(flag == true){
+                    await downloadFile();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                  }
 
-                    else{
-                      var snackBar = const SnackBar(content: Text("Prescription still not uploaded..."));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  },
+                  else{
+                    var snackBar = const SnackBar(content: Text("Prescription still not uploaded..."));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
 
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: (flag) ? Colors.blue : Colors.grey[300],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  icon: const Icon(Icons.contact_page),
-                  label: Text(
-                    "Download Prescription",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white
-                    ),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: (flag) ? Colors.blue : Colors.grey[300],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                icon: const Icon(Icons.contact_page),
+                label: Text(
+                  "Download Prescription",
+                  style: GoogleFonts.montserrat(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white
                   ),
                 ),
               ),

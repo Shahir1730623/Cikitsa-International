@@ -31,7 +31,7 @@ class _VisaConfirmationProgressDialogState extends State<VisaConfirmationProgres
             SizedBox(height: height * 0.04,),
 
             Text(
-              "Your request is sent us",
+              "Your request is sent to us",
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                   color: Colors.black,

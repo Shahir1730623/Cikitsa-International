@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -15,6 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../assistants/assistant_methods.dart';
 import '../global/global.dart';
 import '../navigation_service.dart';
 import '../widgets/progress_dialog.dart';
@@ -102,7 +104,7 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
   }
 
   Future<void> uploadFile(File file) async {
-    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorAppointmentImages/'+ selectedDoctorAppointmentInfo!.id! + "/documents/prescription.png" );
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorAppointmentImages/'+ selectedDoctorAppointmentInfo!.id! + "/documents/doctorPrescription.png" );
 
     // Upload the image to firebase storage
     try{
@@ -117,11 +119,10 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
     //String url = await reference.getDownloadURL();
     //return url;
 
-    setStatusToCompleted();
-
   }
 
   void setStatusToCompleted(){
+    print("User ID: " + selectedDoctorAppointmentInfo!.userId! + " Patient Id: " + selectedDoctorAppointmentInfo!.patientId! +  " Consultation id:" + selectedDoctorAppointmentInfo!.id!);
     FirebaseDatabase.instance.ref()
         .child("Doctors")
         .child(currentFirebaseUser!.uid)
@@ -138,14 +139,33 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
         .child(selectedDoctorAppointmentInfo!.id!)
         .child('status').set("Completed");
 
-    //sendNotificationToUser();
+    getRegistrationTokenForUserAndSendPrescriptionNotification();
   }
 
+  getRegistrationTokenForUserAndSendPrescriptionNotification(){
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(selectedDoctorAppointmentInfo!.userId!)
+        .child("tokens").once().then((snapData) async {
+      DataSnapshot snapshot = snapData.snapshot;
+      if(snapshot.value != null){
+        String deviceRegistrationToken = snapshot.value.toString();
+        // send notification now
+        await AssistantMethods.sendAppointmentPrescriptionPushNotificationToPatientNow(deviceRegistrationToken, selectedDoctorAppointmentInfo!.id!, selectedDoctorAppointmentInfo!.patientId!, context);
+        Fluttertoast.showToast(msg: "Notification sent to patient successfully",toastLength: Toast.LENGTH_LONG);
+      }
+
+      else{
+        Fluttertoast.showToast(msg: "Error sending notifications");
+      }
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    futureFiles = firebase_storage.FirebaseStorage.instance.ref('doctorAppointmentImages/'+ selectedDoctorAppointmentInfo!.id! + "/documents").listAll();
     patientIdTextEditingController.text = selectedDoctorAppointmentInfo!.patientId!;
     documentTypeTextEditingController.text = selectedDoctorAppointmentInfo!.documentType!;
     countryCodeTextEditingController.text = selectedDoctorAppointmentInfo!.countryCode!;
@@ -938,6 +958,8 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
                     ],
                   ),
 
+                  SizedBox(height: height * 0.025,),
+
                   Text(
                     "Download Reports and Prescriptions",
                     style: GoogleFonts.montserrat(
@@ -948,6 +970,8 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
                   ),
 
                   SizedBox(height: height * 0.020,),
+
+                  const MySeparator(color: Colors.blue,),
 
                   FutureBuilder<ListResult>(
                     future: futureFiles,
@@ -996,8 +1020,6 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
                   GestureDetector(
                     onTap: () async {
                       await pickImages();
-                      var snackBar = const SnackBar(content: Text("Uploaded successfully"));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     },
                     child: Container(
                       margin: const EdgeInsets.all(15),
@@ -1065,47 +1087,45 @@ class _DoctorPhysicalAppointmentDetailsState extends State<DoctorPhysicalAppoint
 
                   SizedBox(height: height * 0.02,),
 
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: ()  async {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context){
-                                return ProgressDialog(message: "Please wait...");
-                              }
-                          );
+                  SizedBox(
+                    width: double.infinity,
+                    height: 45,
+                    child: ElevatedButton(
+                      onPressed: ()  async {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context){
+                              return ProgressDialog(message: "Please wait...");
+                            }
+                        );
 
-                          for (int i = 0; i < imageList.length; i++) {
-                            await uploadFile(imageList[i]);
-                            //downloadUrls.add(url);
-                          }
+                        for (int i = 0; i < imageList.length; i++) {
+                          await uploadFile(imageList[i]);
+                          //downloadUrls.add(url);
+                        }
+                        setStatusToCompleted();
 
-                          Timer(const Duration(seconds: 5),()  {
-                            Navigator.pop(context);
-                            var snackBar = const SnackBar(content: Text("Invitation sent successfully"));
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            Navigator.pop(context);
-                          });
+                        Timer(const Duration(seconds: 5),()  {
+                          Navigator.pop(context);
+                          var snackBar = const SnackBar(content: Text("Prescription sent successfully"));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context);
+                        });
 
-                        },
+                      },
 
-                        style: ElevatedButton.styleFrom(
-                            primary: (Colors.blue),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                      style: ElevatedButton.styleFrom(
+                          primary: (Colors.blue),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
 
-                        child: Text(
-                          "Upload Prescription",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                          ),
+                      child: Text(
+                        "Upload Prescription",
+                        style: GoogleFonts.montserrat(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
                         ),
                       ),
                     ),

@@ -103,11 +103,33 @@ class _TelemedicineConsultationsState extends State<TelemedicineConsultations> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const Divider(
-                thickness: 3,
-                height: 120,
-                color: Colors.blue,
+              SizedBox(height: height * 0.08,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Appointments",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                    ),
+                  ),
+                  Text(
+                    "Up-coming",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
               ),
+
+              SizedBox(height: height * 0.02,),
 
               Flexible(
                 child: FirebaseAnimatedList(

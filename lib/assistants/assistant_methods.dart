@@ -14,10 +14,12 @@ import '../models/user_model.dart';
 class AssistantMethods{
   static void readOnlineUserCurrentInfo() async {
     currentFirebaseUser = firebaseAuth.currentUser;
-    DatabaseReference reference = FirebaseDatabase.instance.ref()
-        .child("Users").child(currentFirebaseUser!.uid);
 
-    reference.once().then((snap) {
+    FirebaseDatabase.instance.ref()
+        .child("Users")
+        .child(currentFirebaseUser!.uid)
+        .once()
+        .then((snap) {
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         currentUserInfo = UserModel.fromSnapshot(snapshot);
@@ -25,10 +27,11 @@ class AssistantMethods{
       }
     });
 
-    DatabaseReference reference2 = FirebaseDatabase.instance.ref()
-        .child("Doctors").child(currentFirebaseUser!.uid);
 
-    reference2.once().then((snap) {
+    FirebaseDatabase.instance.ref()
+        .child("Doctors")
+        .child(currentFirebaseUser!.uid)
+        .once().then((snap) {
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         currentDoctorInfo = DoctorModel.fromSnapshot(snapshot);
@@ -36,10 +39,11 @@ class AssistantMethods{
       }
     });
 
-    DatabaseReference reference3 = FirebaseDatabase.instance.ref()
-        .child("Consultant").child(currentFirebaseUser!.uid);
 
-    reference3.once().then((snap) {
+    FirebaseDatabase.instance.ref()
+        .child("Consultant")
+        .child(currentFirebaseUser!.uid)
+        .once().then((snap) {
       final snapshot = snap.snapshot;
       if (snapshot.exists) {
         currentConsultantInfo = ConsultantModel.fromSnapshot(snapshot);
@@ -247,7 +251,8 @@ class AssistantMethods{
         "appointment_id" : appointmentId,
         "patient_id" : patientId,
         "selected_service" : "Doctor Appointment",
-        "push_notify" : "true"
+        "push_notify" : "true",
+        "type" : "confirmation"
       },
 
       "to" : deviceRegistrationToken
@@ -282,7 +287,9 @@ class AssistantMethods{
         "appointment_id" : appointmentId,
         "patient_id" : patientId,
         "selected_service" : "Doctor Appointment",
-        "push_notify" : "true"
+        "push_notify" : "true",
+        "type" : "confirmation"
+
       },
 
       "to" : deviceRegistrationToken
@@ -295,6 +302,43 @@ class AssistantMethods{
       body: jsonEncode(bodyNotification),
     );
   }
+
+  static sendAppointmentPrescriptionPushNotificationToPatientNow(String deviceRegistrationToken, String appointmentId, String patientId, BuildContext context){
+    Map<String,String> headerNotification = {
+      'Content-Type' : 'application/json',
+      'Authorization' : cloudMessagingServerToken,
+    };
+
+    Map bodyNotification = {
+      "notification":{
+        "body": "Your physical appointment prescription is uploaded. Click here to see",
+        "title" : "Physical Appointment Prescription"
+      },
+
+      "priority": "high",
+
+      "data" : {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id" : "1",
+        "status" : "done",
+        "appointment_id" : appointmentId,
+        "patient_id" : patientId,
+        "selected_service" : "Doctor Appointment",
+        "push_notify" : "true",
+        "type" : "prescription"
+      },
+
+      "to" : deviceRegistrationToken
+    };
+
+    // Work of postman to send notification
+    var responseNotification = post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: headerNotification,
+      body: jsonEncode(bodyNotification),
+    );
+  }
+
 
 
 

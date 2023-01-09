@@ -80,11 +80,11 @@ class _PhysicalAppointmentDetailsState extends State<PhysicalAppointmentDetails>
   setAppointmentInfoToUpcoming() async {
     Map appointmentInfoMap = {
       "id" : appointmentId,
-      "userId" : currentFirebaseUser!.uid,
+      "userId" : selectedDoctorAppointmentInfo!.userId,
       "date" : formattedDate,
       "time" : formattedTime,
       "doctorId" : selectedDoctorAppointmentInfo!.doctorId,
-      "doctorName" : "Dr. " + selectedDoctorAppointmentInfo!.doctorName!,
+      "doctorName" : selectedDoctorAppointmentInfo!.doctorName,
       "doctorImageUrl" : selectedDoctorAppointmentInfo!.doctorImageUrl,
       "specialization" : selectedDoctorAppointmentInfo!.specialization,
       "workplace" : selectedDoctorAppointmentInfo!.workplace,
@@ -108,7 +108,7 @@ class _PhysicalAppointmentDetailsState extends State<PhysicalAppointmentDetails>
     };
 
     FirebaseDatabase.instance.ref().child("Users")
-        .child(currentFirebaseUser!.uid)
+        .child(selectedDoctorAppointmentInfo!.userId!)
         .child('patientList')
         .child(selectedDoctorAppointmentInfo!.patientId!)
         .child("doctorAppointment")

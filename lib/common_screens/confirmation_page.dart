@@ -8,10 +8,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../models/consultation_model.dart';
+import '../navigation_service.dart';
 import '../widgets/visa_confirmation_dialog.dart';
 import '../widgets/progress_dialog.dart';
 import 'coundown_screen.dart';

@@ -120,7 +120,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                       TextButton(
                         onPressed: () {
                           setState(() {
-                            appointmentStatus = "Previous";
+                            appointmentStatus = "Completed";
                           });
                         },
                         child:
@@ -129,7 +129,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                           textAlign: TextAlign.center,
                           style: GoogleFonts.montserrat(
                               fontSize: 13,
-                              color: (appointmentStatus == "Previous") ? Colors.black : Colors.grey,
+                              color: (appointmentStatus == "Completed") ? Colors.black : Colors.grey,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -164,7 +164,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                               appointmentId = (snapshot.value as Map)["id"];
                               retrieveConsultationDataFromDatabase(appointmentId!);
 
-                              Timer(const Duration(seconds: 5), () {
+                              Timer(const Duration(seconds: 2), () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorPhysicalAppointmentDetails()));
                               });
@@ -370,7 +370,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
 
                               Timer(const Duration(seconds: 5), () {
                                 Navigator.pop(context);
-                                //Navigator.push(context, MaterialPageRoute(builder: (context) => const PhysicalAppointmentDetails()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const DoctorPhysicalAppointmentDetails()));
                               });
                             },
 
@@ -476,17 +476,19 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                                               ),
                                             ),
 
-                                            const SizedBox(height: 5),
+                                            const SizedBox(height: 10),
 
                                             // Doctor Specialization
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(
-                                                  "Date of Birth: ${(snapshot.value as Map)["dateOfBirth"]}",
-                                                  style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
+                                                Expanded(
+                                                  child: Text(
+                                                    "Sickness: " + (snapshot.value as Map)["visitationReason"],
+                                                    style: GoogleFonts.montserrat(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
                                                   ),
                                                 ),
 
@@ -515,7 +517,7 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                                               ],
                                             ),
 
-                                            const SizedBox(height: 5),
+                                            const SizedBox(height: 10),
 
                                             Row(
                                               children: [
@@ -557,7 +559,6 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                         }
                       }
 
-
                       else {
                         return Container();
                       }
@@ -565,21 +566,6 @@ class _DoctorPhysicalAppointmentsState extends State<DoctorPhysicalAppointments>
                 ),
               ),
 
-              SizedBox(height: height * 0.3,),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "You have no upcoming\nphysical appointments",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade700
-                    ),
-                  ),
-                ],
-              )
 
             ],
           ),

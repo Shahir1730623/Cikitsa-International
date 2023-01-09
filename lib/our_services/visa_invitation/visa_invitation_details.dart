@@ -90,7 +90,7 @@ class _VisaInvitationDetailsState extends State<VisaInvitationDetails> {
     }
 
     Navigator.pop(NavigationService.navigatorKey.currentContext!);
-    Fluttertoast.showToast(msg: "Photo Saved to gallery");
+    Fluttertoast.showToast(msg: "Photo Saved to gallery",toastLength: Toast.LENGTH_LONG);
 
   }
 

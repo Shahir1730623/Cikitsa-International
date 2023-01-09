@@ -1,9 +1,15 @@
-import 'package:dotted_border/dotted_border.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path_provider/path_provider.dart';
 import '../../global/global.dart';
+import '../../main_screen.dart';
+import '../../navigation_service.dart';
+import '../../widgets/progress_dialog.dart';
 
 class DoctorAppointmentHistoryDetails extends StatefulWidget {
   const DoctorAppointmentHistoryDetails({Key? key}) : super(key: key);
@@ -25,10 +31,69 @@ class _DoctorAppointmentHistoryDetailsState extends State<DoctorAppointmentHisto
   TextEditingController genderTextEditingController = TextEditingController(text: '');
   TextEditingController expiryTextEditingController = TextEditingController(text: '');
 
+  String imageUrl = "";
+  bool flag = false;
+
+  Future<void> checkPrescriptionStatus() async {
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorAppointmentImages/'+ selectedDoctorAppointmentInfo!.id! + "/documents/doctorPrescription.png" );
+    try{
+      imageUrl = await reference.getDownloadURL();
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    if(imageUrl.isNotEmpty){
+      setState(() {
+        flag = true;
+      });
+
+    }
+    else{
+      setState(() {
+        flag = false;
+      });
+    }
+  }
+
+  Future downloadFile() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialog(message: "");
+        }
+    );
+
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('doctorAppointmentImages/'+ selectedDoctorAppointmentInfo!.id! + "/documents/doctorPrescription.png" );
+    final url = await reference.getDownloadURL();
+
+    // Not visible to user, only app can access this file
+    final dir = await getTemporaryDirectory();
+    final path = '${dir.path}/${reference.name}';
+    await Dio().download(url, path); // Download file
+
+    //await reference.writeToFile(path); // Save downloaded file locally
+
+    try{
+      await GallerySaver.saveImage(path,toDcim: true);
+    }
+
+    catch(e){
+      print(e);
+    }
+
+    Navigator.pop(NavigationService.navigatorKey.currentContext!);
+    Fluttertoast.showToast(msg: "Photo Saved to gallery",toastLength: Toast.LENGTH_LONG);
+
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkPrescriptionStatus();
     patientIdTextEditingController.text = selectedDoctorAppointmentInfo!.patientId!;
     documentTypeTextEditingController.text = selectedDoctorAppointmentInfo!.documentType!;
     countryCodeTextEditingController.text = selectedDoctorAppointmentInfo!.countryCode!;
@@ -826,6 +891,41 @@ class _DoctorAppointmentHistoryDetailsState extends State<DoctorAppointmentHisto
                     )
                   ],
                 ),
+
+                SizedBox(height: height * 0.1),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 45,
+                  child: ElevatedButton.icon(
+                    onPressed: ()  async {
+                      if(flag == true){
+                        await downloadFile();
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen()), (Route<dynamic> route) => false);
+                      }
+
+                      else{
+                        var snackBar = const SnackBar(content: Text("Prescription still not uploaded..."));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: (flag) ? Colors.blue : Colors.grey[300],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    icon: const Icon(Icons.contact_page),
+                    label: Text(
+                      "Download Prescription",
+                      style: GoogleFonts.montserrat(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white
+                      ),
+                    ),
+                  ),
+                ),
+
 
               ],
             ),
